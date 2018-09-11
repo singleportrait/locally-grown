@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import client from './services-contentful';
 import Video from './Video';
 
 class Program extends Component {
@@ -14,7 +15,9 @@ class Program extends Component {
     super(props);
 
     this.state = {
-      currentHour: new Date().getHours()
+      currentHour: new Date().getHours(),
+      programBlock: null,
+      video: null
     }
   }
 
@@ -22,30 +25,59 @@ class Program extends Component {
     this.setCurrentProgramBlock();
   }
 
+  componentDidUpdate = (prevProps) => {
+    if (this.props.program.sys.id !== prevProps.program.sys.id) {
+      console.log("New program selected");
+      this.setCurrentProgramBlock();
+    }
+  }
+
   setCurrentProgramBlock() {
     const matchingBlock = this.props.program.fields.programBlocks.find(programBlock => {
       // console.log("Found program hour vs. current hour:", programBlock.fields.startTime, this.state.currentHour);
+      // TODO: Lift up `currentHour` out of this component and pass in as a prop
+      // because we've already calculated that and which program block to play
+      // in the App component
       return programBlock.fields.startTime === this.state.currentHour;
     });
 
     if (matchingBlock) {
-      console.log('Matching program');
-      console.log('Videos:', matchingBlock.fields.videos);
+      console.log('Program Block videos:', matchingBlock.fields.videos);
 
       this.setState({
         programBlock: matchingBlock
-      });
+      }, this.getActiveVideo);
     } else {
       console.log('No matching program');
     }
+  }
 
+  getActiveVideo = () => {
+    this.fetchVideo(this.state.programBlock.sys.id)
+      .then(this.setVideo)
+      .catch(error => this.setState({error}));
+  }
 
+  fetchVideo = programBlockId => {
+    return client.getEntry(programBlockId);
+  };
+
+  setVideo = response => {
+    // TODO: Create random() helper function
+    // TODO: Save the randomized order of this and keep it in the right order
+    // & add latest timestamp when switching back and forth between channels
+    const videoToPlay = this.state.programBlock.fields.isRandom ? Math.floor(Math.random() * response.fields.videos.length) : 0;
+
+    this.setState({
+      programBlock: response,
+      video: response.fields.videos[videoToPlay]
+    }, () => {
+      console.log("Selected video:", response.fields.videos[videoToPlay]);
+    });
   }
 
   render() {
     const { title, programBlocks } = this.props.program.fields;
-
-    console.log("Program props:", this.props);
 
     return (
       <div>
@@ -57,13 +89,10 @@ class Program extends Component {
             <em>Nothing playing!</em>
           </div>
         }
-        { this.state.programBlock &&
+        { this.state.programBlock && this.state.video &&
           <div>
             <h1>{this.state.programBlock.fields.title}</h1>
-            <Video
-              programBlockId={this.state.programBlock.sys.id}
-              random={this.state.programBlock.fields.isRandom}
-            />
+            <Video video={this.state.video} />
           </div>
         }
         <h3>It's {this.state.currentHour} o'clock.</h3>

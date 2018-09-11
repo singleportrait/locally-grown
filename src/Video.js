@@ -6,7 +6,6 @@ import { findDOMNode } from 'react-dom'
 
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
-import client from './services-contentful';
 
 const ReactPlayerWrapper = styled('div')`
   position: relative;
@@ -23,41 +22,23 @@ class Video extends Component {
   constructor(props) {
     super(props);
 
-    // The official React way
+    // The official React way; doesn't work
     //this.player = React.createRef();
 
     this.state = {
-      programBlock: [],
       muted: true
     }
 
     this.toggleMute = this.toggleMute.bind(this);
   }
 
-  componentDidMount() {
-    this.fetchVideo(this.props.programBlockId).then(this.setVideo);
-
-    //console.log('Player:', this.player.current);
-  }
-
-  fetchVideo = programBlockId => {
-    return client.getEntry(programBlockId);
-  };
-
-  setVideo = response => {
-    console.log("videos", response.fields.videos);
-    // TODO: Create random() helper function
-    const videoToPlay = this.props.random ? Math.floor(Math.random() * response.fields.videos.length) : 0;
-    this.setState({
-      programBlock: response,
-      video: response.fields.videos[videoToPlay]
-    });
-
-    //console.log(this.state.video.fields);
-  }
-
   onReady() {
     console.log('Video is ready to play');
+  }
+
+  onEnded() {
+    // TOOD: Pass up that video is done to get new video
+    console.log("Video completed");
   }
 
   toggleMute() {
@@ -67,17 +48,12 @@ class Video extends Component {
   }
 
   // TODO: Why are function sometimes like this and sometimes like:
-  // onClickFullscreen() { ... }
-  // IN FACT =>> this.player didn't work with () but works with () =>
   onClickFullscreen = () => {
     // The react-player demo example
     screenfull.request(findDOMNode(this.player));
-    console.log('Player', this.player);
+    // console.log('Player', this.player);
 
     // The official React way (doesn't work immediately)
-    // screenfull.request(this.player);
-    //
-    // Or maybe,
     // screenfull.request(this.player.current);
   }
 
@@ -89,17 +65,17 @@ class Video extends Component {
   render() {
     return (
       <div>
-        Here is my video.
-        {this.state.video &&
+        {this.props.video &&
           <div>
-            <div>{this.state.video.fields.title}</div>
+            <div>{this.props.video.fields.title}</div>
             <ReactPlayerWrapper>
               <ReactPlayer
                 ref={this.ref}
-                url={this.state.video.fields.url}
+                url={this.props.video.fields.url}
                 playing
                 muted={this.state.muted}
                 onReady={this.onReady}
+                onEnded={this.onEnded}
                 width="100%"
                 height="100%"
                 className={reactPlayerStyle}

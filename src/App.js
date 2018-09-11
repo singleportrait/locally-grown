@@ -8,9 +8,14 @@ class App extends Component {
     super(props);
 
     this.state = {
-      channels: [],
-      programs: []
+      loaded: false,
+      currentHour: new Date().getHours(),
+      matchingPrograms: [],
+      matchingProgramIndex: null
     }
+
+    this.nextProgram = this.nextProgram.bind(this);
+    this.previousProgram = this.previousProgram.bind(this);
   }
 
   componentDidMount() {
@@ -32,36 +37,74 @@ class App extends Component {
 
   setRandomProgram = response => {
     const programs = response.items;
+    let matchingPrograms = [];
 
-    // TODO: Remove programs that *don't* have a program block
+    // Remove programs that *don't* have a program block
     // for the current hour
-    const selectedProgram = programs[Math.floor(Math.random()*programs.length)];
-
-    this.setState({
-      program: selectedProgram
+    programs.map(program => {
+      program.fields.programBlocks.map(programBlock => {
+        if (programBlock.fields.startTime === this.state.currentHour) {
+          matchingPrograms.push(program);
+        }
+      });
     });
 
-    console.log('Setting featured program');
-    //console.log(this.state.program.fields.title);
+    // TODO: Push `matchingPrograms` up to a state / session that allows us
+    // to consistently have next and previous channels
+    console.log("Featured Programs with an active Program Block for this hour:", matchingPrograms);
+
+    const randomNumber = Math.floor(Math.random()*matchingPrograms.length);
+    const selectedProgram = matchingPrograms[randomNumber];
+
+    this.setState({
+      matchingPrograms: matchingPrograms,
+      matchingProgramIndex: randomNumber,
+      program: selectedProgram,
+      loaded: true
+    });
   }
 
-  switchProgram() {
-    setInterval(() => {
-      this.fetchFeaturedPrograms().then(this.setRandomProgram);
-    }, 3000)
+  nextProgram = () => {
+    let newIndex = this.state.matchingProgramIndex + 1;
+
+    if (newIndex > this.state.matchingPrograms.length - 1) {
+      newIndex = 0;
+    }
+
+    this.setState((state) => ({
+      matchingProgramIndex: newIndex,
+      program: state.matchingPrograms[newIndex]
+    }));
+  }
+
+  previousProgram = () => {
+    let newIndex = this.state.matchingProgramIndex - 1;
+
+    if (newIndex < 0) {
+      newIndex = this.state.matchingPrograms.length - 1;
+    }
+
+    this.setState((state) => ({
+      matchingProgramIndex: newIndex,
+      program: state.matchingPrograms[newIndex]
+    }));
   }
 
   render() {
-    //console.log('Rendering app now...');
     return (
       <div className="App">
 
-        { !this.state.program &&
+        { !this.state.loaded &&
           <em>Loading program...</em>
         }
-        { this.state.program &&
+        { this.state.loaded && !this.state.program &&
+          <em>No active programs!</em>
+        }
+        { this.state.loaded && this.state.program &&
           <Program program={this.state.program} />
         }
+        <button onClick={this.nextProgram}>Next program</button>
+        <button onClick={this.previousProgram}>Previous program</button>
       </div>
     );
   }
