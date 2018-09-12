@@ -28,20 +28,18 @@ class Video extends Component {
     this.state = {
       muted: true
     }
-
-    this.toggleMute = this.toggleMute.bind(this);
   }
 
   onReady() {
     console.log('Video is ready to play');
   }
 
-  onEnded() {
-    // TOOD: Pass up that video is done to get new video
+  onEnded = () => {
     console.log("Video completed");
+    this.props.onUpdateVideo();
   }
 
-  toggleMute() {
+  toggleMute = () => {
     this.setState({
       muted: !this.state.muted
     })

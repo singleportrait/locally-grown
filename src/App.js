@@ -42,9 +42,9 @@ class App extends Component {
     // Remove programs that *don't* have a program block
     // for the current hour
     programs.map(program => {
-      program.fields.programBlocks.map(programBlock => {
+      return program.fields.programBlocks.map(programBlock => {
         if (programBlock.fields.startTime === this.state.currentHour) {
-          matchingPrograms.push(program);
+          return matchingPrograms.push(program);
         }
       });
     });
@@ -53,6 +53,7 @@ class App extends Component {
     // to consistently have next and previous channels
     console.log("Featured Programs with an active Program Block for this hour:", matchingPrograms);
 
+    // TODO: Create randomNumber() helper function
     const randomNumber = Math.floor(Math.random()*matchingPrograms.length);
     const selectedProgram = matchingPrograms[randomNumber];
 

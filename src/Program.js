@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import client from './services-contentful';
+import { shuffleArray} from './helpers';
 import Video from './Video';
 
 class Program extends Component {
@@ -17,7 +18,9 @@ class Program extends Component {
     this.state = {
       currentHour: new Date().getHours(),
       programBlock: null,
-      video: null
+      videos: [],
+      video: null,
+      videoPlayingIndex: null
     }
   }
 
@@ -42,38 +45,63 @@ class Program extends Component {
     });
 
     if (matchingBlock) {
-      console.log('Program Block videos:', matchingBlock.fields.videos);
-
       this.setState({
         programBlock: matchingBlock
-      }, this.getActiveVideo);
+      }, this.getProgramBlockVideos);
     } else {
       console.log('No matching program');
     }
   }
 
-  getActiveVideo = () => {
-    this.fetchVideo(this.state.programBlock.sys.id)
-      .then(this.setVideo)
+  getProgramBlockVideos = () => {
+    this.fetchProgramBlock(this.state.programBlock.sys.id)
+      .then(this.setVideos)
       .catch(error => this.setState({error}));
   }
 
-  fetchVideo = programBlockId => {
+  fetchProgramBlock = programBlockId => {
     return client.getEntry(programBlockId);
   };
 
-  setVideo = response => {
-    // TODO: Create random() helper function
-    // TODO: Save the randomized order of this and keep it in the right order
-    // & add latest timestamp when switching back and forth between channels
-    const videoToPlay = this.state.programBlock.fields.isRandom ? Math.floor(Math.random() * response.fields.videos.length) : 0;
+  setVideos = response => {
+    let videos = response.fields.videos;
+    const showRandomVideos = this.state.programBlock.fields.isRandom;
+
+    // Randomize order of videos if 'random' is set
+    if (showRandomVideos) {
+      console.log('Channel is random');
+      videos = shuffleArray(videos);
+    }
+    // TODO: Save current location in video & timestamp when switching back and forth between channels
+    // (To keep video 'counting up' as you switch between channels to play what's passed after that amount of time
+    const videoToPlay = 0;
 
     this.setState({
       programBlock: response,
-      video: response.fields.videos[videoToPlay]
+      videos: videos,
+      video: videos[videoToPlay],
+      videoPlayingIndex: videoToPlay
     }, () => {
-      console.log("Selected video:", response.fields.videos[videoToPlay]);
+      console.log("Selected video:", videos[videoToPlay]);
     });
+  }
+
+  onUpdateVideo = () => {
+    console.log("State before updating video:", this.state);
+    let newVideoToPlay = this.state.videoPlayingIndex + 1;
+    console.log('Updating video to video #', newVideoToPlay, "of total", this.state.videos.length - 1);
+
+    if (newVideoToPlay >= this.state.videos.length) {
+      console.log("Going back to beginning");
+      newVideoToPlay = 0;
+    }
+
+    console.log("New video to play:", this.state.videos[newVideoToPlay]);
+
+    this.setState((state) => ({
+      video: state.videos[newVideoToPlay],
+      videoPlayingIndex: newVideoToPlay
+    }));
   }
 
   render() {
@@ -92,7 +120,10 @@ class Program extends Component {
         { this.state.programBlock && this.state.video &&
           <div>
             <h1>{this.state.programBlock.fields.title}</h1>
-            <Video video={this.state.video} />
+            <Video
+              video={this.state.video}
+              onUpdateVideo={this.onUpdateVideo}
+            />
           </div>
         }
         <h3>It's {this.state.currentHour} o'clock.</h3>
