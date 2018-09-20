@@ -17,9 +17,9 @@ class Program extends Component {
 
     this.state = {
       currentHour: new Date().getHours(),
-      programBlock: null,
+      programBlock: null, // {} ?
       videos: [],
-      video: null,
+      video: null, // {} ?
       videoPlayingIndex: null
     }
   }
@@ -49,10 +49,14 @@ class Program extends Component {
         programBlock: matchingBlock
       }, this.getProgramBlockVideos);
     } else {
+      // TODO: Do this as a caught error in action
       console.log('No matching program');
     }
   }
 
+  // programBlockActions
+  // fetchProgramBlock(this.props.programBlockId)
+  // FETCH_PROGRAM_BLOCK
   getProgramBlockVideos = () => {
     this.fetchProgramBlock(this.state.programBlock.sys.id)
       .then(this.setVideos)
@@ -63,9 +67,12 @@ class Program extends Component {
     return client.getEntry(programBlockId);
   };
 
+  // videoActions
+  // fetchProgramBlockVideos(this.props.programBlockId, 'content_type' = 'programBlock') #something
+  // FETCH_PROGRAM_BLOCK_VIDEOS
   setVideos = response => {
     let videos = response.fields.videos;
-    const showRandomVideos = this.state.programBlock.fields.isRandom;
+    const showRandomVideos = this.state.currentProgramBlock.fields.isRandom;
 
     // Randomize order of videos if 'random' is set
     if (showRandomVideos) {
@@ -86,6 +93,9 @@ class Program extends Component {
     });
   }
 
+  // videoActions
+  // replaceVideo()
+  // REPLACE_VIDEO
   onUpdateVideo = () => {
     console.log("State before updating video:", this.state);
     let newVideoToPlay = this.state.videoPlayingIndex + 1;
@@ -105,28 +115,28 @@ class Program extends Component {
   }
 
   render() {
-    const { title, programBlocks } = this.props.program.fields;
+    const program = this.props.program;
+    const { title, programBlocks } = program.fields;
+    const video = program.currentProgramBlock.currentVideo;
 
     return (
       <div>
         The chosen program:
         <h4>You're watching {title}</h4>
         <p>Now playing:</p>
-        { !this.state.programBlock &&
-          <div>
-            <em>Nothing playing!</em>
-          </div>
+        { !program.currentProgramBlock &&
+          <em>Nothing playing at this hour!</em>
         }
-        { this.state.programBlock && this.state.video &&
+        { program.currentProgramBlock && video &&
           <div>
-            <h1>{this.state.programBlock.fields.title}</h1>
+            <h1>{program.currentProgramBlock.fields.title}</h1>
             <Video
-              video={this.state.video}
+              video={video}
               onUpdateVideo={this.onUpdateVideo}
             />
           </div>
         }
-        <h3>It's {this.state.currentHour} o'clock.</h3>
+        <h3>It's {this.props.currentHour} o'clock.</h3>
 
         { programBlocks.map(({fields}, i) =>
           <div key={i}>
