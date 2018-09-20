@@ -8,6 +8,7 @@ const initialState = {
 }
 
 const fakeProgramData = {
+  isLoaded: false,
   currentHour: 10, // Move up outside of programs store
   featuredPrograms: [
     {
@@ -16,6 +17,14 @@ const fakeProgramData = {
       },
       fields: {
         title: "Jenn's Channel Default",
+      }
+    },
+    {
+      sys: {
+        id: 2,
+      },
+      fields: {
+        title: "K-SBI Channel Default",
       }
     }
   ],
@@ -26,6 +35,14 @@ const fakeProgramData = {
       },
       fields: {
         title: "Jenn's Channel Default",
+      }
+    },
+    {
+      sys: {
+        id: 2,
+      },
+      fields: {
+        title: "K-SBI Channel Default",
       }
     }
   ],

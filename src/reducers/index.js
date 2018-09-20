@@ -8,6 +8,7 @@ const initialState = {
   },
   programs: {
     isFetching: false,
+    isLoaded: false,
     featuredPrograms: [],
     availablePrograms: [],
     currentProgramIndex: null,

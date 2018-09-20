@@ -4,6 +4,7 @@ import { fetchFeaturedPrograms, fetchSelectedProgram } from './actions/programAc
 
 import client from './services-contentful';
 import Program from './Program';
+import Navigation from './Navigation';
 
 class Channel extends Component {
   constructor(props) {
@@ -112,13 +113,14 @@ class Channel extends Component {
   render() {
     return (
       <div>
+        <Navigation />
         { !this.state.loaded &&
           <em>Loading program...</em>
         }
         { this.props.programs.error &&
           <h1>Errored out! Sorry</h1>
         }
-        { this.state.loaded && !this.state.program &&
+        { this.state.loaded && !this.props.programs.currentProgram &&
           <em>No active programs!</em>
         }
         { this.state.loaded && this.state.program &&
@@ -130,7 +132,7 @@ class Channel extends Component {
             <Program program={this.props.programs.currentProgram} currentHour={this.props.programs.currentHour} />
           </div>
         }
-        { this.state.matchingPrograms.length > 1 &&
+        { this.props.programs.availablePrograms.length > 1 &&
           <div>
             <button onClick={this.nextProgram}>Next program</button>
             <button onClick={this.previousProgram}>Previous program</button>
