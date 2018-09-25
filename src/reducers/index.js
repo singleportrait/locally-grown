@@ -7,24 +7,59 @@ const initialState = {
     currentHour: null
   },
   programs: {
-    isFetching: false,
     isLoaded: false,
-    featuredPrograms: [],
+    error: false,
+    featuredPrograms: [
+      {
+        // CAN WE AVOID HAVING A WHOLE SEPARATE THING 4 AVAILABLE PROGRAMS?
+        // isCurrentlyAvailable: null,
+        sys: {},
+        fields: {}
+      },
+      {
+        // isCurrentlyAvailable: null,
+        sys: {},
+        fields: {}
+      },
+    ],
     availablePrograms: [],
     currentProgramIndex: null,
     currentProgram: {
-      isFetching: false,
-      id: null,
+      sys: {},
       fields: {},
       programBlocks: [],
       currentProgramBlock: {
+        isLoaded: true,
         isRandom: null,
-        videos: [],
+        videos: [
+          { sys: {}, fields: {} }
+        ],
         currentVideo: {},
         currentVideoIndex: null
       },
     }
   },
+  // TRYING TO REDUCE NESTING
+  // currentProgram: {
+  //   sys: {
+  //     id: 1
+  //   },
+  //   fields: {
+  //     programBlocks: [] // Comes with the response
+  //   },
+  // },
+  // currentProgramBlock: {
+  //   id: 1,
+  //   isLoaded: false,
+  //   videos: [
+  //     { sys: {}, fields: {} },
+  //     { sys: {}, fields: {} }
+  //   ],
+  //   currentVideo: {
+  //     sys: {}, fields: {}
+  //   },
+  //   currentVideoIndex: null
+  // }
   channels: {
   },
   users: {

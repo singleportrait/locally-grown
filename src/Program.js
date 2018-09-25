@@ -25,7 +25,7 @@ class Program extends Component {
   }
 
   componentDidMount() {
-    this.setCurrentProgramBlock();
+    this.initializeProgramBlock();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -35,7 +35,7 @@ class Program extends Component {
     }
   }
 
-  setCurrentProgramBlock() {
+  initializeProgramBlock() {
     const matchingBlock = this.props.program.fields.programBlocks.find(programBlock => {
       // console.log("Found program hour vs. current hour:", programBlock.fields.startTime, this.state.currentHour);
       // TODO: Lift up `currentHour` out of this component and pass in as a prop

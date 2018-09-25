@@ -13,8 +13,8 @@ class Channel extends Component {
     this.state = {
       loaded: false,
       currentHour: new Date().getHours(),
-      matchingPrograms: [],
-      matchingProgramIndex: null
+      availablePrograms: [],
+      currentProgramIndex: null
     }
 
     this.nextProgram = this.nextProgram.bind(this);
@@ -51,7 +51,7 @@ class Channel extends Component {
 
   setRandomProgram = response => {
     const programs = response.items;
-    let matchingPrograms = [];
+    let availablePrograms = [];
 
     // Remove programs that *don't* have a program block
     // for the current hour
@@ -59,21 +59,21 @@ class Channel extends Component {
   // FETCH_AVAILABLE_FEATURED_PROGRAMS
     programs.map(program => program.fields.programBlocks.forEach(programBlock => {
       if (programBlock.fields.startTime === this.state.currentHour) {
-        return matchingPrograms.push(program);
+        return availablePrograms.push(program);
       }
     }));
 
-    // TODO: Push `matchingPrograms` up to a state / session that allows us
+    // TODO: Push `availablePrograms` up to a state / session that allows us
     // to consistently have next and previous channels
-    console.log("Featured Programs with an active Program Block for this hour:", matchingPrograms);
+    console.log("Featured Programs with an active Program Block for this hour:", availablePrograms);
 
     // TODO: Create randomNumber() helper function
-    const randomNumber = Math.floor(Math.random()*matchingPrograms.length);
-    const selectedProgram = matchingPrograms[randomNumber];
+    const randomNumber = Math.floor(Math.random()*availablePrograms.length);
+    const selectedProgram = availablePrograms[randomNumber];
 
     this.setState({
-      matchingPrograms: matchingPrograms,
-      matchingProgramIndex: randomNumber,
+      availablePrograms: availablePrograms,
+      currentProgramIndex: randomNumber,
       program: selectedProgram,
       loaded: true
     });
@@ -82,31 +82,32 @@ class Channel extends Component {
   // programActions.js
   // GO_TO_NEXT_PROGRAM
   nextProgram = () => {
+    // In here, make the dispatch call to either choose next or first program
     // TODO: Set current time in order to come back to exact future video
-    let newIndex = this.state.matchingProgramIndex + 1;
+    let newIndex = this.state.currentProgramIndex + 1;
 
-    if (newIndex > this.state.matchingPrograms.length - 1) {
+    if (newIndex > this.state.availablePrograms.length - 1) {
       newIndex = 0;
     }
 
     this.setState((state) => ({
-      matchingProgramIndex: newIndex,
-      program: state.matchingPrograms[newIndex]
+      currentProgramIndex: newIndex,
+      program: state.availablePrograms[newIndex]
     }));
   }
 
   // programActions.js
   // GO_TO_PREVIOUS_PROGRAM
   previousProgram = () => {
-    let newIndex = this.state.matchingProgramIndex - 1;
+    let newIndex = this.state.currentProgramIndex - 1;
 
     if (newIndex < 0) {
-      newIndex = this.state.matchingPrograms.length - 1;
+      newIndex = this.state.availablePrograms.length - 1;
     }
 
     this.setState((state) => ({
-      matchingProgramIndex: newIndex,
-      program: state.matchingPrograms[newIndex]
+      currentProgramIndex: newIndex,
+      program: state.availablePrograms[newIndex]
     }));
   }
 

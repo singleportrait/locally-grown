@@ -70,3 +70,11 @@ export const fetchSelectedProgram = () => dispatch => {
   //   setCurrentProgram(programs)
   // });
 }
+
+export const nextProgram = () => dispatch => {
+  // dispatch({
+  //   type: 'NEXT_PROGRAM',
+  //   currentProgramIndex: xx,
+  //   currentProgram: xx
+  // })
+}

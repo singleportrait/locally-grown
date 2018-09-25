@@ -8,7 +8,7 @@ const initialState = {
 }
 
 const fakeProgramData = {
-  isLoaded: false,
+  isLoaded: true,
   currentHour: 10, // Move up outside of programs store
   featuredPrograms: [
     {
@@ -81,18 +81,25 @@ const fakeProgramData = {
             title: "Life Philosophies"
           }
         }
-      ]
+      ],
     },
     currentProgramBlock: {
+      isLoaded: true,
       isRandom: true,
       videos: [
         {
+          sys: {
+            id: 10
+          },
           fields: {
             title: "Do Easy",
             url: "https://www.youtube.com/watch?v=j8zDXBSfAAk"
           }
         },
         {
+          sys: {
+            id: 11
+          },
           fields: {
             title: "Another Video",
             url: "https://www.youtube.com/watch?v=j8zDXBSfAAk"
@@ -100,6 +107,9 @@ const fakeProgramData = {
         }
       ],
       currentVideo: {
+        sys: {
+          id: 10
+        },
         fields: {
           title: "Do Easy",
           url: "https://www.youtube.com/watch?v=j8zDXBSfAAk"
