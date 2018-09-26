@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from 'react-emotion';
 
 const ChannelsWrapper = styled('div')`
   background-color: #aaa;

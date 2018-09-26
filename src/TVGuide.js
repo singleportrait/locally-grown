@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from 'react-emotion';
 
 const TVGuideWrapper = styled('div')`
   position: absolute;
