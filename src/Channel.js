@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchFeaturedPrograms, fetchSelectedProgram } from './actions/programActions';
+import { fetchSelectedProgram } from './operations/programOperations';
 
-import client from './services-contentful';
-import Program from './Program';
+// import client from './services-contentful';
+import ProgramReduxed from './ProgramReduxed';
 import Navigation from './Navigation';
 
 class Channel extends Component {
@@ -26,9 +26,9 @@ class Channel extends Component {
     // fetchSelectedProgram()
     // getProgram()
     // FETCH_SELECTED_PROGRAM
-    this.fetchFeaturedPrograms().then(this.setRandomProgram, function(reason) {
-      console.log('Could not fetch because: ', reason);
-    });
+    // this.fetchFeaturedPrograms().then(this.setRandomProgram, function(reason) {
+    //   console.log('Could not fetch because: ', reason);
+    // });
 
     this.props.fetchSelectedProgram();
 
@@ -44,43 +44,44 @@ class Channel extends Component {
    */
   // programActions.js
   // FETCH_FEATURED_PROGRAMS
-  fetchFeaturedPrograms = () => client.getEntries({
-    content_type: 'program',
-    'fields.featured': true
-  });
+  // fetchFeaturedPrograms = () => client.getEntries({
+  //   content_type: 'program',
+  //   'fields.featured': true
+  // });
 
-  setRandomProgram = response => {
-    const programs = response.items;
-    let availablePrograms = [];
+  // setRandomProgram = response => {
+  //   const programs = response.items;
+  //   let availablePrograms = [];
 
-    // Remove programs that *don't* have a program block
-    // for the current hour
-  // this.props.fetchAvailableFeaturedPrograms();
-  // FETCH_AVAILABLE_FEATURED_PROGRAMS
-    programs.map(program => program.fields.programBlocks.forEach(programBlock => {
-      if (programBlock.fields.startTime === this.state.currentHour) {
-        return availablePrograms.push(program);
-      }
-    }));
+  //   // Remove programs that *don't* have a program block
+  //   // for the current hour
+  // // this.props.fetchAvailableFeaturedPrograms();
+  // // FETCH_AVAILABLE_FEATURED_PROGRAMS
+  //   programs.map(program => program.fields.programBlocks.forEach(programBlock => {
+  //     if (programBlock.fields.startTime === this.state.currentHour) {
+  //       return availablePrograms.push(program);
+  //     }
+  //   }));
 
-    // TODO: Push `availablePrograms` up to a state / session that allows us
-    // to consistently have next and previous channels
-    console.log("Featured Programs with an active Program Block for this hour:", availablePrograms);
+  //   // TODO: Push `availablePrograms` up to a state / session that allows us
+  //   // to consistently have next and previous channels
+  //   console.log("Featured Programs with an active Program Block for this hour:", availablePrograms);
 
-    // TODO: Create randomNumber() helper function
-    const randomNumber = Math.floor(Math.random()*availablePrograms.length);
-    const selectedProgram = availablePrograms[randomNumber];
+  //   // TODO: Create randomNumber() helper function
+  //   const randomNumber = Math.floor(Math.random()*availablePrograms.length);
+  //   const selectedProgram = availablePrograms[randomNumber];
 
-    this.setState({
-      availablePrograms: availablePrograms,
-      currentProgramIndex: randomNumber,
-      program: selectedProgram,
-      loaded: true
-    });
-  }
+  //   this.setState({
+  //     availablePrograms: availablePrograms,
+  //     currentProgramIndex: randomNumber,
+  //     program: selectedProgram,
+  //     loaded: true
+  //   });
+  // }
 
   // programActions.js
   // GO_TO_NEXT_PROGRAM
+  // TODO: Add these 2 functions to the action, and update the programs list
   nextProgram = () => {
     // In here, make the dispatch call to either choose next or first program
     // TODO: Set current time in order to come back to exact future video
@@ -115,28 +116,29 @@ class Channel extends Component {
     return (
       <div>
         <Navigation />
-        { !this.state.loaded &&
+        { !this.props.programs.isLoaded &&
           <em>Loading program...</em>
         }
-        { this.props.programs.error &&
-          <h1>Errored out! Sorry</h1>
-        }
-        { this.state.loaded && !this.props.programs.currentProgram &&
-          <em>No active programs!</em>
-        }
-        { this.state.loaded && this.state.program &&
-          <Program program={this.state.program} />
-        }
-        { this.props.programs.currentProgram &&
+        { this.props.programs.isLoaded &&
           <div>
-            <h1>Default Program:</h1>
-            <Program program={this.props.programs.currentProgram} currentHour={this.props.programs.currentHour} />
-          </div>
-        }
-        { this.props.programs.availablePrograms.length > 1 &&
-          <div>
-            <button onClick={this.nextProgram}>Next program</button>
-            <button onClick={this.previousProgram}>Previous program</button>
+            { !this.props.programs.currentProgram &&
+              <em>No active programs!</em>
+            }
+            { this.props.programs.error &&
+              <em>{this.props.programs.error}</em>
+            }
+            { this.props.programs.currentProgram &&
+              <div>
+                <h1>Playing a program:</h1>
+                <ProgramReduxed program={this.props.programs.currentProgram} currentHour={this.props.session.currentHour} />
+              </div>
+            }
+            { this.props.programs.availablePrograms.length > 1 &&
+              <div>
+                <button onClick={this.nextProgram}>Next program</button>
+                <button onClick={this.previousProgram}>Previous program</button>
+              </div>
+            }
           </div>
         }
       </div>
@@ -145,8 +147,9 @@ class Channel extends Component {
 }
 
 const mapStateToProps = state => ({
-  programs: state.programs
+  programs: state.programs,
+  session: state.session
 });
 
 //export default Channel;
-export default connect(mapStateToProps, { fetchFeaturedPrograms, fetchSelectedProgram })(Channel);
+export default connect(mapStateToProps, { fetchSelectedProgram })(Channel);

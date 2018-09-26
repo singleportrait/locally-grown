@@ -1,10 +1,12 @@
 import { FETCH_FEATURED_PROGRAMS, SET_AVAILABLE_PROGRAMS, SET_CURRENT_PROGRAM, ERROR_FETCHING_PROGRAMS } from '../actions/programTypes';
 
 const initialState = {
-  featuredPrograms: {},
-  availablePrograms: {},
-  currentProgram: {},
-  error: null
+  isLoaded: false,
+  featuredPrograms: [],
+  availablePrograms: [],
+  currentProgram: null,
+  currentProgramIndex: null,
+  error: null,
 }
 
 const fakeProgramData = {
@@ -125,12 +127,13 @@ const fakeProgramData = {
   error: null
 }
 
-export default function(state = fakeProgramData, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case FETCH_FEATURED_PROGRAMS:
       return {
         ...state,
-        featuredPrograms: action.payload
+        featuredPrograms: action.featuredPrograms,
+        isLoaded: true
       }
     case SET_AVAILABLE_PROGRAMS:
       return {

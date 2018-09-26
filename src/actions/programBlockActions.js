@@ -1,0 +1,79 @@
+import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, UPDATE_PROGRAM_BLOCK } from './programBlockTypes';
+import store from '../store';
+import client from '../services-contentful';
+
+import { shuffleArray} from '../helpers';
+
+export const getCurrentProgramBlock = (programBlockId) => dispatch => {
+  const savedProgramBlock = store.getState().programBlocks.loadedProgramBlocks.find(programBlock => {
+    return programBlock.sys.id === programBlockId;
+  })
+
+  if (savedProgramBlock) {
+    console.log("Using a saved program block");
+    dispatch(setCurrentProgramBlock(savedProgramBlock));
+  } else {
+    console.log("Fetching a new program block");
+    dispatch(fetchProgramBlock(programBlockId))
+    .then(programBlock => {
+      dispatch(setCurrentProgramBlock(programBlock));
+    });
+  }
+}
+
+const fetchProgramBlock = (programBlockId) => dispatch => {
+  return new Promise(function(resolve, reject) {
+    client.getEntry(programBlockId)
+    .then(programBlock => {
+      dispatch(initializeCurrentProgramBlockVideos(programBlock))
+      .then(loadedProgramBlock => {
+        dispatch({
+          type: ADD_PROGRAM_BLOCK,
+          programBlock: loadedProgramBlock
+        })
+
+        resolve(loadedProgramBlock);
+      });
+    });
+  });
+};
+
+const setCurrentProgramBlock = (currentProgramBlock) => dispatch => {
+  dispatch({
+    type: SET_CURRENT_PROGRAM_BLOCK,
+    currentProgramBlock: currentProgramBlock
+  })
+};
+
+const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
+  return new Promise(function(resolve, reject) {
+    console.log("Initializing the program block");
+    // Run set videos code
+    let videos = currentProgramBlock.fields.videos;
+    const showRandomVideos = currentProgramBlock.fields.isRandom;
+
+    if (showRandomVideos) {
+      console.log("This program block is random!");
+      videos = shuffleArray(videos);
+    }
+
+    // TODO: Calculate programming length of videos
+    // Iterate through all videos and add together their minutes and seconds
+    // Add `startTime` to each video (along with its sys and fields)
+    //
+    // TODO: Calculate which video to play based on the program order & lengths
+
+    const videoToPlay = 0;
+
+    const loadedProgramBlock = {
+      sys: currentProgramBlock.sys,
+      fields: currentProgramBlock.fields,
+      orderedVideos: videos,
+      currentVideo: videos[videoToPlay],
+      videoPlayingIndex: videoToPlay,
+      programmingLength: null
+    }
+
+    resolve(loadedProgramBlock);
+  })
+}

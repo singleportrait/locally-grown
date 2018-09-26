@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import programReducer from './programReducer';
+import programBlockReducer from './programBlockReducer';
+import sessionReducer from './sessionReducer';
 
 const initialState = {
   session: {
@@ -66,8 +68,10 @@ const initialState = {
   }
 }
 
-console.log(initialState);
+//console.log(initialState);
 
 export default combineReducers({
-  programs: programReducer
+  programs: programReducer,
+  programBlocks: programBlockReducer,
+  session: sessionReducer
 });
