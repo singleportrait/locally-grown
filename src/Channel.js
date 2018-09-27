@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchSelectedProgram } from './operations/programOperations';
+import { initializePrograms } from './operations/programOperations';
 
 // import client from './services-contentful';
 import ProgramReduxed from './ProgramReduxed';
@@ -30,7 +30,7 @@ class Channel extends Component {
     //   console.log('Could not fetch because: ', reason);
     // });
 
-    this.props.fetchSelectedProgram();
+    this.props.initializePrograms();
 
   }
 
@@ -152,4 +152,4 @@ const mapStateToProps = state => ({
 });
 
 //export default Channel;
-export default connect(mapStateToProps, { fetchSelectedProgram })(Channel);
+export default connect(mapStateToProps, { initializePrograms })(Channel);
