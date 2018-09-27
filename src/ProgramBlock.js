@@ -18,7 +18,7 @@ class ProgramBlock extends Component {
         <Video
           video={programBlock.currentVideo}
           onUpdateVideo={this.onUpdateVideo}
-          timestamp={60}
+          timestamp={programBlock.timestampForCurrentVideo}
         />
       </div>
     )

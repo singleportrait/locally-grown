@@ -20,6 +20,10 @@ const reactPlayerStyle = css`
   left: 0;
 `;
 
+const progressStyle = css`
+  background-color: #ccc;
+`;
+
 class Video extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +54,12 @@ class Video extends Component {
     this.setState({
       duration: duration
     });
+  }
+
+  // This is only used for the progress bar that is used to
+  // validate timestamps
+  onProgress = state => {
+    this.setState(state);
   }
 
   seekToTimestamp = () => {
@@ -91,6 +101,7 @@ class Video extends Component {
             <h3>{videoFields.title}</h3>
             <p>Video length: {videoFields.length}</p>
             <p>Length in seconds: {convertTimeToSeconds(videoFields.length)}</p>
+            <p>Starting timestamp: {this.props.timestamp}</p>
             <ReactPlayerWrapper>
               <ReactPlayer
                 ref={this.ref}
@@ -99,6 +110,7 @@ class Video extends Component {
                 muted={this.state.muted}
                 onReady={this.onReady}
                 onEnded={this.onEnded}
+                onProgress={this.onProgress}
                 onDuration={this.onDuration}
                 width="100%"
                 height="100%"
@@ -114,6 +126,13 @@ class Video extends Component {
             </ReactPlayerWrapper>
             <button onClick={this.toggleMute}>Toggle mute</button>
             <button onClick={this.onClickFullscreen}>Fullscreen</button>
+            { this.state.duration && this.state.played &&
+              <div className={progressStyle}>
+                <p>Duration:</p>
+                <br />
+                <progress max={1} value={this.state.played} />
+              </div>
+            }
           </div>
         }
       </div>

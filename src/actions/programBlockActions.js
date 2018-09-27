@@ -32,6 +32,13 @@ const addProgramBlock = (programBlock) => dispatch => {
   })
 }
 
+const setExactTimestampForCurrentVideo = (timestamp) => dispatch => {
+  // dispatch({
+  //   type: SET_TIMESTAMP_FOR_VIDEO,
+  //   timestamp: timestamp
+  // })
+}
+
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   return new Promise(function(resolve, reject) {
     // Set videos
@@ -46,25 +53,33 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     let programmingLength = 0;
     const secondsPastTheHour = currentSecondsPastTheHour();
     let videoToPlay = 0;
+    let timestampForCurrentVideo = 0;
 
     // Set individual video lengths & full programming length
     videos.forEach((video, i) => {
       if ('length' in video.fields) {
-        video.lengthInSeconds = convertTimeToSeconds(video.fields.length);
+        const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
+        video.lengthInSeconds = videoLengthInSeconds
         video.startTime = programmingLength;
 
-        let startsBeforeCurrentTime = false;
-        if (programmingLength < secondsPastTheHour) {
-          startsBeforeCurrentTime = true;
-        }
-        const newProgrammingLength = programmingLength + video.lengthInSeconds;
+        // Need to move some of this out of here so we can poll at later
+        // points to determine whether it's time to swap in a new video/timestamp
+        const newProgrammingLength = programmingLength + videoLengthInSeconds;
 
         if (programmingLength < secondsPastTheHour && newProgrammingLength > secondsPastTheHour) {
           videoToPlay = i;
+
+          console.log("Current seconds past the hour:", secondsPastTheHour);
+
+          // TODO: This should be able to dispatch independently to the
+          // loaded program block, so that when you come back to the channel
+          // only this timestamp changes (and the current video, if needed)
+          // & udpates where the video would be playing had it moved
+          // forward in time after you switched channels
+          timestampForCurrentVideo = secondsPastTheHour - programmingLength;
         }
 
         programmingLength = newProgrammingLength;
-        console.log(i);
       } else {
         // TODO: This is potentially where we could make requests to YT/Vimeo
         // to get the duration, but it's probably not worth the effort
@@ -78,7 +93,8 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       videosInOrder: videos,
       currentVideo: videos[videoToPlay],
       videoPlayingIndex: videoToPlay,
-      programmingLength: programmingLength
+      programmingLength: programmingLength,
+      timestampForCurrentVideo: timestampForCurrentVideo
     }
 
     resolve(loadedProgramBlock);
