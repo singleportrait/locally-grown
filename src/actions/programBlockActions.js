@@ -4,33 +4,13 @@ import client from '../services-contentful';
 
 import { shuffleArray} from '../helpers';
 
-export const getCurrentProgramBlock = (programBlockId) => dispatch => {
-  const savedProgramBlock = store.getState().programBlocks.loadedProgramBlocks.find(programBlock => {
-    return programBlock.sys.id === programBlockId;
-  })
-
-  if (savedProgramBlock) {
-    console.log("Using a saved program block");
-    dispatch(setCurrentProgramBlock(savedProgramBlock));
-  } else {
-    console.log("Fetching a new program block");
-    dispatch(fetchProgramBlock(programBlockId))
-    .then(programBlock => {
-      dispatch(setCurrentProgramBlock(programBlock));
-    });
-  }
-}
-
 const fetchProgramBlock = (programBlockId) => dispatch => {
   return new Promise(function(resolve, reject) {
     client.getEntry(programBlockId)
     .then(programBlock => {
       dispatch(initializeCurrentProgramBlockVideos(programBlock))
       .then(loadedProgramBlock => {
-        dispatch({
-          type: ADD_PROGRAM_BLOCK,
-          programBlock: loadedProgramBlock
-        })
+        dispatch(addProgramBlock(loadedProgramBlock));
 
         resolve(loadedProgramBlock);
       });
@@ -38,12 +18,19 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
   });
 };
 
-const setCurrentProgramBlock = (currentProgramBlock) => dispatch => {
+const setCurrentProgramBlock = (programBlock) => dispatch => {
   dispatch({
     type: SET_CURRENT_PROGRAM_BLOCK,
-    currentProgramBlock: currentProgramBlock
+    currentProgramBlock: programBlock
   })
 };
+
+const addProgramBlock = (programBlock) => dispatch => {
+  dispatch({
+    type: ADD_PROGRAM_BLOCK,
+    programBlock: programBlock
+  })
+}
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   return new Promise(function(resolve, reject) {
@@ -75,4 +62,21 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
     resolve(loadedProgramBlock);
   })
+}
+
+export const getCurrentProgramBlock = (programBlockId) => dispatch => {
+  const savedProgramBlock = store.getState().programBlocks.loadedProgramBlocks.find(programBlock => {
+    return programBlock.sys.id === programBlockId;
+  })
+
+  if (savedProgramBlock) {
+    console.log("Using a saved program block");
+    dispatch(setCurrentProgramBlock(savedProgramBlock));
+  } else {
+    console.log("Fetching a new program block");
+    dispatch(fetchProgramBlock(programBlockId))
+    .then(programBlock => {
+      dispatch(setCurrentProgramBlock(programBlock));
+    });
+  }
 }
