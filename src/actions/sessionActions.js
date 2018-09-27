@@ -1,4 +1,5 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
+import { currentSecondsPastTheHour } from '../helpers';
 
 const resetPrograms = () => dispatch => {
   console.log("It's time to reset the programs!");
@@ -7,15 +8,15 @@ const resetPrograms = () => dispatch => {
 
   // Reload available programs & program blocks to get the next program block
   // if there is one, or take you to another channel if not
+  //
+  // Also, reset session.currentHour!
 }
 
 export const initializeSession = () => dispatch => {
   /* Set how many seconds until it's time to load the next program */
-  const currentTime = new Date();
-  const currentMinutes = currentTime.getMinutes();
-  const currentSeconds = currentTime.getSeconds();
+  const secondsPastTheHour = currentSecondsPastTheHour();
   const oneHourInSeconds = 60 * 60;
-  let secondsUntilNextProgram = oneHourInSeconds - (currentMinutes * 60) - currentSeconds;
+  let secondsUntilNextProgram = oneHourInSeconds - secondsPastTheHour;
 
   if (secondsUntilNextProgram < 0) {
     secondsUntilNextProgram = 3600;

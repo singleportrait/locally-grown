@@ -2,7 +2,7 @@ import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK } from './programBlockType
 import store from '../store';
 import client from '../services-contentful';
 
-import { shuffleArray } from '../helpers';
+import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
 
 const fetchProgramBlock = (programBlockId) => dispatch => {
   return new Promise(function(resolve, reject) {
@@ -34,7 +34,7 @@ const addProgramBlock = (programBlock) => dispatch => {
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   return new Promise(function(resolve, reject) {
-    // Run set videos code
+    // Set videos
     let videos = currentProgramBlock.fields.videos;
     const showRandomVideos = currentProgramBlock.fields.isRandom;
 
@@ -43,13 +43,34 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       videos = shuffleArray(videos);
     }
 
-    // TODO: Calculate programming length of videos
-    // Iterate through all videos and add together their minutes and seconds
-    // Add `startTime` to each video (along with its sys and fields)
-    //
-    // TODO: Calculate which video to play based on the program order & lengths
+    let programmingLength = 0;
+    const secondsPastTheHour = currentSecondsPastTheHour();
+    let videoToPlay = 0;
 
-    const videoToPlay = 0;
+    // Set individual video lengths & full programming length
+    videos.forEach((video, i) => {
+      if ('length' in video.fields) {
+        video.lengthInSeconds = convertTimeToSeconds(video.fields.length);
+        video.startTime = programmingLength;
+
+        let startsBeforeCurrentTime = false;
+        if (programmingLength < secondsPastTheHour) {
+          startsBeforeCurrentTime = true;
+        }
+        const newProgrammingLength = programmingLength + video.lengthInSeconds;
+
+        if (programmingLength < secondsPastTheHour && newProgrammingLength > secondsPastTheHour) {
+          videoToPlay = i;
+        }
+
+        programmingLength = newProgrammingLength;
+        console.log(i);
+      } else {
+        // TODO: This is potentially where we could make requests to YT/Vimeo
+        // to get the duration, but it's probably not worth the effort
+        console.log("A video doesn't have a length!");
+      }
+    })
 
     const loadedProgramBlock = {
       sys: currentProgramBlock.sys,
@@ -57,7 +78,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       videosInOrder: videos,
       currentVideo: videos[videoToPlay],
       videoPlayingIndex: videoToPlay,
-      programmingLength: null
+      programmingLength: programmingLength
     }
 
     resolve(loadedProgramBlock);

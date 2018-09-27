@@ -23,5 +23,15 @@ export const shuffleArray = array => {
 };
 
 export const convertTimeToSeconds = time => {
-  return TimeFormat.toS(time);
+  if (time) {
+    return TimeFormat.toS(time);
+  }
+}
+
+export const currentSecondsPastTheHour = () => {
+  const currentTime = new Date();
+  const currentMinutes = currentTime.getMinutes();
+  const currentSeconds = currentTime.getSeconds();
+
+  return (currentMinutes * 60) + currentSeconds;
 }
