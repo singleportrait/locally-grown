@@ -12,8 +12,9 @@ class ProgramBlock extends Component {
     const programBlock = this.props.programBlock;
     return (
       <div>
+        <p>Now playing:</p>
         <h1>{programBlock.fields.title}</h1>
-        <p>{programBlock.fields.description}</p>
+        <p>Description: {programBlock.fields.description}</p>
         <Video
           video={programBlock.currentVideo}
           onUpdateVideo={this.onUpdateVideo}

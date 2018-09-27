@@ -12,7 +12,6 @@ export const fetchFeaturedPrograms = () => dispatch => {
       content_type: 'program',
       'fields.featured': true
     }).then(programs => {
-      console.log("I'm dispatching FETCH_FEATURED_PROGRAMS!");
       dispatch({
         type: FETCH_FEATURED_PROGRAMS,
         featuredPrograms: programs,

@@ -27,9 +27,8 @@ const addAvailableAndCurrentPrograms = (programs, dispatch) => {
 }
 
 export const initializePrograms = () => dispatch => {
-  console.log("I'm in initializePrograms!");
+  console.log("I'm initializing the programs...");
   dispatch(fetchFeaturedPrograms()).then(programs => {
-    console.log("I returned from dispatch inside fetchFeaturedPrograms!");
     addAvailableAndCurrentPrograms(programs, dispatch);
   });
 }

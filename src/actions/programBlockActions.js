@@ -1,4 +1,4 @@
-import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, UPDATE_PROGRAM_BLOCK } from './programBlockTypes';
+import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK } from './programBlockTypes';
 import store from '../store';
 import client from '../services-contentful';
 
@@ -47,7 +47,6 @@ const setCurrentProgramBlock = (currentProgramBlock) => dispatch => {
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   return new Promise(function(resolve, reject) {
-    console.log("Initializing the program block");
     // Run set videos code
     let videos = currentProgramBlock.fields.videos;
     const showRandomVideos = currentProgramBlock.fields.isRandom;
@@ -68,7 +67,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     const loadedProgramBlock = {
       sys: currentProgramBlock.sys,
       fields: currentProgramBlock.fields,
-      orderedVideos: videos,
+      videosInOrder: videos,
       currentVideo: videos[videoToPlay],
       videoPlayingIndex: videoToPlay,
       programmingLength: null
