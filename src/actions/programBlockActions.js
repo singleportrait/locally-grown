@@ -2,7 +2,7 @@ import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK } from './programBlockType
 import store from '../store';
 import client from '../services-contentful';
 
-import { shuffleArray} from '../helpers';
+import { shuffleArray } from '../helpers';
 
 const fetchProgramBlock = (programBlockId) => dispatch => {
   return new Promise(function(resolve, reject) {

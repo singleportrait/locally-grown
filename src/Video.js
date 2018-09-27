@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { convertTimeToSeconds } from './helpers';
+
 import styled, { css } from 'react-emotion';
 
 // The react-player demo example
@@ -79,15 +81,20 @@ class Video extends Component {
   }
 
   render() {
+    const videoFields = this.props.video.fields;
+
     return (
+
       <div>
         {this.props.video &&
           <div>
-            <div>{this.props.video.fields.title}</div>
+            <h3>{videoFields.title}</h3>
+            <p>Video length: {videoFields.length}</p>
+            <p>Length in seconds: {convertTimeToSeconds(videoFields.length)}</p>
             <ReactPlayerWrapper>
               <ReactPlayer
                 ref={this.ref}
-                url={this.props.video.fields.url}
+                url={videoFields.url}
                 playing
                 muted={this.state.muted}
                 onReady={this.onReady}

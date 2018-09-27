@@ -1,3 +1,5 @@
+import TimeFormat from 'hh-mm-ss';
+
 export const shuffleArray = array => {
   var currentIndex = array.length
     , temporaryValue
@@ -19,3 +21,7 @@ export const shuffleArray = array => {
 
   return array;
 };
+
+export const convertTimeToSeconds = time => {
+  return TimeFormat.toS(time);
+}
