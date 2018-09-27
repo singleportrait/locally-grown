@@ -32,9 +32,22 @@ const addProgramBlock = (programBlock) => dispatch => {
   })
 }
 
-const setExactTimestampForCurrentVideo = (timestamp) => dispatch => {
+const updateCurrentVideo = () => dispatch => {
+  // Could this be used for setting AND updating?
+
+  // const currentProgramBlock = state.currentProgramBlock;
+  // const secondsPastTheHour = currentSecondsPastTheHour();
+  // currentProgramBlock.videos.forEach((video, i) => {
+  //   if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
+  //     videoToPlay = i;
+  //     timestampForCurrentVideo = secondsPastTheHour - programmingLength;
+  //   }
+  // });
+
   // dispatch({
-  //   type: SET_TIMESTAMP_FOR_VIDEO,
+  //   type: UPDATE_CURRENT_VIDEO,
+  //   currentVideo: currentProgramBlock.videos[i],
+  //   videoPlayingIndex: i,
   //   timestamp: timestamp
   // })
 }
@@ -65,11 +78,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         // Need to move some of this out of here so we can poll at later
         // points to determine whether it's time to swap in a new video/timestamp
         const newProgrammingLength = programmingLength + videoLengthInSeconds;
+        video.endTime = programmingLength + videoLengthInSeconds;
 
-        if (programmingLength < secondsPastTheHour && newProgrammingLength > secondsPastTheHour) {
+        if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
           videoToPlay = i;
-
-          console.log("Current seconds past the hour:", secondsPastTheHour);
 
           // TODO: This should be able to dispatch independently to the
           // loaded program block, so that when you come back to the channel
@@ -79,13 +91,17 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           timestampForCurrentVideo = secondsPastTheHour - programmingLength;
         }
 
-        programmingLength = newProgrammingLength;
+        programmingLength = video.endTime;
       } else {
         // TODO: This is potentially where we could make requests to YT/Vimeo
         // to get the duration, but it's probably not worth the effort
         console.log("A video doesn't have a length!");
       }
     })
+
+    if (programmingLength < 3600) {
+      console.log("This programming isn't enough to fill the hour!");
+    }
 
     const loadedProgramBlock = {
       sys: currentProgramBlock.sys,
