@@ -30,13 +30,31 @@ class Video extends Component {
     }
   }
 
-  onReady() {
+  onReady = () => {
     console.log('Video is ready to play');
   }
 
   onEnded = () => {
     console.log("Video completed");
     this.props.onUpdateVideo();
+  }
+
+  onDuration = (duration) => {
+    if (!this.state.duration) {
+      // Had to put this here because onStart() doesn't reliably play
+      // for Vimeo videos, and there's no other way to set the timestamp
+      this.seekToTimestamp();
+    }
+    this.setState({
+      duration: duration
+    });
+  }
+
+  seekToTimestamp = () => {
+    // TODO: Check to make sure the duration is greater than the
+    // second we're seeking to
+    this.player.seekTo(this.props.timestamp);
+    console.log(this.player);
   }
 
   toggleMute = () => {
@@ -74,6 +92,7 @@ class Video extends Component {
                 muted={this.state.muted}
                 onReady={this.onReady}
                 onEnded={this.onEnded}
+                onDuration={this.onDuration}
                 width="100%"
                 height="100%"
                 className={reactPlayerStyle}
@@ -93,6 +112,10 @@ class Video extends Component {
       </div>
     );
   }
+}
+
+Video.defaultProps = {
+  timestamp: 0
 }
 
 export default Video;
