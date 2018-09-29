@@ -20,28 +20,21 @@ const reactPlayerStyle = css`
 `;
 
 const progressStyle = css`
-  background-color: #ccc;
+  background-color: #bbb;
 `;
 
 class Video extends Component {
   constructor(props) {
     super(props);
 
-    // The official React way; doesn't work
-    //this.player = React.createRef();
-
     this.state = {
       muted: true
     }
   }
 
-  onReady = () => {
-    console.log('Video is ready to play');
-  }
+  onReady = () => console.log('Video is ready to play');
 
-  onEnded = () => {
-    this.props.onUpdateVideo();
-  }
+  onEnded = () => this.props.onUpdateVideo();
 
   onDuration = (duration) => {
     if (!this.state.duration) {
@@ -54,11 +47,8 @@ class Video extends Component {
     });
   }
 
-  // This is only used for the progress bar that is used to
-  // validate timestamps
-  onProgress = state => {
-    this.setState(state);
-  }
+  // This is only used for the progress bar
+  onProgress = state => this.setState(state);
 
   seekToTimestamp = (duration) => {
     // TODO: Handle what should happen if the duration is greater than the
@@ -77,11 +67,9 @@ class Video extends Component {
     })
   }
 
-  // TODO: Why are function sometimes like this and sometimes like:
   onClickFullscreen = () => {
     // The react-player demo example
     screenfull.request(findDOMNode(this.player));
-    // console.log('Player', this.player);
 
     // The official React way (doesn't work immediately)
     // screenfull.request(this.player.current);
@@ -96,7 +84,6 @@ class Video extends Component {
     const videoFields = this.props.video.fields;
 
     return (
-
       <div>
         {this.props.video &&
           <div>
