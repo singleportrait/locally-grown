@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { convertTimeToSeconds } from './helpers';
 
 import styled, { css } from 'react-emotion';
 
@@ -49,7 +48,7 @@ class Video extends Component {
     if (!this.state.duration) {
       // Had to put this here because onStart() doesn't reliably play
       // for Vimeo videos, and there's no other way to set the timestamp
-      this.seekToTimestamp();
+      this.seekToTimestamp(duration);
     }
     this.setState({
       duration: duration
@@ -62,9 +61,13 @@ class Video extends Component {
     this.setState(state);
   }
 
-  seekToTimestamp = () => {
-    // TODO: Check to make sure the duration is greater than the
-    // second we're seeking to
+  seekToTimestamp = (duration) => {
+    // TODO: Handle what should happen if the duration is greater than the
+    // timestamp we passed in (could happen from user error)
+    if (duration <= this.props.timestamp) {
+      console.log("This timestamp is longer than the video!");
+    }
+
     this.player.seekTo(this.props.timestamp);
     console.log(this.player);
   }
@@ -100,7 +103,7 @@ class Video extends Component {
           <div>
             <h3>{videoFields.title}</h3>
             <p>Video length: {videoFields.length}</p>
-            <p>Length in seconds: {convertTimeToSeconds(videoFields.length)}</p>
+            <p>Length in seconds: {this.props.video.lengthInSeconds}</p>
             <p>Starting timestamp: {this.props.timestamp}</p>
             <ReactPlayerWrapper>
               <ReactPlayer

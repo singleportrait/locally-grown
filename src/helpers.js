@@ -24,7 +24,12 @@ export const shuffleArray = array => {
 
 export const convertTimeToSeconds = time => {
   if (time) {
-    return TimeFormat.toS(time);
+    try {
+      return TimeFormat.toS(time);
+    } catch (e) {
+      console.log(e);
+      return 0;
+    }
   }
 }
 
