@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getCurrentProgramBlock } from './actions/programBlockActions';
+import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import ProgramBlock from './ProgramBlock';
 

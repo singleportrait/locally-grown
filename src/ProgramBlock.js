@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { updateCurrentVideo } from './operations/programBlockOperations';
 
 import Video from './Video';
 
 class ProgramBlock extends Component {
   onUpdateVideo = () => {
+    this.props.updateCurrentVideo();
     // Trigger the onUpdateVideo() function on the program block action
     console.log("Time to update the video!");
   }
@@ -27,4 +30,4 @@ class ProgramBlock extends Component {
 
 // I'll connect my onUpdateVideo() action through dispatch props here
 
-export default ProgramBlock;
+export default connect(null, { updateCurrentVideo })(ProgramBlock);

@@ -40,7 +40,6 @@ class Video extends Component {
   }
 
   onEnded = () => {
-    console.log("Video completed");
     this.props.onUpdateVideo();
   }
 

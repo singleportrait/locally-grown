@@ -1,5 +1,5 @@
-import store from '../store';
 import { fetchFeaturedPrograms, setAvailablePrograms, setCurrentProgram, errorFetchingPrograms } from '../actions/programActions';
+import store from '../store';
 
 const addAvailableAndCurrentPrograms = (programs, dispatch) => {
   let availablePrograms = [];
