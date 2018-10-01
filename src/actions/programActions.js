@@ -8,6 +8,8 @@ import client from '../services-contentful';
 
 export const fetchFeaturedPrograms = () => dispatch => {
   return new Promise(function(resolve, reject) {
+    // TODO: Find programs with start date today or earlier
+    // & end date today or later
     client.getEntries({
       content_type: 'program',
       'fields.featured': true

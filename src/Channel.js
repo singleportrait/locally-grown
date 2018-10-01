@@ -10,74 +10,13 @@ class Channel extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      loaded: false,
-      currentHour: new Date().getHours(),
-      availablePrograms: [],
-      currentProgramIndex: null
-    }
-
     this.nextProgram = this.nextProgram.bind(this);
     this.previousProgram = this.previousProgram.bind(this);
   }
 
   componentDidMount() {
-    // programActions.js
-    // fetchSelectedProgram()
-    // getProgram()
-    // FETCH_SELECTED_PROGRAM
-    // this.fetchFeaturedPrograms().then(this.setRandomProgram, function(reason) {
-    //   console.log('Could not fetch because: ', reason);
-    // });
-
     this.props.initializePrograms();
-
   }
-
-  /* We need to fetch programs that are:
-   * - Featured
-   * - Have a ProgramBlock in the current hour
-   *    - e.g. if it's 7pm, make sure they have content for that hour
-   * - Currently active, meaning:
-   *    - Start date is today or earlier
-   *    - End date is today or later
-   */
-  // programActions.js
-  // FETCH_FEATURED_PROGRAMS
-  // fetchFeaturedPrograms = () => client.getEntries({
-  //   content_type: 'program',
-  //   'fields.featured': true
-  // });
-
-  // setRandomProgram = response => {
-  //   const programs = response.items;
-  //   let availablePrograms = [];
-
-  //   // Remove programs that *don't* have a program block
-  //   // for the current hour
-  // // this.props.fetchAvailableFeaturedPrograms();
-  // // FETCH_AVAILABLE_FEATURED_PROGRAMS
-  //   programs.map(program => program.fields.programBlocks.forEach(programBlock => {
-  //     if (programBlock.fields.startTime === this.state.currentHour) {
-  //       return availablePrograms.push(program);
-  //     }
-  //   }));
-
-  //   // TODO: Push `availablePrograms` up to a state / session that allows us
-  //   // to consistently have next and previous channels
-  //   console.log("Featured Programs with an active Program Block for this hour:", availablePrograms);
-
-  //   // TODO: Create randomNumber() helper function
-  //   const randomNumber = Math.floor(Math.random()*availablePrograms.length);
-  //   const selectedProgram = availablePrograms[randomNumber];
-
-  //   this.setState({
-  //     availablePrograms: availablePrograms,
-  //     currentProgramIndex: randomNumber,
-  //     program: selectedProgram,
-  //     loaded: true
-  //   });
-  // }
 
   // programActions.js
   // GO_TO_NEXT_PROGRAM

@@ -6,9 +6,9 @@ import Video from './Video';
 
 class ProgramBlock extends Component {
   onUpdateVideo = () => {
-    this.props.updateCurrentVideo();
-    // Trigger the onUpdateVideo() function on the program block action
     console.log("Time to update the video!");
+    // Trigger updating the video from the program block action
+    this.props.updateCurrentVideo();
   }
 
   render() {
