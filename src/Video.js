@@ -38,20 +38,24 @@ class Video extends Component {
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
       // console.log("Seeking to timestamp...");
       // this.player.seekTo(this.props.timestamp);
-      console.log("Video component did update");
+      console.log("Video: Video component did update");
+      // this.setState({
+      //   playing: true
+      // })
     }
   }
 
   onEnded = () => this.props.onUpdateVideo();
 
   onDuration = (duration) => {
-    console.log("duration being calculated", duration);
     if (!this.state.duration) {
-      // console.log("Seeking...");
       // Had to put this here because onStart() doesn't reliably play
       // for Vimeo videos, and there's no other way to set the timestamp
+      // But then, realized onDuration() only gets called once,
+      // so we don't need to have this sanity check around it
       // this.seekToTimestamp(duration);
     }
+    console.log("Video: Setting duration");
     this.seekToTimestamp(duration);
     this.setState({
       duration: duration
@@ -65,15 +69,38 @@ class Video extends Component {
     // TODO: Handle what should happen if the duration is greater than the
     // timestamp we passed in (could happen from user error)
     if (duration <= this.props.timestamp) {
-      console.log("This timestamp is longer than the video!");
+      console.log("Video: This timestamp is longer than the video!");
     }
 
     // console.log("Seeking to timestamp...");
     this.player.seekTo(this.props.timestamp);
   }
 
+  playPause = () => {
+    // Only playing/pausing the video via the button seems to
+    // correctly trigger Vimeo videos to play/pause after
+    // not playing by default after hitting 'Mute' button
+    this.setState({ playing: !this.state.playing })
+  }
+
+  onPlay = () => {
+    console.log("Video: Playing...");
+  }
+
+  onReady = () => {
+    // Was trying to get the videos to start playing by using a timeout
+    // rather than user trigger, but didn't work
+    // console.log("Video: On ready");
+    // setTimeout(() => {
+    //   this.playPause();
+    //   setTimeout(this.playPause, 500);
+    //   console.log("Video: Toggled play/pause");
+    // }, 500)
+  }
+
   toggleMute = () => {
-    console.log("Toggling mute");
+    // Vimeo videos break once you try to unmute them
+    // console.log("Video: Toggling mute");
     this.setState({
       volume: this.state.volume === 0 ? 1 : 0,
       muted: !this.state.muted
@@ -111,6 +138,8 @@ class Video extends Component {
                 playing={this.state.playing}
                 volume={this.state.volume}
                 muted={this.state.muted}
+                onReady={this.onReady}
+                onPlay={this.onPlay}
                 onEnded={this.onEnded}
                 onProgress={this.onProgress}
                 onDuration={this.onDuration}
@@ -126,6 +155,7 @@ class Video extends Component {
                 }}
               />
             </ReactPlayerWrapper>
+            <button onClick={this.playPause}>{this.state.playing ? 'Pause' : 'Play'}</button>
             <button onClick={this.toggleMute}>Toggle mute</button>
             <button onClick={this.onClickFullscreen}>Fullscreen</button>
             { this.state.duration && this.state.played &&

@@ -87,7 +87,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 const setupCurrentVideoAfterInitialLoad = () => dispatch => {
   // Could this be used for setting AND updating?
 
-  console.log("Updating current video info after switching channels");
+  console.log("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const secondsPastTheHour = currentSecondsPastTheHour();
   const videos = currentProgramBlock.fields.videos;
@@ -97,10 +97,9 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
   videos.forEach((video, i) => {
     if ('length' in video.fields) {
       if (video.startTime < secondsPastTheHour && video.endTime > secondsPastTheHour) {
-        console.log("Found a video to play...");
         videoToPlayIndex = i;
         timestampToStartVideo = secondsPastTheHour - video.startTime;
-        console.log(timestampToStartVideo);
+        console.log("Found a video to play at timestamp...", timestampToStartVideo);
       }
     }
   });
@@ -134,12 +133,12 @@ export const getCurrentProgramBlock = (programBlockId) => dispatch => {
   })
 
   if (savedProgramBlock) {
-    console.log("Using a saved program block");
+    console.log("- Using a saved program block");
     dispatch(setCurrentProgramBlock(savedProgramBlock));
     // Then, probably update to the latest/correct video?
     dispatch(setupCurrentVideoAfterInitialLoad()); // + need to set correct index + timestamp video
   } else {
-    console.log("Don't have this program block saved yet; fetching it now.");
+    console.log("- Don't have this program block saved yet; fetching it now.");
     dispatch(fetchProgramBlock(programBlockId))
     .then(programBlock => {
       dispatch(setCurrentProgramBlock(programBlock));
