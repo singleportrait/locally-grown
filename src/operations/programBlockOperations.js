@@ -42,7 +42,6 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
         // Need to move some of this out of here so we can poll at later
         // points to determine whether it's time to swap in a new video/timestamp
-        const newProgrammingLength = programmingLength + videoLengthInSeconds;
         video.endTime = programmingLength + videoLengthInSeconds;
 
         if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {

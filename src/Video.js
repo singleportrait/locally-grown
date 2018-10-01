@@ -84,6 +84,9 @@ class Video extends Component {
   }
 
   onPlay = () => {
+    // Video loading animation will stop playing HERE
+    // Ideally: Clicking 'next' won't actually switch the video until this
+    // player loads
     console.log("Video: Playing...");
   }
 

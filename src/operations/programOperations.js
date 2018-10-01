@@ -40,7 +40,16 @@ export const goToNextProgram = () => dispatch => {
 }
 
 export const goToPreviousProgram = () => dispatch => {
-  // Implement previous program switch
+  const programs = store.getState().programs;
+  const availablePrograms = programs.availablePrograms;
+  const currentProgramIndex = programs.currentProgramIndex;
+  let newProgramIndex = currentProgramIndex - 1;
+
+  if (newProgramIndex < 0) {
+    newProgramIndex = availablePrograms.length - 1;
+  }
+
+  dispatch(setCurrentProgram(newProgramIndex, availablePrograms[newProgramIndex]));
 }
 
 export const initializePrograms = () => dispatch => {
