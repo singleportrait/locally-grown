@@ -30,18 +30,26 @@ class Video extends Component {
     this.state = {
       volume: 0,
       muted: true,
-      playing: true
+      playing: true,
+      previouslyMuted: true
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = (prevProps, prevState) => {
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
       // console.log("Seeking to timestamp...");
       // this.player.seekTo(this.props.timestamp);
       console.log("Video: Video component did update");
-      // this.setState({
-      //   playing: true
-      // })
+      // console.log("Video previous state:", prevState);
+      // Resetting the state to be muted FIXES the Vimeo pause issue,
+      // but this doesn't fix turning muted back on once you switch
+      // HOWEVER, somehow when switching back to Youtube from Vimeo
+      // videos, the audio stays un-muted
+      this.setState({
+        volume: 0,
+        muted: true,
+        previouslyMuted: prevState.muted
+      })
     }
   }
 
@@ -87,6 +95,7 @@ class Video extends Component {
     // Video loading animation will stop playing HERE
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
+    // This doesn't reliably trigger for Vimeo videos
     console.log("Video: Playing...");
   }
 
@@ -99,6 +108,16 @@ class Video extends Component {
     //   setTimeout(this.playPause, 500);
     //   console.log("Video: Toggled play/pause");
     // }, 500)
+    console.log("Video: onReady");
+    if (!this.state.previouslyMuted) {
+      console.log("This shouldn't be muted anymore");
+      // Vimeo videos still pause when changing channels with
+      // un-muted audio, though the following code could theoretically work
+      // this.setState({
+      //   volume: 1,
+      //   muted: true
+      // })
+    }
   }
 
   toggleMute = () => {
@@ -106,7 +125,8 @@ class Video extends Component {
     // console.log("Video: Toggling mute");
     this.setState({
       volume: this.state.volume === 0 ? 1 : 0,
-      muted: !this.state.muted
+      muted: !this.state.muted,
+      previouslyMuted: !this.state.muted
     })
   }
 
