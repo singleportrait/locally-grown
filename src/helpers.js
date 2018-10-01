@@ -27,7 +27,7 @@ export const convertTimeToSeconds = time => {
     try {
       return TimeFormat.toS(time);
     } catch (e) {
-      console.log(e);
+      console.log("Error calculating the time", e);
       return 0;
     }
   }

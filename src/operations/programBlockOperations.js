@@ -104,6 +104,11 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
       }
     }
   });
+
+  if (currentProgramBlock.programmingLength < secondsPastTheHour) {
+    console.log("The programming isn't even enough to get to this time in the hour!");
+  }
+
   dispatch(setCurrentVideo(videos[videoToPlayIndex], videoToPlayIndex, timestampToStartVideo));
 }
 

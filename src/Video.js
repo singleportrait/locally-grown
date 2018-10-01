@@ -28,20 +28,31 @@ class Video extends Component {
     super(props);
 
     this.state = {
-      muted: true
+      volume: 0,
+      muted: true,
+      playing: true
     }
   }
 
-  onReady = () => console.log('Video is ready to play');
+  componentDidUpdate = (prevProps) => {
+    if (this.props.video.sys.id !== prevProps.video.sys.id) {
+      // console.log("Seeking to timestamp...");
+      // this.player.seekTo(this.props.timestamp);
+      console.log("Video component did update");
+    }
+  }
 
   onEnded = () => this.props.onUpdateVideo();
 
   onDuration = (duration) => {
+    console.log("duration being calculated", duration);
     if (!this.state.duration) {
+      // console.log("Seeking...");
       // Had to put this here because onStart() doesn't reliably play
       // for Vimeo videos, and there's no other way to set the timestamp
-      this.seekToTimestamp(duration);
+      // this.seekToTimestamp(duration);
     }
+    this.seekToTimestamp(duration);
     this.setState({
       duration: duration
     });
@@ -57,12 +68,14 @@ class Video extends Component {
       console.log("This timestamp is longer than the video!");
     }
 
+    // console.log("Seeking to timestamp...");
     this.player.seekTo(this.props.timestamp);
-    console.log(this.player);
   }
 
   toggleMute = () => {
+    console.log("Toggling mute");
     this.setState({
+      volume: this.state.volume === 0 ? 1 : 0,
       muted: !this.state.muted
     })
   }
@@ -95,9 +108,9 @@ class Video extends Component {
               <ReactPlayer
                 ref={this.ref}
                 url={videoFields.url}
-                playing
+                playing={this.state.playing}
+                volume={this.state.volume}
                 muted={this.state.muted}
-                onReady={this.onReady}
                 onEnded={this.onEnded}
                 onProgress={this.onProgress}
                 onDuration={this.onDuration}
