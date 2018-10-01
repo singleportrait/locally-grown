@@ -9,6 +9,13 @@ class ProgramReduxed extends Component {
     this.initializeProgram();
   }
 
+  componentDidUpdate = (prevProps) => {
+    if (this.props.program.sys.id !== prevProps.program.sys.id) {
+      console.log("New program selected: ", this.props.program.fields.title);
+      this.initializeProgram();
+    }
+  }
+
   initializeProgram() {
     const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
       return programBlock.fields.startTime === this.props.currentHour;

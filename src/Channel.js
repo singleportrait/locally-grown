@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { initializePrograms } from './operations/programOperations';
+import { initializePrograms, goToNextProgram, goToPreviousProgram } from './operations/programOperations';
 
 // import client from './services-contentful';
 import ProgramReduxed from './ProgramReduxed';
@@ -85,16 +85,17 @@ class Channel extends Component {
   nextProgram = () => {
     // In here, make the dispatch call to either choose next or first program
     // TODO: Set current time in order to come back to exact future video
-    let newIndex = this.state.currentProgramIndex + 1;
+    // let newIndex = this.state.currentProgramIndex + 1;
 
-    if (newIndex > this.state.availablePrograms.length - 1) {
-      newIndex = 0;
-    }
+    // if (newIndex > this.state.availablePrograms.length - 1) {
+    //   newIndex = 0;
+    // }
 
-    this.setState((state) => ({
-      currentProgramIndex: newIndex,
-      program: state.availablePrograms[newIndex]
-    }));
+    // this.setState((state) => ({
+    //   currentProgramIndex: newIndex,
+    //   program: state.availablePrograms[newIndex]
+    // }));
+    this.props.goToNextProgram();
   }
 
   // programActions.js
@@ -106,10 +107,11 @@ class Channel extends Component {
       newIndex = this.state.availablePrograms.length - 1;
     }
 
-    this.setState((state) => ({
-      currentProgramIndex: newIndex,
-      program: state.availablePrograms[newIndex]
-    }));
+    // this.setState((state) => ({
+    //   currentProgramIndex: newIndex,
+    //   program: state.availablePrograms[newIndex]
+    // }));
+    this.props.goToPreviousProgram();
   }
 
   render() {
@@ -151,5 +153,10 @@ const mapStateToProps = state => ({
   session: state.session
 });
 
-//export default Channel;
-export default connect(mapStateToProps, { initializePrograms })(Channel);
+const mapDispatchToProps = dispatch => ({
+  initializePrograms: () => dispatch(initializePrograms()),
+  goToNextProgram: () => dispatch(goToNextProgram()),
+  goToPreviousProgram: () => dispatch(goToPreviousProgram())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Channel);

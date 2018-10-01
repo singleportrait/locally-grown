@@ -19,11 +19,12 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
 };
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
+  console.log("Initializing program block", currentProgramBlock.fields.title);
   return new Promise(function(resolve, reject) {
     let videos = currentProgramBlock.fields.videos;
 
     if (currentProgramBlock.fields.isRandom) {
-      console.log("This program block is random!");
+      console.log("This program block is random.");
       videos = shuffleArray(videos);
     }
 
@@ -66,11 +67,13 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     if (programmingLength < 3600) {
       console.log("This programming isn't enough to fill the hour!");
     }
+    if (programmingLength < secondsPastTheHour) {
+      console.log("The programming isn't even enough to get to this time in the hour!");
+    }
 
     const loadedProgramBlock = {
       sys: currentProgramBlock.sys,
       fields: currentProgramBlock.fields,
-      videosInOrder: videos,
       currentVideo: videos[videoToPlayIndex],
       videoPlayingIndex: videoToPlayIndex,
       programmingLength: programmingLength,
@@ -81,28 +84,40 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
   })
 }
 
-export const updateCurrentVideo = () => dispatch => {
+const setupCurrentVideoAfterInitialLoad = () => dispatch => {
   // Could this be used for setting AND updating?
 
-  // const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
-  // const secondsPastTheHour = currentSecondsPastTheHour();
-  // currentProgramBlock.videos.forEach((video, i) => {
-  //   if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
-  //     videoToPlayIndex = i;
-  //     timestampToStartVideo = secondsPastTheHour - programmingLength;
-  //   }
-  // });
+  console.log("Updating current video info after switching channels");
+  const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
+  const secondsPastTheHour = currentSecondsPastTheHour();
+  const videos = currentProgramBlock.fields.videos;
 
+  let videoToPlayIndex = 0;
+  let timestampToStartVideo = 0;
+  videos.forEach((video, i) => {
+    if ('length' in video.fields) {
+      if (video.startTime < secondsPastTheHour && video.endTime > secondsPastTheHour) {
+        console.log("Found a video to play...");
+        videoToPlayIndex = i;
+        timestampToStartVideo = secondsPastTheHour - video.startTime;
+        console.log(timestampToStartVideo);
+      }
+    }
+  });
+  dispatch(setCurrentVideo(videos[videoToPlayIndex], videoToPlayIndex, timestampToStartVideo));
+}
+
+export const updateCurrentVideo = () => dispatch => {
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const videoPlayingIndex = currentProgramBlock.videoPlayingIndex;
 
   let newVideoIndex = videoPlayingIndex + 1;
-  if (newVideoIndex >= currentProgramBlock.videosInOrder.length) {
+  if (newVideoIndex >= currentProgramBlock.fields.videos.length) {
     console.log("This was the last video! Going back to the beginning");
     newVideoIndex = 0;
   }
 
-  const newCurrentVideo = currentProgramBlock.videosInOrder[newVideoIndex];
+  const newCurrentVideo = currentProgramBlock.fields.videos[newVideoIndex];
   const newTimestamp = 0;
 
   dispatch(setCurrentVideo(newCurrentVideo, newVideoIndex, newTimestamp));
@@ -117,9 +132,9 @@ export const getCurrentProgramBlock = (programBlockId) => dispatch => {
     console.log("Using a saved program block");
     dispatch(setCurrentProgramBlock(savedProgramBlock));
     // Then, probably update to the latest/correct video?
-    // dispatch(updateCurrentVideo());
+    dispatch(setupCurrentVideoAfterInitialLoad()); // + need to set correct index + timestamp video
   } else {
-    console.log("Fetching a new program block");
+    console.log("Don't have this program block saved yet; fetching it now.");
     dispatch(fetchProgramBlock(programBlockId))
     .then(programBlock => {
       dispatch(setCurrentProgramBlock(programBlock));

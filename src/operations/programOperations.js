@@ -26,6 +26,23 @@ const addAvailableAndCurrentPrograms = (programs, dispatch) => {
   }
 }
 
+export const goToNextProgram = () => dispatch => {
+  const programs = store.getState().programs;
+  const availablePrograms = programs.availablePrograms;
+  const currentProgramIndex = programs.currentProgramIndex;
+  let newProgramIndex = currentProgramIndex + 1;
+
+  if (newProgramIndex > availablePrograms.length - 1) {
+    newProgramIndex = 0;
+  }
+
+  dispatch(setCurrentProgram(newProgramIndex, availablePrograms[newProgramIndex]));
+}
+
+export const goToPreviousProgram = () => dispatch => {
+  // Implement previous program switch
+}
+
 export const initializePrograms = () => dispatch => {
   console.log("I'm initializing the programs...");
   dispatch(fetchFeaturedPrograms()).then(programs => {
