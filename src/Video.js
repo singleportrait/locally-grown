@@ -44,7 +44,9 @@ class Video extends Component {
       // Resetting the state to be muted FIXES the Vimeo pause issue,
       // but this doesn't fix turning muted back on once you switch
       // HOWEVER, somehow when switching back to Youtube from Vimeo
-      // videos, the audio stays un-muted
+      // videos, the audio stays un-muted.
+      // It ALSO breaks when a video plays into the next one,
+      // if you've previously played with mute
       this.setState({
         volume: 0,
         muted: true,
@@ -170,6 +172,11 @@ class Video extends Component {
                 height="100%"
                 className={reactPlayerStyle}
                 config={{
+                  youtube: {
+                    playerVars: {
+                      rel: 0
+                    }
+                  },
                   vimeo: {
                     playerOptions: {
                       background: 1
