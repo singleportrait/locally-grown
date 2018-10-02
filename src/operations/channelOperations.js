@@ -35,11 +35,7 @@ const findFeaturedLiveChannels = (channels) => {
 const findAvailableChannels = (channels) => {
   // This is all because this code was ALSO updating the original variable's objects
   // because cloning objects is a no-no...but I need help with my store shape
-  const copiedChannels = [];
-  channels.forEach(channel => {
-    const copy = Object.assign({}, channel);
-    copiedChannels.push(copy);
-  });
+  const copiedChannels = JSON.parse(JSON.stringify(channels));
 
   const availableChannels = copiedChannels.filter(channel => {
     const availablePrograms = channel.fields.programs.filter(program => {
@@ -72,8 +68,9 @@ const findAvailableChannels = (channels) => {
 
 const findHiddenChannels = (allChannels, availableChannels) => {
   const availableIds = availableChannels.map(channel => channel.sys.id);
+  const copiedAllChannels = JSON.parse(JSON.stringify(allChannels));
 
-  const hiddenChannels = allChannels.filter(channel => {
+  const hiddenChannels = copiedAllChannels.filter(channel => {
     return !availableIds.includes(channel.sys.id);
   });
 
