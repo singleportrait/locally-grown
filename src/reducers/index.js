@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import channelReducer from './channelReducer';
 import sessionReducer from './sessionReducer';
-import programReducer from './programReducer';
 import programBlockReducer from './programBlockReducer';
 
 // const initialStateShape = {
@@ -74,6 +73,5 @@ import programBlockReducer from './programBlockReducer';
 export default combineReducers({
   session: sessionReducer,
   channels: channelReducer,
-  programs: programReducer,
   programBlocks: programBlockReducer,
 });

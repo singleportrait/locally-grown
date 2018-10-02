@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
 
-import Channel from './Channel';
 import ChannelWithSlug from './ChannelWithSlug';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
