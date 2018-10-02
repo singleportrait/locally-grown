@@ -1,4 +1,4 @@
-import { SET_CHANNELS, SET_FEATURED_CHANNELS, SET_AVAILABLE_CHANNELS } from '../actions/channelTypes';
+import { SET_CHANNELS, SET_FEATURED_CHANNELS, SET_AVAILABLE_CHANNELS, SET_CURRENT_CHANNEL_INFO } from '../actions/channelTypes';
 
 // HOW BEST TO ORGANIZE THE STORE???
 // currentChannelId = 27
@@ -13,10 +13,11 @@ const initialState = {
   allChannels: [],
   featuredChannels: [], // Active, featured channels
   availableChannels: [], // Channels with programs w program blocks for this hour
-  currentChannel: {},
-  currentChannelIndex: null,
-  // nextChannelSlug: null, // For <Link>ing previous/next channel
-  // previousChannelSlug: null,
+  currentChannel: null,
+  // currentChannelIndex: null,
+  // hasMultipleAvailableChannels: null,
+  // previousChannelSlug: null, // For <Link>ing previous/next channel
+  // nextChannelSlug: null,
   error: null
 }
 
@@ -37,6 +38,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         availableChannels: action.channels
+      }
+    case SET_CURRENT_CHANNEL_INFO:
+      return {
+        ...state,
+        currentChannel: action.channel
       }
     default:
       return state;

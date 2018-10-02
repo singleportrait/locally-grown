@@ -1,4 +1,4 @@
-import { setChannels, setFeaturedChannels, setAvailableChannels } from '../actions/channelActions';
+import { setChannels, setFeaturedChannels, setAvailableChannels, setCurrentChannelInfo } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
 
@@ -45,6 +45,19 @@ const findAvailableChannels = (channels) => {
     }
     return availablePrograms.length !== 0;
   });
+
+  // Set previous & next channel slugs on the channel itself
+  const availableChannelsTotal = availableChannels.length;
+  if (availableChannelsTotal > 1) {
+    availableChannels.forEach((channel, i) => {
+      const previousChannelIndex = i - 1 < 0 ? availableChannelsTotal - 1 : i - 1;
+      const nextChannelIndex = i + 1 < availableChannelsTotal ? i + 1 : 0;
+
+      channel.previousChannelSlug = availableChannels[previousChannelIndex].fields.slug;
+      channel.nextChannelSlug = availableChannels[nextChannelIndex].fields.slug;
+    });
+  }
+
   return availableChannels;
 }
 
@@ -52,19 +65,29 @@ const findAndSetFeaturedChannels = (channels, dispatch) => {
   // Go through each program and see if it's featured
   // and is active currently in time
   const featuredLiveChannels = findFeaturedLiveChannels(channels);
-  // console.log("Featured, live channels:", featuredLiveChannels);
 
   // Go through each program and see if there's a block for this hour
   const availableChannels = findAvailableChannels(featuredLiveChannels);
-  // console.log("Available channels:", availableChannels);
 
   dispatch(setFeaturedChannels(featuredLiveChannels));
   dispatch(setAvailableChannels(availableChannels));
+
+  // Then, set the current channel and its info
+  setCurrentChannel(availableChannels, dispatch);
+}
+
+const setCurrentChannel = (channels, dispatch) => {
+  const channelsTotal = channels.length;
+  const randomChannelIndex = Math.floor(Math.random()*channelsTotal);
+
+  const currentChannel = channels[randomChannelIndex];
+
+  dispatch(setCurrentChannelInfo(currentChannel));
 }
 
 export const initializeChannels = () => dispatch => {
   dispatch(fetchChannels())
-    .then(channels => {
-      findAndSetFeaturedChannels(channels, dispatch);
-    });
+  .then(channels => {
+    findAndSetFeaturedChannels(channels, dispatch);
+  });
 }
