@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-
-import styled, { css } from 'react-emotion';
-
-// The react-player demo example
-import { findDOMNode } from 'react-dom'
+import { connect } from 'react-redux';
+import { updateCurrentVideo } from './operations/programBlockOperations';
 
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
+// The react-player demo example
+import { findDOMNode } from 'react-dom'
+
+import styled, { css } from 'react-emotion';
 
 const ReactPlayerWrapper = styled('div')`
   position: relative;
@@ -52,7 +53,7 @@ class Video extends Component {
     }
   }
 
-  onEnded = () => this.props.onUpdateVideo();
+  onEnded = () => this.props.updateCurrentVideo();
 
   onDuration = (duration) => {
     if (!this.state.duration) {
@@ -203,4 +204,4 @@ Video.defaultProps = {
   timestamp: 0
 }
 
-export default Video;
+export default connect(null, { updateCurrentVideo })(Video);
