@@ -17,10 +17,6 @@ const Row = styled('div')`
 `;
 
 class TVGuide extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   goBack = () => {
     // TODO: What happens if I come directly to the TV Guide?
     // I need to check if the browser history is this domain,

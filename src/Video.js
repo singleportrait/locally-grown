@@ -62,7 +62,7 @@ class Video extends Component {
       // so we don't need to have this sanity check around it
       // this.seekToTimestamp(duration);
     }
-    console.log("Video: Setting duration");
+    // console.log("Video: Setting duration");
     this.seekToTimestamp(duration);
     this.setState({
       duration: duration
@@ -91,11 +91,11 @@ class Video extends Component {
   }
 
   onPlay = () => {
-    // Video loading animation will stop playing HERE
+    // Video loading animation stops playing HERE
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
     // This doesn't reliably trigger for Vimeo videos
-    console.log("Video: Playing...");
+    // console.log("Video: Playing...");
   }
 
   onReady = () => {
@@ -107,7 +107,7 @@ class Video extends Component {
     //   setTimeout(this.playPause, 500);
     //   console.log("Video: Toggled play/pause");
     // }, 500)
-    console.log("Video: onReady");
+    // console.log("Video: onReady");
     if (!this.state.previouslyMuted) {
       console.log("This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with

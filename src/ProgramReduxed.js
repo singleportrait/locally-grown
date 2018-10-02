@@ -43,13 +43,9 @@ class ProgramReduxed extends Component {
 
     return (
       <div>
-        <pre>ProgramReduxed component</pre>
         <h2>You're watching {title}</h2>
         <p>It's {this.props.session.currentHour} o'clock</p>
         { !currentProgramBlock &&
-          <em>Loading this hour's programming!</em>
-        }
-        { !programBlocks &&
           <em>This program doesn't have any program blocks!</em>
         }
         { currentProgramBlock &&
