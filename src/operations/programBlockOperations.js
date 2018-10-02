@@ -47,11 +47,6 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
           videoToPlayIndex = i;
 
-          // TODO: This should be able to dispatch independently to the
-          // loaded program block, so that when you come back to the channel
-          // only this timestamp changes (and the current video, if needed)
-          // & udpates where the video would be playing had it moved
-          // forward in time after you switched channels
           timestampToStartVideo = secondsPastTheHour - programmingLength;
         }
 
@@ -83,10 +78,9 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
   })
 }
 
+// Finds the video to play after switching away from the channel
 const setupCurrentVideoAfterInitialLoad = () => dispatch => {
-  // Could this be used for setting AND updating?
-
-  console.log("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
+  // console.log("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const secondsPastTheHour = currentSecondsPastTheHour();
   const videos = currentProgramBlock.fields.videos;

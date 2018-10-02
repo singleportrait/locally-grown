@@ -12,9 +12,13 @@
 
 // Mobile
 <VideoControls show="mute" />
+  // Or
+  <MuteControl />
 <PreviousChannel />
 <Video />
 <VideoControls show="fullscreen" />
+  // Or
+  <FullscreenControl />
 <NextChannel />
 <ProgramMobileTitle />
 
