@@ -33,7 +33,15 @@ const findFeaturedLiveChannels = (channels) => {
 }
 
 const findAvailableChannels = (channels) => {
-  const availableChannels = channels.filter(channel => {
+  // This is all because this code was ALSO updating the original variable's objects
+  // because cloning objects is a no-no...but I need help with my store shape
+  const copiedChannels = [];
+  channels.forEach(channel => {
+    const copy = Object.assign({}, channel);
+    copiedChannels.push(copy);
+  });
+
+  const availableChannels = copiedChannels.filter(channel => {
     const availablePrograms = channel.fields.programs.filter(program => {
       const availableProgramBlocks = program.fields.programBlocks.filter(programBlock => {
         return programBlock.fields.startTime === store.getState().session.currentHour;
@@ -43,6 +51,7 @@ const findAvailableChannels = (channels) => {
     if (availablePrograms.length > 1) {
       console.log("There are multiple available programs for this channel!");
     }
+    channel.fields.programs = availablePrograms;
     return availablePrograms.length !== 0;
   });
 
@@ -61,21 +70,6 @@ const findAvailableChannels = (channels) => {
   return availableChannels;
 }
 
-const findAndSetFeaturedChannels = (channels, dispatch) => {
-  // Go through each program and see if it's featured
-  // and is active currently in time
-  const featuredLiveChannels = findFeaturedLiveChannels(channels);
-
-  // Go through each program and see if there's a block for this hour
-  const availableChannels = findAvailableChannels(featuredLiveChannels);
-
-  dispatch(setFeaturedChannels(featuredLiveChannels));
-  dispatch(setAvailableChannels(availableChannels));
-
-  // Then, set the current channel and its info
-  setCurrentChannel(availableChannels, dispatch);
-}
-
 const setCurrentChannel = (channels, dispatch) => {
   const channelsTotal = channels.length;
   const randomChannelIndex = Math.floor(Math.random()*channelsTotal);
@@ -83,6 +77,19 @@ const setCurrentChannel = (channels, dispatch) => {
   const currentChannel = channels[randomChannelIndex];
 
   dispatch(setCurrentChannelInfo(currentChannel));
+}
+
+const findAndSetFeaturedChannels = (channels, dispatch) => {
+  // Go through each program and see if it's featured & is active on today's date
+  const featuredLiveChannels = findFeaturedLiveChannels(channels);
+  dispatch(setFeaturedChannels(featuredLiveChannels));
+
+  // Go through each program and see if there's a block for this hour
+  const availableChannels = findAvailableChannels(featuredLiveChannels);
+  dispatch(setAvailableChannels(availableChannels));
+
+  // Then, set the current channel and its info
+  setCurrentChannel(availableChannels, dispatch);
 }
 
 export const initializeChannels = () => dispatch => {

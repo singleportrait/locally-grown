@@ -29,7 +29,7 @@ class AppContents extends Component {
                 </span>
               )}
               <hr/>
-              { this.props.channels.allChannels.map((channel, i) =>
+              { this.props.channels.availableChannels.map((channel, i) =>
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <ChannelWithSlug {...props} channel={channel} />
                 )} />
