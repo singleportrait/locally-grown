@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -40,9 +40,7 @@ class AppContents extends Component {
               )}
               { this.props.channels.currentChannel &&
                 <Route exact path="/" render={props => (
-                  <div>
-                    <ChannelWithSlug {...props} channel={this.props.channels.currentChannel} />
-                  </div>
+                  <Redirect to={`/${this.props.channels.currentChannel.fields.slug}`} />
                 )} />
               }
 
