@@ -34,6 +34,11 @@ class AppContents extends Component {
                   <ChannelWithSlug {...props} channel={channel} />
                 )} />
               )}
+              { this.props.channels.hiddenChannels.map((channel, i) =>
+                <Route key={i} path={`/${channel.fields.slug}`} render={props => (
+                  <ChannelWithSlug {...props} channel={channel} />
+                )} />
+              )}
               { this.props.channels.currentChannel &&
                 <Route exact path="/" render={props => (
                   <div>

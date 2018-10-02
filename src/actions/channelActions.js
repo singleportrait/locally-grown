@@ -1,4 +1,4 @@
-import { SET_CHANNELS, SET_FEATURED_CHANNELS, SET_AVAILABLE_CHANNELS, SET_CURRENT_CHANNEL_INFO } from '../actions/channelTypes';
+import { SET_CHANNELS, SET_FEATURED_CHANNELS, SET_AVAILABLE_CHANNELS, SET_HIDDEN_CHANNELS, SET_CURRENT_CHANNEL_INFO } from '../actions/channelTypes';
 
 export const setChannels = channels => dispatch => {
   dispatch({
@@ -17,6 +17,13 @@ export const setFeaturedChannels = channels => dispatch => {
 export const setAvailableChannels = channels => dispatch => {
   dispatch({
     type: SET_AVAILABLE_CHANNELS,
+    channels: channels
+  })
+}
+
+export const setHiddenChannels = channels => dispatch => {
+  dispatch({
+    type: SET_HIDDEN_CHANNELS,
     channels: channels
   })
 }
