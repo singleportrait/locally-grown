@@ -26,13 +26,25 @@ class AppContents extends Component {
                 <span key={i}>
                   &nbsp;
                   <Link to={channel.fields.slug}>{channel.fields.title}</Link>
-                  <Route path={`/${channel.fields.slug}`} render={props => (
-                    <ChannelWithSlug channel={channel} />
-                  )} />
                 </span>
               )}
               <hr/>
-              <Route exact path="/" component={Channel} />
+              { this.props.channels.allChannels.map((channel, i) =>
+                <Route key={i} path={`/${channel.fields.slug}`} render={props => (
+                  <ChannelWithSlug {...props} channel={channel} />
+                )} />
+              )}
+              { this.props.channels.currentChannel &&
+                <Route exact path="/" render={props => (
+                  <div>
+                    <ChannelWithSlug {...props} channel={this.props.channels.currentChannel} />
+                  </div>
+                )} />
+              }
+
+              { !this.props.channels.currentChannel &&
+                <h1>No programs right now!</h1>
+              }
               <Route path="/tv-guide" render={props => (
                 <TVGuide {...props} channels={this.props.channels.featuredChannels} />
               )} />
