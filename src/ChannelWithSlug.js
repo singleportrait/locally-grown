@@ -17,7 +17,10 @@ class ChannelWithSlug extends Component {
               <h2>This channel has multiple programs grr</h2>
             }
 
-            <ProgramReduxed program={channelFields.programs[0]} />
+            { channelFields.programs.length &&
+              <ProgramReduxed program={channelFields.programs[0]} />
+            }
+
             { this.props.channel.nextChannelSlug && this.props.channel.previousChannelSlug &&
               <div>
                 <Link to={`/${this.props.channel.previousChannelSlug}`}>Previous channel</Link>

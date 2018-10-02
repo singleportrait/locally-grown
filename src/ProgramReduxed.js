@@ -17,14 +17,21 @@ class ProgramReduxed extends Component {
   }
 
   initializeProgram() {
-    const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
-      return programBlock.fields.startTime === this.props.session.currentHour;
-    })
+    // TODO: Check whether program blocks exist at a higher level?
+    // If you go to a direct URL of a channel and it has programs, but they don't have any
+    // program blocks inside them, this page errors
+    if (this.props.program.fields.programBlocks) {
+      const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
+        return programBlock.fields.startTime === this.props.session.currentHour;
+      })
 
-    if (currentProgramBlock) {
-      this.props.getCurrentProgramBlock(currentProgramBlock.sys.id);
+      if (currentProgramBlock) {
+        this.props.getCurrentProgramBlock(currentProgramBlock.sys.id);
+      } else {
+        console.log("No current program block!");
+      }
     } else {
-      console.log("No current program block!");
+      console.log("No program blocks!");
     }
   }
 
@@ -42,11 +49,14 @@ class ProgramReduxed extends Component {
         { !currentProgramBlock &&
           <em>Loading this hour's programming!</em>
         }
+        { !programBlocks &&
+          <em>This program doesn't have any program blocks!</em>
+        }
         { currentProgramBlock &&
           <ProgramBlock programBlock={currentProgramBlock} />
         }
         <hr />
-        { programBlocks.map(({fields}, i) =>
+        { programBlocks && programBlocks.map(({fields}, i) =>
           <div key={i}>
             {fields.startTime}:00 - {fields.title}
           </div>
