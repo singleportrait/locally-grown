@@ -18,7 +18,7 @@ class ProgramReduxed extends Component {
 
   initializeProgram() {
     const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
-      return programBlock.fields.startTime === this.props.currentHour;
+      return programBlock.fields.startTime === this.props.session.currentHour;
     })
 
     if (currentProgramBlock) {
@@ -38,7 +38,7 @@ class ProgramReduxed extends Component {
       <div>
         <pre>ProgramReduxed component</pre>
         <h2>You're watching {title}</h2>
-        <p>It's {this.props.currentHour} o'clock</p>
+        <p>It's {this.props.session.currentHour} o'clock</p>
         { !currentProgramBlock &&
           <em>Loading this hour's programming!</em>
         }
@@ -57,7 +57,8 @@ class ProgramReduxed extends Component {
 }
 
 const mapStateToProps = state => ({
-  programBlocks: state.programBlocks
+  programBlocks: state.programBlocks,
+  session: state.session
 });
 
 export default connect(mapStateToProps, { getCurrentProgramBlock })(ProgramReduxed);

@@ -44,7 +44,7 @@ class Channel extends Component {
             { this.props.programs.currentProgram &&
               <div>
                 <h1>Playing a program:</h1>
-                <ProgramReduxed program={this.props.programs.currentProgram} currentHour={this.props.session.currentHour} />
+                <ProgramReduxed program={this.props.programs.currentProgram} />
               </div>
             }
             { this.props.programs.availablePrograms.length > 1 &&
@@ -61,8 +61,7 @@ class Channel extends Component {
 }
 
 const mapStateToProps = state => ({
-  programs: state.programs,
-  session: state.session
+  programs: state.programs
 });
 
 const mapDispatchToProps = dispatch => ({
