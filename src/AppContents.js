@@ -34,7 +34,7 @@ class AppContents extends Component {
               <hr/>
               <Route exact path="/" component={Channel} />
               <Route path="/tv-guide" render={props => (
-                <TVGuide channels={this.props.channels.featuredChannels} />
+                <TVGuide {...props} channels={this.props.channels.featuredChannels} />
               )} />
               <Route path="/channels" render={props => (
                 <Channels testProp="test prop" />

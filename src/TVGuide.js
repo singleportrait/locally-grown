@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
 import styled from 'react-emotion';
 
@@ -18,11 +17,23 @@ const Row = styled('div')`
 `;
 
 class TVGuide extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  goBack = () => {
+    // TODO: What happens if I come directly to the TV Guide?
+    // I need to check if the browser history is this domain,
+    // and if it's not (or doesn't exist) go back to '/'
+    // Can probably use this.props.history.location.pathname
+    this.props.history.goBack();
+  }
+
   render() {
     return (
       <TVGuideWrapper>
         <h1>TV Guide</h1>
-        <Link to="/">Close</Link>
+        <button onClick={this.goBack}>Close</button>
         <em>(This should be 'Back' or /, depending on history)</em>
         <hr/>
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
