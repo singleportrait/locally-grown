@@ -4,7 +4,7 @@ import Navigation from './Navigation';
 
 import Program from './Program';
 
-class ChannelWithSlug extends Component {
+class Channel extends Component {
   render() {
     const channelFields = this.props.channel.fields;
     return (
@@ -39,4 +39,4 @@ class ChannelWithSlug extends Component {
   }
 }
 
-export default ChannelWithSlug;
+export default Channel;

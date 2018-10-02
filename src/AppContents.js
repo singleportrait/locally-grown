@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
 
-import ChannelWithSlug from './ChannelWithSlug';
+import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
 
@@ -30,12 +30,12 @@ class AppContents extends Component {
               <hr/>
               { this.props.channels.availableChannels.map((channel, i) =>
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
-                  <ChannelWithSlug {...props} channel={channel} />
+                  <Channel {...props} channel={channel} />
                 )} />
               )}
               { this.props.channels.hiddenChannels.map((channel, i) =>
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
-                  <ChannelWithSlug {...props} channel={channel} />
+                  <Channel {...props} channel={channel} />
                 )} />
               )}
               { this.props.channels.currentChannel &&
