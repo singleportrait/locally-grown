@@ -4,16 +4,9 @@ import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import ProgramBlock from './ProgramBlock';
 
-class ProgramReduxed extends Component {
+class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
-  }
-
-  componentDidUpdate = (prevProps) => {
-    if (this.props.program.sys.id !== prevProps.program.sys.id) {
-      console.log("New program selected: ", this.props.program.fields.title);
-      this.initializeProgram();
-    }
   }
 
   initializeProgram() {
@@ -67,4 +60,4 @@ const mapStateToProps = state => ({
   session: state.session
 });
 
-export default connect(mapStateToProps, { getCurrentProgramBlock })(ProgramReduxed);
+export default connect(mapStateToProps, { getCurrentProgramBlock })(Program);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
 
-import ProgramReduxed from './ProgramReduxed';
+import Program from './Program';
 
 class ChannelWithSlug extends Component {
   render() {
@@ -18,7 +18,7 @@ class ChannelWithSlug extends Component {
             }
 
             { channelFields.programs.length &&
-              <ProgramReduxed program={channelFields.programs[0]} />
+              <Program program={channelFields.programs[0]} />
             }
 
             { this.props.channel.nextChannelSlug && this.props.channel.previousChannelSlug &&
