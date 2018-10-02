@@ -37,16 +37,13 @@ class Video extends Component {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
-      // console.log("Seeking to timestamp...");
-      // this.player.seekTo(this.props.timestamp);
-      console.log("Video: Video component did update");
-      // console.log("Video previous state:", prevState);
       // Resetting the state to be muted FIXES the Vimeo pause issue,
       // but this doesn't fix turning muted back on once you switch
       // HOWEVER, somehow when switching back to Youtube from Vimeo
       // videos, the audio stays un-muted.
       // It ALSO breaks when a video plays into the next one,
       // if you've previously played with mute
+      // TODO: Only reset the mute settings if the video is Vimeo
       this.setState({
         volume: 0,
         muted: true,
