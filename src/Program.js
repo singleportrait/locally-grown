@@ -92,7 +92,7 @@ class Program extends Component {
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
-          You're on a phone!
+          You're on a phone! Too bad, this isn't for you yet.
         </MediaQuery>
       </div>
     );
