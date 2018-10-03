@@ -67,6 +67,8 @@ const findAvailableChannels = (channels) => {
 }
 
 const findHiddenChannels = (allChannels, availableChannels) => {
+  // TODO: These probably shouldn't populate programs that aren't happening currently, either.
+  // Should use the date checks from above in findFeaturedLiveChannels() to filter these out too.
   const availableIds = availableChannels.map(channel => channel.sys.id);
   const copiedAllChannels = JSON.parse(JSON.stringify(allChannels));
 

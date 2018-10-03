@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import { Link } from 'react-router-dom';
-import ProgramBlock from './ProgramBlock';
+
+import Video from './Video';
+import Navigation from './Navigation';
+import ProgramBlockInfo from './ProgramBlockInfo';
+
+import { css } from 'react-emotion';
 
 class Program extends Component {
   componentDidMount() {
@@ -31,34 +36,87 @@ class Program extends Component {
 
   render() {
     const program = this.props.program;
-    const { title, programBlocks } = program.fields;
-
+    const { programBlocks } = program.fields;
     const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
 
     return (
-      <div>
-        <h2>You're watching {title}</h2>
-        <p>It's {this.props.session.currentHour} o'clock</p>
-        { !currentProgramBlock &&
-          <div>
-            <em>This program doesn't have any program blocks!</em>
-            <br />
-            <Link to="/tv-guide">Check out the TV Guide</Link> to find some.
-          </div>
-        }
-        { currentProgramBlock &&
-          <ProgramBlock programBlock={currentProgramBlock} />
-        }
-        <hr />
-        { programBlocks && programBlocks.map(({fields}, i) =>
-          <div key={i}>
-            {fields.startTime}:00 - {fields.title}
-          </div>
-        )}
+      <div className={programClass}>
+        <div className={videoAndControlsColumn}>
+          { currentProgramBlock &&
+            <React.Fragment>
+              <Video
+                video={currentProgramBlock.currentVideo}
+                timestamp={currentProgramBlock.timestampToStartVideo}
+                showMetadata={true}
+              />
+
+              { this.props.nextChannelSlug && this.props.previousChannelSlug &&
+                <div>
+                  <Link to={`/${this.props.previousChannelSlug}`}>Previous channel</Link>
+                  &nbsp;
+                  <Link to={`/${this.props.nextChannelSlug}`}>Next channel</Link>
+                </div>
+              }
+            </React.Fragment>
+          }
+
+          { !currentProgramBlock &&
+            <h1>No video!</h1>
+          }
+        </div>
+        <div className={infoColumn}>
+          <Navigation />
+          <p>You're watching {this.props.channelTitle} by &lt;name&gt;</p>
+          <a href="">Info</a>
+          <p>It's {this.props.session.currentHour} o'clock</p>
+          <hr/>
+          { currentProgramBlock &&
+            <React.Fragment>
+              <p>Now playing:</p>
+              <h1>{currentProgramBlock.fields.title}</h1>
+              <p>Description: {currentProgramBlock.fields.description}</p>
+            </React.Fragment>
+          }
+          { !currentProgramBlock &&
+            <div>
+              <em>This program doesn't have any program blocks!</em>
+              <br /><br />
+              <Link to="/tv-guide">Check out the TV Guide</Link> to find some.
+            </div>
+          }
+          { programBlocks &&
+            <ProgramBlockInfo programBlocks={programBlocks} />
+          }
+        </div>
       </div>
     );
   }
 }
+
+const programClass = css`
+  display: flex;
+  margin: 1.4rem;
+  position: relative;
+`;
+
+const videoAndControlsColumn = css`
+  position: relative;
+  width: 65%;
+  transition: width 0.4s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+`;
+
+const infoColumn = css`
+  position: absolute;
+  right: 0;
+  width: 35%;
+  padding-left: 1.4rem;
+  opacity: 1;
+  transition: opacity 0.4s ease, right 0.4s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+`;
 
 const mapStateToProps = state => ({
   programBlocks: state.programBlocks,

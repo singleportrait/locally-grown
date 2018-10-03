@@ -21,7 +21,7 @@ const reactPlayerStyle = css`
 `;
 
 const progressStyle = css`
-  background-color: #bbb;
+  background-color: white;
 `;
 
 class Video extends Component {
@@ -150,10 +150,6 @@ class Video extends Component {
       <div>
         {this.props.video &&
           <div>
-            <h3>{videoFields.title}</h3>
-            <p>Video length: {videoFields.length}</p>
-            <p>Length in seconds: {this.props.video.lengthInSeconds}</p>
-            <p>Starting timestamp: {this.props.timestamp}</p>
             <ReactPlayerWrapper>
               <ReactPlayer
                 ref={this.ref}
@@ -183,14 +179,31 @@ class Video extends Component {
                 }}
               />
             </ReactPlayerWrapper>
-            <button onClick={this.playPause}>{this.state.playing ? 'Pause' : 'Play'}</button>
+
+            { this.props.showMetadata &&
+              <div>
+                <h3>Metadata:</h3>
+                Title: {videoFields.title}
+                <br />
+                Video length: {videoFields.length || "No length set"}
+                ({`${this.props.video.lengthInSeconds} seconds` || "No length set"})
+                <br />
+                Starting timestamp: {this.props.timestamp}
+
+                <br />
+                <br />
+
+                <button onClick={this.playPause}>{this.state.playing ? 'Pause' : 'Play'}</button>
+              </div>
+            }
+            <br />
             <button onClick={this.toggleMute}>Toggle mute</button>
             <button onClick={this.onClickFullscreen}>Fullscreen</button>
-            { this.state.duration && this.state.played &&
-              <div className={progressStyle}>
+            { this.props.showMetadata && this.state.duration && this.state.played &&
+              <div>
                 <p>Duration:</p>
                 <br />
-                <progress max={1} value={this.state.played} />
+                <progress className={progressStyle} max={1} value={this.state.played} />
               </div>
             }
           </div>
