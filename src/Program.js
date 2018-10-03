@@ -90,6 +90,9 @@ class Program extends Component {
                 <p>Now playing:</p>
                 <h1>{currentProgramBlock.fields.title}</h1>
                 <p>Description: {currentProgramBlock.fields.description}</p>
+                { currentProgramBlock.programmingLength < 3600 &&
+                  <em>Warning! This block of programming doesn't fill the whole hour, so you might get some unexpected behavior while viewing this channel</em>
+                }
               </React.Fragment>
             }
             { !currentProgramBlock &&
@@ -99,6 +102,7 @@ class Program extends Component {
                 <Link to="/tv-guide">Check out the TV Guide</Link> to find some.
               </div>
             }
+            <hr />
             { programBlocks &&
               <ProgramBlockInfo programBlocks={programBlocks} />
             }
