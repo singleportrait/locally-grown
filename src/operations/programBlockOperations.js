@@ -24,7 +24,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     let videos = currentProgramBlock.fields.videos;
 
     if (currentProgramBlock.fields.isRandom) {
-      console.log("This program block is random.");
+      console.log("- This program block is random.");
       videos = shuffleArray(videos);
     }
 
@@ -54,7 +54,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       } else {
         // TODO: This is potentially where we could make requests to YT/Vimeo
         // to get the duration, but it's probably not worth the effort
-        console.log("A video doesn't have a length!");
+        console.log("- A video doesn't have a length!");
       }
     })
 
@@ -92,7 +92,7 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
       if (video.startTime < secondsPastTheHour && video.endTime > secondsPastTheHour) {
         videoToPlayIndex = i;
         timestampToStartVideo = secondsPastTheHour - video.startTime;
-        console.log("Found a video to play at timestamp...", timestampToStartVideo);
+        console.log("- Found a video to play at timestamp...", timestampToStartVideo);
       }
     }
   });
@@ -125,6 +125,7 @@ export const getCurrentProgramBlock = (programBlockId) => dispatch => {
     return programBlock.sys.id === programBlockId;
   })
 
+  console.log("Getting current program block...");
   if (savedProgramBlock) {
     console.log("- Using a saved program block");
     dispatch(setCurrentProgramBlock(savedProgramBlock));
