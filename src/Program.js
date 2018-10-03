@@ -8,6 +8,7 @@ import { getCurrentProgramBlock } from './operations/programBlockOperations';
 import Video from './Video';
 import Navigation from './Navigation';
 import ProgramBlockInfo from './ProgramBlockInfo';
+import MuteButton from './MuteButton';
 
 import { css } from 'react-emotion';
 
@@ -50,6 +51,7 @@ class Program extends Component {
                   video={currentProgramBlock.currentVideo}
                   timestamp={currentProgramBlock.timestampToStartVideo}
                 />
+                <MuteButton />
 
                 { this.props.nextChannelSlug && this.props.previousChannelSlug &&
                   <div>

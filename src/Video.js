@@ -191,9 +191,6 @@ class Video extends Component {
                 <button onClick={this.playPause}>{this.state.playing ? 'Pause' : 'Play'}</button>
               </div>
             }
-            <br />
-            <button onClick={this.toggleMute}>Toggle mute</button>
-            <button onClick={this.onClickFullscreen}>Fullscreen</button>
             { this.props.showMetadata && this.state.duration && this.state.played &&
               <div>
                 <p>Duration:</p>
@@ -201,6 +198,8 @@ class Video extends Component {
                 <progress className={progressStyle} max={1} value={this.state.played} />
               </div>
             }
+            <br />
+            <button onClick={this.onClickFullscreen}>Fullscreen</button>
           </div>
         }
       </div>
