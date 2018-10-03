@@ -32,6 +32,10 @@ class TVGuide extends Component {
         <button onClick={this.goBack}>Close</button>
         <em>(This should be 'Back' or /, depending on history)</em>
         <hr/>
+        { this.props.channels.length === 0 &&
+          <h2>Uh oh! There aren't any featured programs with active programming right now. Come back later!</h2>
+        }
+
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
           <Row key={i}>
             <h2>{channel.fields.title}: {program.fields.title}</h2>

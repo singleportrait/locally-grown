@@ -19,7 +19,7 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
 };
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
-  console.log("Initializing program block", currentProgramBlock.fields.title);
+  console.log("- Initializing program block", currentProgramBlock.fields.title);
   return new Promise(function(resolve, reject) {
     let videos = currentProgramBlock.fields.videos;
 
@@ -59,10 +59,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     })
 
     if (programmingLength < 3600) {
-      console.log("This programming isn't enough to fill the hour!");
+      console.log("- This programming isn't enough to fill the hour!");
     }
     if (programmingLength < secondsPastTheHour) {
-      console.log("The programming isn't even enough to get to this time in the hour!");
+      console.log("- The programming isn't even enough to get to this time in the hour!");
     }
 
     const loadedProgramBlock = {
@@ -98,7 +98,7 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
   });
 
   if (currentProgramBlock.programmingLength < secondsPastTheHour) {
-    console.log("The programming isn't even enough to get to this time in the hour!");
+    console.log("- The programming isn't even enough to get to this time in the hour!");
   }
 
   dispatch(setCurrentVideo(videos[videoToPlayIndex], videoToPlayIndex, timestampToStartVideo));

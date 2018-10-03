@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
+import { Link } from 'react-router-dom';
 import ProgramBlock from './ProgramBlock';
 
 class Program extends Component {
@@ -39,7 +40,11 @@ class Program extends Component {
         <h2>You're watching {title}</h2>
         <p>It's {this.props.session.currentHour} o'clock</p>
         { !currentProgramBlock &&
-          <em>This program doesn't have any program blocks!</em>
+          <div>
+            <em>This program doesn't have any program blocks!</em>
+            <br />
+            <Link to="/tv-guide">Check out the TV Guide</Link> to find some.
+          </div>
         }
         { currentProgramBlock &&
           <ProgramBlock programBlock={currentProgramBlock} />
