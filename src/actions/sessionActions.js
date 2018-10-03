@@ -1,4 +1,4 @@
-import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
+import { SET_SECONDS_UNTIL_NEXT_PROGRAM, TOGGLE_MUTE } from './sessionTypes';
 import { currentSecondsPastTheHour } from '../helpers';
 
 const resetPrograms = () => dispatch => {
@@ -31,5 +31,13 @@ const setTimeUntilNextProgram = (seconds) => dispatch => {
   dispatch({
     type: SET_SECONDS_UNTIL_NEXT_PROGRAM,
     secondsUntilNextProgram: seconds
+  })
+}
+
+export const toggleMute = (muted) => dispatch => {
+  dispatch({
+    type: TOGGLE_MUTE,
+    muted: !muted,
+    volume: !muted ? 0 : 1
   })
 }

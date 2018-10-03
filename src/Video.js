@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { updateCurrentVideo } from './operations/programBlockOperations';
+import { toggleMute } from './actions/sessionActions';
 
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
@@ -30,10 +31,7 @@ class Video extends Component {
     super(props);
 
     this.state = {
-      volume: 0,
-      muted: true,
-      playing: true,
-      previouslyMuted: true
+      playing: true
     }
   }
 
@@ -45,12 +43,10 @@ class Video extends Component {
       // videos, the audio stays un-muted.
       // It ALSO breaks when a video plays into the next one,
       // if you've previously played with mute
-      // TODO: Only reset the mute settings if the video is Vimeo
-      this.setState({
-        volume: 0,
-        muted: true,
-        previouslyMuted: prevState.muted
-      })
+      // For now: Only reset the mute settings if the video is Vimeo
+      if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.session.muted) {
+        this.props.toggleMute(false);
+      }
     }
   }
 
@@ -89,6 +85,7 @@ class Video extends Component {
     // Only playing/pausing the video via the button seems to
     // correctly trigger Vimeo videos to play/pause after
     // not playing by default after hitting 'Mute' button
+    //
     this.setState({ playing: !this.state.playing })
   }
 
@@ -111,7 +108,7 @@ class Video extends Component {
     // }, 500)
     // console.log("Video: onReady");
     if (!this.state.previouslyMuted) {
-      console.log("This shouldn't be muted anymore");
+      // console.log("This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with
       // un-muted audio, though the following code could theoretically work
       // this.setState({
@@ -122,13 +119,9 @@ class Video extends Component {
   }
 
   toggleMute = () => {
-    // Vimeo videos break once you try to unmute them
+    // Vimeo videos break once you try to unmute the videos and change the channel
     // console.log("Video: Toggling mute");
-    this.setState({
-      volume: this.state.volume === 0 ? 1 : 0,
-      muted: !this.state.muted,
-      previouslyMuted: !this.state.muted
-    })
+    this.props.toggleMute(this.props.session.muted);
   }
 
   onClickFullscreen = () => {
@@ -156,8 +149,8 @@ class Video extends Component {
                 ref={this.ref}
                 url={videoFields.url}
                 playing={this.state.playing}
-                volume={this.state.volume}
-                muted={this.state.muted}
+                volume={this.props.session.volume}
+                muted={this.props.session.muted}
                 onReady={this.onReady}
                 onPlay={this.onPlay}
                 onEnded={this.onEnded}
@@ -219,4 +212,8 @@ Video.defaultProps = {
   timestamp: 0
 }
 
-export default connect(null, { updateCurrentVideo })(Video);
+const mapStateToProps = state => ({
+  session: state.session
+});
+
+export default connect(mapStateToProps, { updateCurrentVideo, toggleMute })(Video);
