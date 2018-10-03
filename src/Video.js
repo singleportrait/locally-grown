@@ -12,6 +12,7 @@ import styled, { css } from 'react-emotion';
 const ReactPlayerWrapper = styled('div')`
   position: relative;
   padding-top: 56.25%;
+  background-color: #222;
 `;
 
 const reactPlayerStyle = css`
@@ -186,6 +187,7 @@ class Video extends Component {
                 Title: {videoFields.title}
                 <br />
                 Video length: {videoFields.length || "No length set"}
+                &nbsp;
                 ({`${this.props.video.lengthInSeconds} seconds` || "No length set"})
                 <br />
                 Starting timestamp: {this.props.timestamp}
