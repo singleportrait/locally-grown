@@ -20,14 +20,6 @@ class AppContents extends Component {
         <div className="App">
           { this.props.channels.isLoaded &&
             <div>
-              <Link to="/">Home</Link>
-              { this.props.channels.availableChannels.map((channel, i) =>
-                <span key={i}>
-                  &nbsp;
-                  <Link to={channel.fields.slug}>{channel.fields.title}</Link>
-                </span>
-              )}
-              <hr/>
               { this.props.channels.availableChannels.map((channel, i) =>
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <Channel {...props} channel={channel} />

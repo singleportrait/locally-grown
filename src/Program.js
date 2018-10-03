@@ -62,7 +62,7 @@ class Program extends Component {
             }
 
             { !currentProgramBlock &&
-              <h1>No video!</h1>
+              <h1>Loading video...</h1>
             }
           </div>
           <div className={infoColumn}>
