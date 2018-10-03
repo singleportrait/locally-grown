@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { updateCurrentVideo } from './operations/programBlockOperations';
 import { toggleMute } from './actions/sessionActions';
+import { addVideoPlayer } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
@@ -34,6 +35,8 @@ class Video extends Component {
       playing: true
     }
   }
+
+  componentDidMount = () => this.props.addVideoPlayer(this.player);
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
@@ -215,4 +218,4 @@ const mapStateToProps = state => ({
   session: state.session
 });
 
-export default connect(mapStateToProps, { updateCurrentVideo, toggleMute })(Video);
+export default connect(mapStateToProps, { updateCurrentVideo, toggleMute, addVideoPlayer })(Video);

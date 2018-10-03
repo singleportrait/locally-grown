@@ -9,6 +9,7 @@ import Video from './Video';
 import Navigation from './Navigation';
 import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
+import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
 
 import styled, { css } from 'react-emotion';
@@ -65,6 +66,7 @@ class Program extends Component {
                   }
 
                   <MuteButton />
+                  <FullscreenButton />
 
                   { this.props.nextChannelSlug &&
                     <ChannelButton direction="next" to={this.props.nextChannelSlug} />
