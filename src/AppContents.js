@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -43,7 +43,7 @@ class AppContents extends Component {
                 <TVGuide {...props} channels={this.props.channels.featuredChannels} />
               )} />
               <Route path="/channels" render={props => (
-                <Channels testProp="test prop" />
+                <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
               )} />
             </div>
           }

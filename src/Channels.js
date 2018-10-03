@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import styled from 'react-emotion';
 
 const ChannelsWrapper = styled('div')`
-  background-color: #aaa;
+  background-color: #333;
   padding: 1rem;
 `;
 
@@ -17,9 +16,8 @@ class Channels extends Component {
     return (
       <ChannelsWrapper>
         <h1>K-SBI Channels</h1>
-        <h2>{this.props.testProp}</h2>
         <Link to="/">Back to first program</Link>
-        { this.props.featuredPrograms.map(({fields}, i) =>
+        { this.props.featuredChannels.map(({fields}, i) =>
           <div key={i}>
             {fields.title}
           </div>
@@ -29,9 +27,4 @@ class Channels extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  featuredPrograms: state.programs.featuredPrograms
-});
-
-//export default Channel;
-export default connect(mapStateToProps, {})(Channels);
+export default Channels;
