@@ -2,6 +2,8 @@ import { setChannels, setupChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
 
+import * as moment from 'moment';
+
 const fetchChannels = () => dispatch => {
   return new Promise(function(resolve, reject) {
     client.getEntries({
@@ -17,14 +19,12 @@ const fetchChannels = () => dispatch => {
 }
 
 const findFeaturedLiveChannels = (channels) => {
-  const today = new Date().setHours(0,0,0,0);
+  const today = moment().format("YYYY-MM-DD");
   const featuredLiveChannels = channels.filter(channel => {
     const featuredPrograms = channel.fields.programs.filter(program => {
-      const parsedStartDate = Date.parse(program.fields.startDate.replace(/-/g, " "));
-      const parsedEndDate = Date.parse(program.fields.endDate.replace(/-/g, " "));
       return program.fields.featured === true &&
-        parsedStartDate <= today &&
-        parsedEndDate >= today;
+        moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
+        moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
     });
     // console.log("Featured programs:", featuredPrograms);
     return featuredPrograms.length !== 0;
