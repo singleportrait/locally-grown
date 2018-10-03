@@ -1,4 +1,4 @@
-import { SET_CHANNELS, SET_FEATURED_CHANNELS, SET_AVAILABLE_CHANNELS, SET_HIDDEN_CHANNELS, SET_CURRENT_CHANNEL_INFO } from '../actions/channelTypes';
+import { SET_CHANNELS, SETUP_CHANNELS } from '../actions/channelTypes';
 
 // HOW BEST TO ORGANIZE THE STORE???
 // currentChannelId = 27
@@ -32,25 +32,13 @@ export default function(state = initialState, action) {
         allChannels: action.channels,
         isLoaded: true
       }
-    case SET_FEATURED_CHANNELS:
+    case SETUP_CHANNELS:
       return {
         ...state,
-        featuredChannels: action.channels
-      }
-    case SET_AVAILABLE_CHANNELS:
-      return {
-        ...state,
-        availableChannels: action.channels
-      }
-    case SET_CURRENT_CHANNEL_INFO:
-      return {
-        ...state,
-        currentChannel: action.channel
-      }
-    case SET_HIDDEN_CHANNELS:
-      return {
-        ...state,
-        hiddenChannels: action.channels
+        featuredChannels: action.featured,
+        availableChannels: action.available,
+        hiddenChannels: action.hidden,
+        currentChannel: action.current
       }
     default:
       return state;

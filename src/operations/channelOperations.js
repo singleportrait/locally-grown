@@ -1,4 +1,4 @@
-import { setChannels, setFeaturedChannels, setAvailableChannels, setHiddenChannels, setCurrentChannelInfo } from '../actions/channelActions';
+import { setChannels, setupChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
 
@@ -79,30 +79,30 @@ const findHiddenChannels = (allChannels, availableChannels) => {
   return hiddenChannels;
 }
 
-const setCurrentChannel = (channels, dispatch) => {
+const getCurrentChannel = channels => {
   const channelsTotal = channels.length;
   const randomChannelIndex = Math.floor(Math.random()*channelsTotal);
 
   const currentChannel = channels[randomChannelIndex];
 
-  dispatch(setCurrentChannelInfo(currentChannel));
+  return currentChannel;
 }
 
 const findAndSetFeaturedChannels = (allChannels, dispatch) => {
   // Go through each program and see if it's featured & is active on today's date
   const featuredLiveChannels = findFeaturedLiveChannels(allChannels);
-  dispatch(setFeaturedChannels(featuredLiveChannels));
 
   // Go through each program and see if there's a block for this hour
   const availableChannels = findAvailableChannels(featuredLiveChannels);
-  dispatch(setAvailableChannels(availableChannels));
 
   // Then, get the channels that AREN'T available
   // (so we can render them as their own route but not worry about next/previous)
   const hiddenChannels = findHiddenChannels(allChannels, availableChannels);
-  dispatch(setHiddenChannels(hiddenChannels));
+
   // Then, set the current channel and its info
-  setCurrentChannel(availableChannels, dispatch);
+  const currentChannel = getCurrentChannel(availableChannels, dispatch);
+
+  dispatch(setupChannels(featuredLiveChannels, availableChannels, hiddenChannels, currentChannel));
 }
 
 export const initializeChannels = () => dispatch => {

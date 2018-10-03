@@ -1,6 +1,7 @@
 import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, UPDATE_PROGRAM_BLOCK, SET_CURRENT_VIDEO } from '../actions/programBlockTypes';
 
 const initialState = {
+  // isLoaded: false,
   loadedProgramBlocks: [],
   currentProgramBlock: null,
 }
@@ -8,10 +9,6 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case ADD_PROGRAM_BLOCK:
-      // return {
-      //   ...state,
-      //   loadedProgramBlocks: [...state.loadedProgramBlocks, action.programBlock]
-      // }
       return Object.assign({}, state, {
         loadedProgramBlocks: [
           ...state.loadedProgramBlocks, action.programBlock
