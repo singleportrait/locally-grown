@@ -15,6 +15,7 @@ import ChannelButton from './ChannelButton';
 import styled, { css } from 'react-emotion';
 
 const VideoControls = styled('div')`
+  padding-top: 1rem;
   display: flex;
   justify-content: space-between;
 `;

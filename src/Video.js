@@ -4,9 +4,6 @@ import { updateCurrentVideo } from './operations/programBlockOperations';
 import { addVideoPlayer, toggleMute } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
-import screenfull from 'screenfull';
-// The react-player demo example
-import { findDOMNode } from 'react-dom'
 
 import styled, { css } from 'react-emotion';
 
@@ -126,14 +123,6 @@ class Video extends Component {
     this.props.toggleMute(this.props.videoStore.muted);
   }
 
-  onClickFullscreen = () => {
-    // The react-player demo example
-    screenfull.request(findDOMNode(this.player));
-
-    // The official React way (doesn't work immediately)
-    // screenfull.request(this.player.current);
-  }
-
   // The react-player demo example
   ref = player => {
     this.player = player;
@@ -200,8 +189,6 @@ class Video extends Component {
                 <progress className={progressStyle} max={1} value={this.state.played} />
               </div>
             }
-            <br />
-            <button onClick={this.onClickFullscreen}>Fullscreen</button>
           </div>
         }
       </div>
