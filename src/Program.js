@@ -9,8 +9,14 @@ import Video from './Video';
 import Navigation from './Navigation';
 import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
+import ChannelButton from './ChannelButton';
 
-import { css } from 'react-emotion';
+import styled, { css } from 'react-emotion';
+
+const VideoControls = styled('div')`
+  display: flex;
+  justify-content: space-between;
+`;
 
 class Program extends Component {
   componentDidMount() {
@@ -53,15 +59,17 @@ class Program extends Component {
                   video={currentProgramBlock.currentVideo}
                   timestamp={currentProgramBlock.timestampToStartVideo}
                 />
-                <MuteButton />
+                <VideoControls>
+                  { this.props.previousChannelSlug &&
+                    <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+                  }
 
-                { this.props.nextChannelSlug && this.props.previousChannelSlug &&
-                  <div>
-                    <Link to={`/${this.props.previousChannelSlug}`}>Previous channel</Link>
-                    &nbsp;
-                    <Link to={`/${this.props.nextChannelSlug}`}>Next channel</Link>
-                  </div>
-                }
+                  <MuteButton />
+
+                  { this.props.nextChannelSlug &&
+                    <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                  }
+                </VideoControls>
               </React.Fragment>
             }
 

@@ -9,7 +9,9 @@ class MuteButton extends Component {
 
   render() {
     return (
-      <button onClick={this.toggleMute}>Toggle Mute</button>
+      <button onClick={this.toggleMute}>
+        {this.props.session.muted ? 'Unmute' : 'Mute'}
+      </button>
     );
   }
 }
