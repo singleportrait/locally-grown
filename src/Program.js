@@ -110,7 +110,19 @@ class Program extends Component {
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
-          You're on a phone! Too bad, this isn't for you yet.
+          { currentProgramBlock &&
+            <div>
+              You're on a phone! This is still especially in beta, for you
+              <Video
+                video={currentProgramBlock.currentVideo}
+                timestamp={currentProgramBlock.timestampToStartVideo}
+              />
+              <p>You're watching {this.props.channelTitle}</p>
+              <p>Now playing:</p>
+              <h1>{currentProgramBlock.fields.title}</h1>
+              <p>Description: {currentProgramBlock.fields.description}</p>
+            </div>
+          }
         </MediaQuery>
       </div>
     );
