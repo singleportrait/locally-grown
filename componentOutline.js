@@ -21,19 +21,21 @@
 
 
 // Mobile
-<Program>
-  <VideoControls show="fullscreen" />
-  <Navigation />
-  <MobileChannelInfo />
-    // Or <MuteControl />
-  <PreviousChannel />
-  <Video />
-  <VideoControls show="mute" />
-    // Or <FullscreenControl />
-  <MobileProgramInfo />
-  <NextChannel />
-  <ProgramMobileTitle />
-</Program>
+<Channel>
+  <Program>
+    <VideoControls show="fullscreen" />
+    <Navigation />
+    <MobileChannelInfo />
+      // Or <MuteControl />
+    <PreviousChannel />
+    <Video />
+    <VideoControls show="mute" />
+      // Or <FullscreenControl />
+    <MobileProgramInfo />
+    <NextChannel />
+    <ProgramMobileTitle />
+  </Program>
+</Channel>
 
 
 <TVGuide>
