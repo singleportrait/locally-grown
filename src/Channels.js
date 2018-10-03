@@ -9,6 +9,10 @@ const ChannelsWrapper = styled('div')`
 `;
 
 class Channels extends Component {
+  componentDidMount() {
+    document.title = "All Channels | K-SBI";
+  }
+
   render() {
     // TODO: Check if each featured program is in available programs.
     // If not, we'll show something different:

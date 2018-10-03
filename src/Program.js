@@ -15,6 +15,8 @@ import { css } from 'react-emotion';
 class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
+
+    document.title = `${this.props.program.fields.title} | K-SBI`
   }
 
   initializeProgram() {
