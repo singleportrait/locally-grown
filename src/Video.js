@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { updateCurrentVideo } from './operations/programBlockOperations';
-import { toggleMute } from './actions/sessionActions';
-import { addVideoPlayer } from './actions/videoActions';
+import { addVideoPlayer, toggleMute } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
@@ -47,7 +46,7 @@ class Video extends Component {
       // It ALSO breaks when a video plays into the next one,
       // if you've previously played with mute
       // For now: Only reset the mute settings if the video is Vimeo
-      if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.session.muted) {
+      if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.videoStore.muted) {
         this.props.toggleMute(false);
       }
     }
@@ -124,7 +123,7 @@ class Video extends Component {
   toggleMute = () => {
     // Vimeo videos break once you try to unmute the videos and change the channel
     // console.log("Video: Toggling mute");
-    this.props.toggleMute(this.props.session.muted);
+    this.props.toggleMute(this.props.videoStore.muted);
   }
 
   onClickFullscreen = () => {
@@ -152,8 +151,8 @@ class Video extends Component {
                 ref={this.ref}
                 url={videoFields.url}
                 playing={this.state.playing}
-                volume={this.props.session.volume}
-                muted={this.props.session.muted}
+                volume={this.props.videoStore.volume}
+                muted={this.props.videoStore.muted}
                 onReady={this.onReady}
                 onPlay={this.onPlay}
                 onEnded={this.onEnded}
@@ -215,7 +214,7 @@ Video.defaultProps = {
 }
 
 const mapStateToProps = state => ({
-  session: state.session
+  videoStore: state.video
 });
 
 export default connect(mapStateToProps, { updateCurrentVideo, toggleMute, addVideoPlayer })(Video);

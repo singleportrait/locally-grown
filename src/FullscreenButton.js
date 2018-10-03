@@ -9,7 +9,11 @@ class FullscreenButton extends Component {
 
   render() {
     return (
-      <button onClick={this.goFullscreen}>Fullscreen!</button>
+      <React.Fragment>
+        { this.props.video.player &&
+          <button onClick={this.goFullscreen}>Fullscreen!</button>
+        }
+      </React.Fragment>
     );
   }
 }
