@@ -49,7 +49,6 @@ class Program extends Component {
                 <Video
                   video={currentProgramBlock.currentVideo}
                   timestamp={currentProgramBlock.timestampToStartVideo}
-                  showMetadata={true}
                 />
 
                 { this.props.nextChannelSlug && this.props.previousChannelSlug &&
