@@ -9,7 +9,7 @@ import styled, { css } from 'react-emotion';
 
 const ReactPlayerWrapper = styled('div')`
   position: relative;
-  padding-top: 56.25%;
+  padding-top: 75%;
   background-color: #222;
 `;
 
