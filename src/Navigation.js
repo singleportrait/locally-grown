@@ -6,7 +6,7 @@ class Navigation extends Component {
     return (
       <div>
         <Link to="/channels">K-SBI</Link>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
+        &nbsp;Beta!&nbsp;&nbsp;|&nbsp;&nbsp;
         <Link to="/tv-guide">TV Guide</Link>
       </div>
     )
