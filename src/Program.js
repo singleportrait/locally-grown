@@ -117,6 +117,12 @@ class Program extends Component {
                 video={currentProgramBlock.currentVideo}
                 timestamp={currentProgramBlock.timestampToStartVideo}
               />
+              <br />
+              <VideoControls>
+                <MuteButton />
+                <FullscreenButton />
+              </VideoControls>
+              <br />
               <p>You're watching {this.props.channelTitle}</p>
               <p>Now playing:</p>
               <h1>{currentProgramBlock.fields.title}</h1>
