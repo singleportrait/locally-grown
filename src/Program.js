@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
+import * as moment from 'moment';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -84,7 +85,7 @@ class Program extends Component {
             <Navigation />
             <p>You're watching {this.props.channelTitle} by &lt;name&gt;</p>
             <a href="">Info</a>
-            <p>It's {this.props.session.currentHour} o'clock</p>
+            <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
             <hr/>
             { currentProgramBlock &&
               <React.Fragment>
