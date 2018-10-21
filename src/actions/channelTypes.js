@@ -1,0 +1,2 @@
+export const SET_CHANNELS = 'SET_CHANNELS';
+export const SETUP_CHANNELS = 'SETUP_CHANNELS';
