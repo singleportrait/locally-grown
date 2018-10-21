@@ -6,8 +6,8 @@ const resetPrograms = () => dispatch => {
 
   dispatch(setTimeUntilNextProgram(3600));
 
-  // Reload available programs & program blocks to get the next program block
-  // if there is one, or take you to another channel if not
+  // TODO: Reload available programs & program blocks to get the next
+  // program block if there is one, or take you to another channel if not
   //
   // Also, reset session.currentHour!
 }

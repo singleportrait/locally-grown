@@ -41,13 +41,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.lengthInSeconds = videoLengthInSeconds
         video.startTime = programmingLength;
 
-        // Need to move some of this out of here so we can poll at later
-        // points to determine whether it's time to swap in a new video/timestamp
         video.endTime = programmingLength + videoLengthInSeconds;
 
         if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
           videoToPlayIndex = i;
-
           timestampToStartVideo = secondsPastTheHour - programmingLength;
         }
 
@@ -130,8 +127,7 @@ export const getCurrentProgramBlock = (programBlockId) => dispatch => {
   if (savedProgramBlock) {
     console.log("- Using a saved program block");
     dispatch(setCurrentProgramBlock(savedProgramBlock));
-    // Then, probably update to the latest/correct video?
-    dispatch(setupCurrentVideoAfterInitialLoad()); // + need to set correct index + timestamp video
+    dispatch(setupCurrentVideoAfterInitialLoad());
   } else {
     console.log("- Don't have this program block saved yet; fetching it now.");
     dispatch(fetchProgramBlock(programBlockId))

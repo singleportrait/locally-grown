@@ -17,10 +17,6 @@ const initialState = {
   availableChannels: [], // Channels with programs w program blocks for this hour
   hiddenChannels: [],
   currentChannel: null,
-  // currentChannelIndex: null,
-  // hasMultipleAvailableChannels: null,
-  // previousChannelSlug: null, // For <Link>ing previous/next channel
-  // nextChannelSlug: null,
   error: null
 }
 
