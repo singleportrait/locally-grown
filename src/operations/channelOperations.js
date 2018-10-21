@@ -26,7 +26,7 @@ const findFeaturedLiveChannels = (channels) => {
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
         moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
     });
-    // console.log("Featured programs:", featuredPrograms);
+    // console.log("Featured available programs:", featuredPrograms);
     return featuredPrograms.length !== 0;
   });
   return featuredLiveChannels;
@@ -93,6 +93,7 @@ const findAndSetFeaturedChannels = (allChannels, dispatch) => {
   const featuredLiveChannels = findFeaturedLiveChannels(allChannels);
 
   // Go through each program and see if there's a block for this hour
+  // TODO: This finds the right programs, but doesn't put them into the store
   const availableChannels = findAvailableChannels(featuredLiveChannels);
 
   // Then, get the channels that AREN'T available

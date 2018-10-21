@@ -6,6 +6,7 @@ import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '.
 
 const fetchProgramBlock = (programBlockId) => dispatch => {
   return new Promise(function(resolve, reject) {
+    // TODO: Use video results from initial Contentful fetch
     client.getEntry(programBlockId)
     .then(programBlock => {
       dispatch(initializeCurrentProgramBlockVideos(programBlock))
