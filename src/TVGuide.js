@@ -26,16 +26,19 @@ const Row = styled('div')`
 const ProgramTitle = styled('div')`
   width: 200px;
   margin: 5px;
+  flex-shrink: 0;
 `;
 
 const ProgramBlock = styled('div')`
-  width: 200px;
+  width: 400px;
+  height: 60px;
   background-color: #fff;
   color: #000;
   font-weight: 500;
   font-size: 15px;
   margin: .5rem;
   padding: .5rem;
+  flex-shrink: 0;
 `;
 
 class TVGuide extends Component {
@@ -52,16 +55,19 @@ class TVGuide extends Component {
   }
 
   render() {
-    // TODO: Create 24 hour period dynamically
-    // hours.push(this.props.session.currentHour)
-    // hours[hours.length - 1] + 1
-    // if (<last hour + 1> < 23 && <last hour> !== this.props.session.currentHour) {
-    //   hours.push(<last hour + 1>);
-    // } else if (<last hour + 1> > 23) {
-    //   hours.push(0);
-    //   16...24 + 0...15
-    // }
-    const hours = [16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4];
+    let hours = [];
+    const currentHour = this.props.session.currentHour;
+    for (let i = currentHour; i < 24; i++) {
+      hours.push(i);
+    }
+    if (currentHour !== 0) {
+      for (let i = 0; i < currentHour; i++) {
+        hours.push(i);
+      }
+    }
+
+    // TODO: Figure out a better way to know if NONE of
+    // the program blocks match
 
     return (
       <TVGuideWrapper>
@@ -82,11 +88,19 @@ class TVGuide extends Component {
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
           <Row key={i}>
             <ProgramTitle>
-              <h3>{channel.fields.title}: {program.fields.title}</h3>
+              <h3>{program.fields.title}</h3>
+              <p>{channel.fields.title}</p>
             </ProgramTitle>
-            { getRelativeSortedProgramBlocks(program.fields.programBlocks, this.props.session.currentHour).map(({fields}, i) =>
+            { hours.map((hour, i) =>
               <ProgramBlock key={i}>
-                {moment(fields.startTime, "HH").format("ha")} - {fields.title}
+                {moment(hour, "HH").format("ha")}
+                {program.fields.programBlocks.map((programBlock, i) =>
+                  <span key={i}>
+                    {programBlock.fields.startTime === hour &&
+                      <div>- {programBlock.fields.title}</div>
+                    }
+                  </span>
+                )}
               </ProgramBlock>
             )}
           </Row>
