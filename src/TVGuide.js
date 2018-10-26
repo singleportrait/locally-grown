@@ -1,19 +1,41 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import styled from 'react-emotion';
 
+import * as moment from 'moment';
+
+import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
+
 const TVGuideWrapper = styled('div')`
   position: absolute;
-  width: 60vw;
-  min-height: 60vh;
-  top: 20vh;
-  left: 20vw;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 1rem;
   background-color: #333;
+  overflow-x: scroll;
 `;
 
 const Row = styled('div')`
   width: 100%;
   padding: 2rem 0;
+  display: flex;
+  border-bottom: 1px solid #000;
+`;
+
+const ProgramTitle = styled('div')`
+  width: 200px;
+  margin: 5px;
+`;
+
+const ProgramBlock = styled('div')`
+  width: 200px;
+  background-color: #fff;
+  color: #000;
+  font-weight: 500;
+  font-size: 15px;
+  margin: .5rem;
+  padding: .5rem;
 `;
 
 class TVGuide extends Component {
@@ -30,6 +52,17 @@ class TVGuide extends Component {
   }
 
   render() {
+    // TODO: Create 24 hour period dynamically
+    // hours.push(this.props.session.currentHour)
+    // hours[hours.length - 1] + 1
+    // if (<last hour + 1> < 23 && <last hour> !== this.props.session.currentHour) {
+    //   hours.push(<last hour + 1>);
+    // } else if (<last hour + 1> > 23) {
+    //   hours.push(0);
+    //   16...24 + 0...15
+    // }
+    const hours = [16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4];
+
     return (
       <TVGuideWrapper>
         <h1>TV Guide</h1>
@@ -40,13 +73,21 @@ class TVGuide extends Component {
           <h2>Uh oh! There aren't any featured programs with active programming right now. Come back later!</h2>
         }
 
+        <Row>
+          <ProgramTitle></ProgramTitle>
+          { hours.map((hour, i) =>
+            <ProgramBlock key={i}>{moment(hour, "HH").format("ha")}</ProgramBlock>
+          )}
+        </Row>
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
           <Row key={i}>
-            <h2>{channel.fields.title}: {program.fields.title}</h2>
-            { program.fields.programBlocks.map(({fields}, i) =>
-              <div key={i}>
-                {fields.startTime}:00 - {fields.title}
-              </div>
+            <ProgramTitle>
+              <h3>{channel.fields.title}: {program.fields.title}</h3>
+            </ProgramTitle>
+            { getRelativeSortedProgramBlocks(program.fields.programBlocks, this.props.session.currentHour).map(({fields}, i) =>
+              <ProgramBlock key={i}>
+                {moment(fields.startTime, "HH").format("ha")} - {fields.title}
+              </ProgramBlock>
             )}
           </Row>
         ))}
@@ -55,4 +96,9 @@ class TVGuide extends Component {
   }
 }
 
-export default TVGuide;
+const mapStateToProps = state => ({
+  session: state.session
+});
+
+
+export default connect(mapStateToProps)(TVGuide);
