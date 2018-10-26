@@ -29,6 +29,16 @@ const ProgramTitle = styled('div')`
   flex-shrink: 0;
 `;
 
+const ProgramBlockHeader = styled('div')`
+  width: 400px;
+  height: 60px;
+  font-weight: 500;
+  font-size: 15px;
+  margin: .5rem;
+  padding: .5rem;
+  flex-shrink: 0;
+`;
+
 const ProgramBlock = styled('div')`
   width: 400px;
   height: 60px;
@@ -82,7 +92,7 @@ class TVGuide extends Component {
         <Row>
           <ProgramTitle></ProgramTitle>
           { hours.map((hour, i) =>
-            <ProgramBlock key={i}>{moment(hour, "HH").format("ha")}</ProgramBlock>
+            <ProgramBlockHeader key={i}>{moment(hour, "HH").format("ha")}</ProgramBlockHeader>
           )}
         </Row>
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
