@@ -106,7 +106,7 @@ class Program extends Component {
             }
             <hr />
             { programBlocks &&
-              <ProgramBlockInfo programBlocks={programBlocks} />
+              <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
             }
           </div>
         </MediaQuery>
