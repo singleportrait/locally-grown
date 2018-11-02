@@ -1,3 +1,4 @@
+// TODO: Import reset css
 @import "shared.scss";
 
 * {
@@ -28,4 +29,27 @@ hr {
   border-style: solid;
   border-bottom-width: 0;
   margin: 1rem 0;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 900;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 18px;
 }

@@ -83,7 +83,7 @@ class Program extends Component {
           </div>
           <div className={infoColumn}>
             <Navigation />
-            <p>You're watching {this.props.channelTitle} by &lt;name&gt;</p>
+            <p>You're watching {this.props.channelTitle}.</p>
             <a href="">Info</a>
             <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
             <hr/>
@@ -106,7 +106,7 @@ class Program extends Component {
             }
             <hr />
             { programBlocks &&
-              <ProgramBlockInfo programBlocks={programBlocks} />
+              <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
             }
           </div>
         </MediaQuery>
