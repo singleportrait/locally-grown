@@ -21,6 +21,17 @@ const VideoControls = styled('div')`
   justify-content: space-between;
 `;
 
+const controlButtons = css`
+  display: flex;
+`;
+
+const VideoPlaceholderWrapper = styled('div')`
+  position: relative;
+  padding-top: 75%;
+  background: url(./static_placeholder_simpler.gif);
+  background-size: cover;
+`;
+
 class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
@@ -67,8 +78,10 @@ class Program extends Component {
                     <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
                   }
 
-                  <MuteButton />
-                  <FullscreenButton />
+                  <div className={controlButtons}>
+                    <MuteButton />
+                    <FullscreenButton />
+                  </div>
 
                   { this.props.nextChannelSlug &&
                     <ChannelButton direction="next" to={this.props.nextChannelSlug} />
@@ -78,7 +91,7 @@ class Program extends Component {
             }
 
             { !currentProgramBlock &&
-              <h1>Loading video...</h1>
+              <VideoPlaceholderWrapper />
             }
           </div>
           <div className={infoColumn}>
@@ -93,18 +106,20 @@ class Program extends Component {
                 <h1>{currentProgramBlock.fields.title}</h1>
                 <p>Description: {currentProgramBlock.fields.description}</p>
                 { currentProgramBlock.programmingLength < 3600 &&
-                  <em>Warning! This block of programming doesn't fill the whole hour, so you might get some unexpected behavior while viewing this channel</em>
+                    <p>
+                      <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
+                    </p>
                 }
               </React.Fragment>
             }
             { !currentProgramBlock &&
               <div>
-                <em>This program doesn't have any program blocks!</em>
+                <br />
+                <h1>There's nothing playing on this channel.</h1>
                 <br /><br />
-                <Link to="/tv-guide">Check out the TV Guide</Link> to find some.
+                <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
               </div>
             }
-            <hr />
             { programBlocks &&
               <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
             }

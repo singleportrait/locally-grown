@@ -9,6 +9,17 @@ import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
 
+import styled from 'react-emotion';
+
+const LoadingContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+`;
+
 class AppContents extends Component {
   componentDidMount() {
     this.props.initializeSession();
@@ -36,20 +47,32 @@ class AppContents extends Component {
                   <Redirect to={`/${this.props.channels.currentChannel.fields.slug}`} />
                 )} />
               }
-
-              { !this.props.channels.currentChannel &&
-                <h1>No programs right now!</h1>
-              }
               <Route path="/tv-guide" render={props => (
                 <TVGuide {...props} channels={this.props.channels.featuredChannels} />
               )} />
               <Route path="/channels" render={props => (
                 <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
               )} />
+
+              { !this.props.channels.currentChannel &&
+                <Route exact path="/" render={props => (
+                  <LoadingContainer>
+                    <h4>Locally Grown</h4>
+                    <h1>No programs right now.</h1>
+                    <br /><br />
+                    <div style={{textDecoration: "underline"}}>What is this?</div>
+                  </LoadingContainer>
+                )} />
+              }
             </div>
           }
           { !this.props.channels.isLoaded &&
-            <h1>Loading K-SBI...</h1>
+            <LoadingContainer>
+              <h4>&nbsp;</h4>
+              <h1>Loading Locally Grown...</h1>
+              <br /><br />
+              <div>&nbsp;</div>
+            </LoadingContainer>
           }
         </div>
       </Router>
