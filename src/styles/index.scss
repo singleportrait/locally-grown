@@ -6,7 +6,7 @@
 }
 
 html {
-  background-color: #111;
+  background-color: #221935;
 }
 
 body {
@@ -25,14 +25,15 @@ a, a:visited, a:hover, a:active {
 }
 
 hr {
-  border-color: #333;
+  border-color: #4E475D;
   border-style: solid;
   border-bottom-width: 0;
   margin: 1rem 0;
 }
 
 h1, h2, h3, h4 {
-  margin: 0;
+  margin: 0.25rem;
+  line-height: 1.2;
 }
 
 h1 {
@@ -52,4 +53,6 @@ h3 {
 
 h4 {
   font-size: 18px;
+  font-weight: 200;
+  line-height: 1.4;
 }

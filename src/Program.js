@@ -96,15 +96,14 @@ class Program extends Component {
           </div>
           <div className={infoColumn}>
             <Navigation />
-            <p>You're watching {this.props.channelTitle}.</p>
-            <a href="">Info</a>
+            <p>You're watching {this.props.channelTitle}. <a href="">Info</a></p>
             <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
             <hr/>
             { currentProgramBlock &&
               <React.Fragment>
                 <p>Now playing:</p>
                 <h1>{currentProgramBlock.fields.title}</h1>
-                <p>Description: {currentProgramBlock.fields.description}</p>
+                <p>{currentProgramBlock.fields.description}</p>
                 { currentProgramBlock.programmingLength < 3600 &&
                     <p>
                       <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>

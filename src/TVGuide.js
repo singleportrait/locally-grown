@@ -5,14 +5,12 @@ import styled from 'react-emotion';
 
 import * as moment from 'moment';
 
-import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
-
 const TVGuideWrapper = styled('div')`
   position: absolute;
   width: 100vw;
   min-height: 100vh;
   padding: 1rem;
-  background-color: #333;
+  background-color: #221935;
   overflow-x: scroll;
 `;
 
