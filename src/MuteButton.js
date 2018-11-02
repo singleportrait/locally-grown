@@ -2,6 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { toggleMute } from './actions/videoActions';
 
+import MuteIcon from './MuteIcon';
+import UnmuteIcon from './UnmuteIcon';
+
+import { css } from 'react-emotion';
+
+const muteButton = css`
+  padding: 1rem;
+  &:hover {
+    cursor: pointer;
+    opacity: .9;
+    margin-top: 1px;
+  }
+`;
+
 class MuteButton extends Component {
   toggleMute = () => {
     this.props.toggleMute(this.props.video.muted);
@@ -9,9 +23,14 @@ class MuteButton extends Component {
 
   render() {
     return (
-      <button onClick={this.toggleMute}>
-        {this.props.video.muted ? 'Unmute' : 'Mute'}
-      </button>
+      <div className={muteButton} onClick={this.toggleMute}>
+        {this.props.video.muted &&
+          <UnmuteIcon />
+        }
+        {!this.props.video.muted &&
+          <MuteIcon />
+        }
+      </div>
     );
   }
 }

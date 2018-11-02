@@ -3,13 +3,18 @@ import { Link } from 'react-router-dom';
 
 import styled from 'react-emotion';
 
+import LeftArrow from './LeftArrow';
+import RightArrow from './RightArrow';
+
 const ChannelButtonLink = styled('div')`
   padding: 1rem;
   &:hover {
-    background-color: #222;
+    cursor: pointer;
+    opacity: .9;
+    margin-top: 1px;
   }
-  // ${props => props.direction === 'previous' && 'background-color: navy;'}
-  // ${props => props.direction === 'next' && 'background-color: purple;'}
+  ${props => props.direction === 'previous' && 'padding: 1rem 1rem 1rem 0;'}
+  ${props => props.direction === 'next' && 'padding: 1rem 0 1rem 1rem;'}
 `;
 
 class ChannelButton extends Component {
@@ -18,10 +23,10 @@ class ChannelButton extends Component {
       <Link to={`/${this.props.to}`}>
         <ChannelButtonLink direction={this.props.direction}>
           { this.props.direction === "previous" &&
-            <span>&larr; Previous channel</span>
+            <LeftArrow />
           }
           { this.props.direction === "next" &&
-            <span>Next channel &rarr;</span>
+            <RightArrow />
           }
         </ChannelButtonLink>
       </Link>
