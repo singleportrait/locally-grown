@@ -10,7 +10,7 @@ const ChannelsWrapper = styled('div')`
 
 class Channels extends Component {
   componentDidMount() {
-    document.title = "All Channels | K-SBI";
+    document.title = "All Channels | Locally Grown";
   }
 
   render() {
@@ -19,7 +19,7 @@ class Channels extends Component {
     // "Nothing playing right now for this channel."
     return (
       <ChannelsWrapper>
-        <h1>K-SBI Channels</h1>
+        <h1>Locally Grown Channels</h1>
         <Link to="/">Back to first program</Link>
         { this.props.featuredChannels.map(({fields}, i) =>
           <div key={i}>

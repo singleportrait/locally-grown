@@ -13,7 +13,7 @@ class Navigation extends Component {
     return (
       <div className={navigation}>
         <span>
-          <Link to="/channels">K-SBI</Link>
+          <Link to="/channels">Locally Grown</Link>
           &nbsp;Beta!
         </span>
         <Link to="/tv-guide">TV Guide</Link>

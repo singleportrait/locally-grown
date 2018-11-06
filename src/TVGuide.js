@@ -72,7 +72,7 @@ const EmptyProgramBlock = styled('div')`
 
 class TVGuide extends Component {
   componentDidMount() {
-    document.title = "TV Guide | K-SBI";
+    document.title = "TV Guide | Locally Grown";
   }
 
   goBack = () => {

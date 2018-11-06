@@ -19,7 +19,7 @@ class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
 
-    document.title = `${this.props.program.fields.title} | K-SBI`
+    document.title = `${this.props.program.fields.title} | Locally Grown`
   }
 
   initializeProgram() {
