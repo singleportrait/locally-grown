@@ -15,23 +15,6 @@ import ChannelButton from './ChannelButton';
 
 import styled, { css } from 'react-emotion';
 
-const VideoControls = styled('div')`
-  padding-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const controlButtons = css`
-  display: flex;
-`;
-
-const VideoPlaceholderWrapper = styled('div')`
-  position: relative;
-  padding-top: 75%;
-  background: url(./static_placeholder_simpler.gif);
-  background-size: cover;
-`;
-
 class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
@@ -94,34 +77,36 @@ class Program extends Component {
               <VideoPlaceholderWrapper />
             }
           </div>
-          <div className={infoColumn}>
-            <Navigation />
-            <p>You're watching {this.props.channelTitle}. <a href="">Info</a></p>
-            <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
-            <hr/>
-            { currentProgramBlock &&
-              <React.Fragment>
-                <p>Now playing:</p>
-                <h1>{currentProgramBlock.fields.title}</h1>
-                <p>{currentProgramBlock.fields.description}</p>
-                { currentProgramBlock.programmingLength < 3600 &&
-                    <p>
-                      <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
-                    </p>
-                }
-              </React.Fragment>
-            }
-            { !currentProgramBlock &&
-              <div>
-                <br />
-                <h1>There's nothing playing on this channel.</h1>
-                <br /><br />
-                <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
-              </div>
-            }
-            { programBlocks &&
-              <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
-            }
+          <div className={infoColumnContainer}>
+            <div className={infoColumn}>
+              <Navigation />
+              <p>You're watching {this.props.channelTitle}. <a href="">Info</a></p>
+              <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
+              <hr/>
+              { currentProgramBlock &&
+                <React.Fragment>
+                  <p>Now playing:</p>
+                  <h1>{currentProgramBlock.fields.title}</h1>
+                  <p>{currentProgramBlock.fields.description}</p>
+                  { currentProgramBlock.programmingLength < 3600 &&
+                      <p>
+                        <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
+                      </p>
+                  }
+                </React.Fragment>
+              }
+              { !currentProgramBlock &&
+                <div>
+                  <br />
+                  <h1>There's nothing playing on this channel.</h1>
+                  <br /><br />
+                  <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
+                </div>
+              }
+              { programBlocks &&
+                <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
+              }
+            </div>
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
@@ -164,7 +149,7 @@ const videoAndControlsColumn = css`
   backface-visibility: hidden;
 `;
 
-const infoColumn = css`
+const infoColumnContainer = css`
   position: absolute;
   right: 0;
   width: 35%;
@@ -173,6 +158,32 @@ const infoColumn = css`
   transition: opacity 0.4s ease, right 0.4s ease;
   transform: translateZ(0);
   backface-visibility: hidden;
+  height: calc(100vh - 1.4rem);
+  overflow-x: hidden;
+`;
+
+const infoColumn = css`
+  padding-right: 16px;
+  margin-right: -16px;
+  overflow-y: scroll;
+  height: 100%;
+`;
+
+const VideoControls = styled('div')`
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const controlButtons = css`
+  display: flex;
+`;
+
+const VideoPlaceholderWrapper = styled('div')`
+  position: relative;
+  padding-top: 75%;
+  background: url(./static_placeholder_simpler.gif);
+  background-size: cover;
 `;
 
 const mapStateToProps = state => ({
