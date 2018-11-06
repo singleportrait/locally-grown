@@ -121,7 +121,7 @@ class TVGuide extends Component {
               <p>{channel.fields.title}</p>
             </ProgramTitle>
             { hours.map((hour, i) =>
-              <React.Fragment>
+              <React.Fragment key={i}>
                 {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
                   <React.Fragment>
                     {hours[0] === hour &&
