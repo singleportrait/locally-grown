@@ -11,6 +11,10 @@ const ProgramBlockInfoContainer = styled('div')`
   padding-top: 6rem;
 `;
 
+const NextProgramBlock = styled('div')`
+  padding-bottom: 2rem;
+`;
+
 const ProgramBlock = styled('div')`
   opacity: .6;
   display: flex;
@@ -30,13 +34,13 @@ class ProgramBlockInfo extends Component {
     return (
       <ProgramBlockInfoContainer>
         { nextProgramBlock &&
-          <h4>
-            Next up at {moment(nextProgramBlock.fields.startTime, "HH").format("ha")}:
-            <br />
-            {nextProgramBlock.fields.title}
-            <br />
-            <br />
-          </h4>
+          <NextProgramBlock>
+            <h4>
+              Next up at {moment(nextProgramBlock.fields.startTime, "HH").format("ha")}:
+              <br />
+              {nextProgramBlock.fields.title}
+            </h4>
+          </NextProgramBlock>
         }
         { sortedProgramBlocks.map(({fields}, i) =>
           <ProgramBlock key={i}>
