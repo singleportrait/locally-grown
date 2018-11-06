@@ -4,6 +4,19 @@ import { connect } from 'react-redux';
 import screenfull from 'screenfull';
 import { findDOMNode } from 'react-dom'
 
+import FullscreenIcon from './FullscreenIcon';
+
+import { css } from 'react-emotion';
+
+const fullscreenButton = css`
+  padding: 1rem;
+  &:hover {
+    cursor: pointer;
+    opacity: .9;
+    margin-top: 1px;
+  }
+`;
+
 class FullscreenButton extends Component {
   goFullscreen = () => {
     if (screenfull.enabled) {
@@ -20,7 +33,9 @@ class FullscreenButton extends Component {
     return (
       <React.Fragment>
         { this.props.video.player && screenfull.enabled &&
-          <button onClick={this.goFullscreen}>Fullscreen!</button>
+          <div className={fullscreenButton} onClick={this.goFullscreen}>
+            <FullscreenIcon />
+          </div>
         }
       </React.Fragment>
     );

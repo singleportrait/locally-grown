@@ -11,10 +11,6 @@ class Channel extends Component {
       <div className="channel">
         { channelFields &&
           <div>
-            { channelFields.programs.length > 1 &&
-              <h3>This channel has multiple available programs grr</h3>
-            }
-
             { channelFields.programs.length > 0 &&
               <Program
                 program={channelFields.programs[0]}
@@ -22,6 +18,10 @@ class Channel extends Component {
                 previousChannelSlug={this.props.channel.previousChannelSlug}
                 nextChannelSlug={this.props.channel.nextChannelSlug}
               />
+            }
+
+            { channelFields.programs.length > 1 &&
+              <h4>(This channel has multiple available programs, fyi)</h4>
             }
 
             { channelFields.programs.length === 0 &&

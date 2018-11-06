@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import styled from 'react-emotion';
+import styled, { css } from 'react-emotion';
 
 import * as moment from 'moment';
-
-import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 
 const TVGuideWrapper = styled('div')`
   position: absolute;
   width: 100vw;
   min-height: 100vh;
   padding: 1rem;
-  background-color: #333;
+  background-color: #221935;
   overflow-x: scroll;
 `;
 
@@ -29,31 +28,51 @@ const ProgramTitle = styled('div')`
   flex-shrink: 0;
 `;
 
+const programBlockBase = css`
+  width: 200px;
+  height: 50px;
+  margin: .3rem;
+  padding: .3rem .5rem;
+  flex-shrink: 0;
+  cursor: default;
+`;
+
 const ProgramBlockHeader = styled('div')`
-  width: 400px;
-  height: 60px;
+  ${programBlockBase};
   font-weight: 500;
   font-size: 15px;
-  margin: .5rem;
-  padding: .5rem;
-  flex-shrink: 0;
 `;
 
 const ProgramBlock = styled('div')`
-  width: 400px;
-  height: 60px;
-  background-color: #fff;
+  ${programBlockBase};
+  background-color: rgba(255,255,255,.5);
   color: #000;
   font-weight: 500;
   font-size: 15px;
-  margin: .5rem;
-  padding: .5rem;
-  flex-shrink: 0;
+`;
+
+const programBlockLink = css`
+  text-decoration: none;
+`;
+
+const firstHour = css`
+  background-color: rgba(255,255,255,1);
+  transition: background-color .2s ease;
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(255,255,255,.8);
+  }
+`;
+
+const EmptyProgramBlock = styled('div')`
+  ${programBlockBase};
+  text-align: center;
+  opacity: .5;
 `;
 
 class TVGuide extends Component {
   componentDidMount() {
-    document.title = "TV Guide | K-SBI";
+    document.title = "TV Guide | Locally Grown";
   }
 
   goBack = () => {
@@ -92,26 +111,39 @@ class TVGuide extends Component {
         <Row>
           <ProgramTitle></ProgramTitle>
           { hours.map((hour, i) =>
-            <ProgramBlockHeader key={i}>{moment(hour, "HH").format("ha")}</ProgramBlockHeader>
+            <ProgramBlockHeader key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHeader>
           )}
         </Row>
         { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
           <Row key={i}>
             <ProgramTitle>
-              <h3>{program.fields.title}</h3>
+              <h3><Link to={channel.fields.slug}>{program.fields.title}</Link></h3>
               <p>{channel.fields.title}</p>
             </ProgramTitle>
             { hours.map((hour, i) =>
-              <ProgramBlock key={i}>
-                {moment(hour, "HH").format("ha")}
-                {program.fields.programBlocks.map((programBlock, i) =>
-                  <span key={i}>
-                    {programBlock.fields.startTime === hour &&
-                      <div>- {programBlock.fields.title}</div>
+              <React.Fragment key={i}>
+                {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                  <React.Fragment>
+                    {hours[0] === hour &&
+                      <Link to={channel.fields.slug} className={programBlockLink}>
+                        <ProgramBlock className={firstHour}>
+                          {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
+                        </ProgramBlock>
+                      </Link>
                     }
-                  </span>
-                )}
-              </ProgramBlock>
+                    {hours[0] !== hour &&
+                      <ProgramBlock>
+                        {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
+                      </ProgramBlock>
+                    }
+                  </React.Fragment>
+                }
+                {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                  <EmptyProgramBlock>
+                    X
+                  </EmptyProgramBlock>
+                }
+              </React.Fragment>
             )}
           </Row>
         ))}
