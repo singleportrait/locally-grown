@@ -16,6 +16,7 @@ const LoadingContainer = styled('div')`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
   height: 100vh;
   width: 100vw;
 `;

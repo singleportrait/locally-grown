@@ -6,12 +6,25 @@ import styled, { css } from 'react-emotion';
 
 import * as moment from 'moment';
 
+import CloseIcon from './CloseIcon';
+
 const TVGuideWrapper = styled('div')`
-  position: absolute;
-  width: 100vw;
-  min-height: 100vh;
-  padding: 1rem;
-  background-color: #221935;
+  padding: 1rem 1rem 0;
+`;
+
+const Header = styled('div')`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
+const closeButton = css`
+  padding: 1rem 1rem 0;
+  cursor: pointer;
+`;
+
+const TVGuideChart = styled('div')`
+  width: calc(100vw - 2rem);
   overflow-x: scroll;
 `;
 
@@ -19,7 +32,14 @@ const Row = styled('div')`
   width: 100%;
   padding: 2rem 0;
   display: flex;
-  border-bottom: 1px solid #000;
+  position: relative;
+  &:after {
+    position: absolute;
+    border-bottom: 1px solid #4E475D;
+    content: "";
+    bottom: 0;
+    width: ${(200*25)+(10*25)-16}px; // Hour blocks + title block widths & margins - 1rem page padding
+  }
 `;
 
 const ProgramTitle = styled('div')`
@@ -31,8 +51,8 @@ const ProgramTitle = styled('div')`
 const programBlockBase = css`
   width: 200px;
   height: 50px;
-  margin: .3rem;
-  padding: .3rem .5rem;
+  margin: 5px;
+  padding: 5px .5rem;
   flex-shrink: 0;
   cursor: default;
 `;
@@ -66,8 +86,10 @@ const firstHour = css`
 
 const EmptyProgramBlock = styled('div')`
   ${programBlockBase};
-  text-align: center;
-  opacity: .5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: .4;
 `;
 
 class TVGuide extends Component {
@@ -100,53 +122,59 @@ class TVGuide extends Component {
 
     return (
       <TVGuideWrapper>
-        <h1>TV Guide</h1>
-        <button onClick={this.goBack}>Close</button>
-        <em>(This should be 'Back' or /, depending on history)</em>
+        <Header>
+          <h4><a href="">What is this?</a></h4>
+          <h2>TV Guide</h2>
+          <div onClick={this.goBack} className={closeButton}>
+            <CloseIcon />
+          </div>
+        </Header>
         <hr/>
         { this.props.channels.length === 0 &&
           <h2>Uh oh! There aren't any featured programs with active programming right now. Come back later!</h2>
         }
 
-        <Row>
-          <ProgramTitle></ProgramTitle>
-          { hours.map((hour, i) =>
-            <ProgramBlockHeader key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHeader>
-          )}
-        </Row>
-        { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
-          <Row key={i}>
-            <ProgramTitle>
-              <h3><Link to={channel.fields.slug}>{program.fields.title}</Link></h3>
-              <p>{channel.fields.title}</p>
-            </ProgramTitle>
+        <TVGuideChart>
+          <Row>
+            <ProgramTitle></ProgramTitle>
             { hours.map((hour, i) =>
-              <React.Fragment key={i}>
-                {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                  <React.Fragment>
-                    {hours[0] === hour &&
-                      <Link to={channel.fields.slug} className={programBlockLink}>
-                        <ProgramBlock className={firstHour}>
-                          {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
-                        </ProgramBlock>
-                      </Link>
-                    }
-                    {hours[0] !== hour &&
-                      <ProgramBlock>
-                        {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
-                      </ProgramBlock>
-                    }
-                  </React.Fragment>
-                }
-                {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                  <EmptyProgramBlock>
-                    X
-                  </EmptyProgramBlock>
-                }
-              </React.Fragment>
+              <ProgramBlockHeader key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHeader>
             )}
           </Row>
-        ))}
+          { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
+            <Row key={i}>
+              <ProgramTitle>
+                <h3><Link to={channel.fields.slug}>{program.fields.title}</Link></h3>
+                <p>{channel.fields.title}</p>
+              </ProgramTitle>
+              { hours.map((hour, i) =>
+                <React.Fragment key={i}>
+                  {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                    <React.Fragment>
+                      {hours[0] === hour &&
+                        <Link to={channel.fields.slug} className={programBlockLink}>
+                          <ProgramBlock className={firstHour}>
+                            {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
+                          </ProgramBlock>
+                        </Link>
+                      }
+                      {hours[0] !== hour &&
+                        <ProgramBlock>
+                          {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
+                        </ProgramBlock>
+                      }
+                    </React.Fragment>
+                  }
+                  {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                    <EmptyProgramBlock title="No programming for this hour">
+                      <CloseIcon />
+                    </EmptyProgramBlock>
+                  }
+                </React.Fragment>
+              )}
+            </Row>
+          ))}
+        </TVGuideChart>
       </TVGuideWrapper>
     );
   }
