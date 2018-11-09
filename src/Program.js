@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import * as moment from 'moment';
+import { findDOMNode } from 'react-dom';
+import Overlay from 'react-overlays/lib/Overlay';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -12,10 +14,21 @@ import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
 import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
+import CloseIcon from './CloseIcon';
 
 import styled, { css } from 'react-emotion';
 
 class Program extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showInfo: false
+    }
+
+    this.toggleInfo = this.toggleInfo.bind(this);
+  }
+
   componentDidMount() {
     this.initializeProgram();
 
@@ -41,13 +54,17 @@ class Program extends Component {
     }
   }
 
+  toggleInfo() {
+    this.setState({ showInfo: !this.state.showInfo });
+  }
+
   render() {
     const program = this.props.program;
     const { programBlocks } = program.fields;
     const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
 
     return (
-      <div className={programClass}>
+      <div className={programClass} ref={(c) => { this.container = c; }}>
         <MediaQuery minDeviceWidth={600}>
           <div className={videoAndControlsColumn}>
             { currentProgramBlock &&
@@ -80,7 +97,37 @@ class Program extends Component {
           <div className={infoColumnContainer}>
             <div className={infoColumn}>
               <Navigation />
-              <p>You're watching {this.props.channelTitle}. <a href="">Info</a></p>
+              <p>
+                You're watching {this.props.channelTitle}.
+                <span
+                  className={tooltipTrigger}
+                  ref={(t) => { this.target = t; }}
+                  onClick={this.toggleInfo}
+                >Info</span>
+                <Overlay
+                  show={this.state.showInfo}
+                  onHide={() => this.setState({ showInfo: false })}
+                  placement="bottom"
+                  container={() => findDOMNode(this.container)}
+                  rootClose={true}
+                  target={() => findDOMNode(this.target)}
+                >
+                  <Tooltip>
+                    <div className={tooltipHeader}>
+                      <h4>{program.fields.title}</h4>
+                      <div className={tooltipCloseButton} onClick={this.toggleInfo}>
+                        <CloseIcon color="#000" />
+                      </div>
+                    </div>
+                    {program.fields.description &&
+                      <p>{program.fields.description}</p>
+                    }
+                    {!program.fields.description &&
+                      <p><em>This program doesn't have a description!</em></p>
+                    }
+                  </Tooltip>
+                </Overlay>
+              </p>
               <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
               <hr/>
               { currentProgramBlock &&
@@ -167,6 +214,31 @@ const infoColumn = css`
   margin-right: -16px;
   overflow-y: scroll;
   height: 100%;
+`;
+
+const tooltipTrigger = css`
+  text-decoration: underline;
+  margin-left: .3rem;
+  cursor: pointer;
+`;
+
+const Tooltip = styled('div')`
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  color: #000;
+  padding: 1rem;
+  width: 400px;
+  margin-top: 2rem;
+`;
+
+const tooltipHeader = css`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const tooltipCloseButton = css`
+  cursor: pointer;
 `;
 
 const VideoControls = styled('div')`
