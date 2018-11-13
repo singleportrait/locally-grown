@@ -7,15 +7,15 @@ import { css } from 'react-emotion';
 import CloseIcon from './CloseIcon';
 import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
 
-class WhatIsThisTooltip extends Component {
+class InfoTooltip extends Component {
   render() {
     return (
-      <div>
-        <h4
+      <React.Fragment>
+        <span
           className={tooltipTrigger}
           ref={(t) => { this.target = t; }}
           onClick={this.props.toggleInfo}
-        >What is this?</h4>
+        >Info</span>
         <Overlay
           show={this.props.showInfo}
           onHide={this.props.toggleInfo}
@@ -23,28 +23,31 @@ class WhatIsThisTooltip extends Component {
           rootClose={true}
           target={() => findDOMNode(this.target)}
         >
-          <Tooltip className={whatIsThisTooltip}>
+          <Tooltip>
             <div className={tooltipHeader}>
-              <h4>What is Locally Grown?</h4>
+              <h4>{this.props.title}</h4>
               <div className={tooltipCloseButton} onClick={this.props.toggleInfo}>
                 <CloseIcon color="#000" />
               </div>
             </div>
-            <p>Locally Grown is a project that...</p>
+            {this.props.description &&
+                <p>{this.props.description}</p>
+            }
+            {!this.props.description &&
+                <p><em>This program doesn't have a description!</em></p>
+            }
           </Tooltip>
         </Overlay>
-      </div>
+      </React.Fragment>
     );
   }
 }
 
 const tooltipTrigger = css`
   text-decoration: underline;
+  margin-left: .3rem;
   cursor: pointer;
 `;
 
-const whatIsThisTooltip = css`
-  margin-left: 1rem;
-`;
+export default InfoTooltip;
 
-export default WhatIsThisTooltip;

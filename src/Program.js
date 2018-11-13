@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
-import * as moment from 'moment';
 import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/lib/Overlay';
+import * as moment from 'moment';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -14,9 +13,9 @@ import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
 import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
-import CloseIcon from './CloseIcon';
+import InfoTooltip from './InfoTooltip';
 
-import { Tooltip, tooltipHeader, tooltipCloseButton, Logo } from './styles';
+import { Logo } from './styles';
 
 import styled, { css } from 'react-emotion';
 
@@ -102,34 +101,13 @@ class Program extends Component {
                 <Navigation />
                 <p>
                   You're watching {this.props.channelTitle}.
-                  <span
-                    className={tooltipTrigger}
-                    ref={(t) => { this.target = t; }}
-                    onClick={this.toggleInfo}
-                  >Info</span>
-                  <Overlay
-                    show={this.state.showInfo}
-                    onHide={() => this.setState({ showInfo: false })}
-                    placement="bottom"
+                  <InfoTooltip
+                    toggleInfo={this.toggleInfo}
+                    showInfo={this.state.showInfo}
                     container={() => findDOMNode(this.container)}
-                    rootClose={true}
-                    target={() => findDOMNode(this.target)}
-                  >
-                    <Tooltip>
-                      <div className={tooltipHeader}>
-                        <h4>{program.fields.title}</h4>
-                        <div className={tooltipCloseButton} onClick={this.toggleInfo}>
-                          <CloseIcon color="#000" />
-                        </div>
-                      </div>
-                      {program.fields.description &&
-                        <p>{program.fields.description}</p>
-                      }
-                      {!program.fields.description &&
-                        <p><em>This program doesn't have a description!</em></p>
-                      }
-                    </Tooltip>
-                  </Overlay>
+                    title={program.fields.title}
+                    description={program.fields.description}
+                  />
                 </p>
                 <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
                 <hr/>
@@ -233,12 +211,6 @@ const infoColumn = css`
   margin-right: -16px;
   overflow-y: scroll;
   height: 100%;
-`;
-
-const tooltipTrigger = css`
-  text-decoration: underline;
-  margin-left: .3rem;
-  cursor: pointer;
 `;
 
 const VideoControls = styled('div')`
