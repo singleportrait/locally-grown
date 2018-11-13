@@ -16,7 +16,7 @@ import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
 import CloseIcon from './CloseIcon';
 
-import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+import { Tooltip, tooltipHeader, tooltipCloseButton, Logo } from './styles';
 
 import styled, { css } from 'react-emotion';
 
@@ -66,120 +66,137 @@ class Program extends Component {
     const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
 
     return (
-      <div className={programClass} ref={(c) => { this.container = c; }}>
+      <React.Fragment>
         <MediaQuery minDeviceWidth={600}>
-          <div className={videoAndControlsColumn}>
-            { currentProgramBlock &&
-              <React.Fragment>
-                <Video
-                  video={currentProgramBlock.currentVideo}
-                  timestamp={currentProgramBlock.timestampToStartVideo}
-                />
-                <VideoControls>
-                  { this.props.previousChannelSlug &&
-                    <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
-                  }
-
-                  <div className={controlButtons}>
-                    <MuteButton />
-                    <FullscreenButton />
-                  </div>
-
-                  { this.props.nextChannelSlug &&
-                    <ChannelButton direction="next" to={this.props.nextChannelSlug} />
-                  }
-                </VideoControls>
-              </React.Fragment>
-            }
-
-            { !currentProgramBlock &&
-              <VideoPlaceholderWrapper />
-            }
-          </div>
-          <div className={infoColumnContainer}>
-            <div className={infoColumn}>
-              <Navigation />
-              <p>
-                You're watching {this.props.channelTitle}.
-                <span
-                  className={tooltipTrigger}
-                  ref={(t) => { this.target = t; }}
-                  onClick={this.toggleInfo}
-                >Info</span>
-                <Overlay
-                  show={this.state.showInfo}
-                  onHide={() => this.setState({ showInfo: false })}
-                  placement="bottom"
-                  container={() => findDOMNode(this.container)}
-                  rootClose={true}
-                  target={() => findDOMNode(this.target)}
-                >
-                  <Tooltip>
-                    <div className={tooltipHeader}>
-                      <h4>{program.fields.title}</h4>
-                      <div className={tooltipCloseButton} onClick={this.toggleInfo}>
-                        <CloseIcon color="#000" />
-                      </div>
-                    </div>
-                    {program.fields.description &&
-                      <p>{program.fields.description}</p>
-                    }
-                    {!program.fields.description &&
-                      <p><em>This program doesn't have a description!</em></p>
-                    }
-                  </Tooltip>
-                </Overlay>
-              </p>
-              <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
-              <hr/>
+          <div className={programClass} ref={(c) => { this.container = c; }}>
+            <div className={videoAndControlsColumn}>
               { currentProgramBlock &&
                 <React.Fragment>
-                  <p>Now playing:</p>
-                  <h1>{currentProgramBlock.fields.title}</h1>
-                  <p>{currentProgramBlock.fields.description}</p>
-                  { currentProgramBlock.programmingLength < 3600 &&
-                      <p>
-                        <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
-                      </p>
-                  }
+                  <Video
+                    video={currentProgramBlock.currentVideo}
+                    timestamp={currentProgramBlock.timestampToStartVideo}
+                  />
+                  <VideoControls>
+                    { this.props.previousChannelSlug &&
+                      <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+                    }
+
+                    <div className={controlButtons}>
+                      <MuteButton />
+                      <FullscreenButton />
+                    </div>
+
+                    { this.props.nextChannelSlug &&
+                      <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                    }
+                  </VideoControls>
                 </React.Fragment>
               }
+
               { !currentProgramBlock &&
-                <div>
-                  <br />
-                  <h1>There's nothing playing on this channel.</h1>
-                  <br /><br />
-                  <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
-                </div>
+                <VideoPlaceholderWrapper />
               }
-              { programBlocks &&
-                <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
-              }
+            </div>
+            <div className={infoColumnContainer}>
+              <div className={infoColumn}>
+                <Navigation />
+                <p>
+                  You're watching {this.props.channelTitle}.
+                  <span
+                    className={tooltipTrigger}
+                    ref={(t) => { this.target = t; }}
+                    onClick={this.toggleInfo}
+                  >Info</span>
+                  <Overlay
+                    show={this.state.showInfo}
+                    onHide={() => this.setState({ showInfo: false })}
+                    placement="bottom"
+                    container={() => findDOMNode(this.container)}
+                    rootClose={true}
+                    target={() => findDOMNode(this.target)}
+                  >
+                    <Tooltip>
+                      <div className={tooltipHeader}>
+                        <h4>{program.fields.title}</h4>
+                        <div className={tooltipCloseButton} onClick={this.toggleInfo}>
+                          <CloseIcon color="#000" />
+                        </div>
+                      </div>
+                      {program.fields.description &&
+                        <p>{program.fields.description}</p>
+                      }
+                      {!program.fields.description &&
+                        <p><em>This program doesn't have a description!</em></p>
+                      }
+                    </Tooltip>
+                  </Overlay>
+                </p>
+                <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
+                <hr/>
+                { currentProgramBlock &&
+                  <React.Fragment>
+                    <p>Now playing:</p>
+                    <h1>{currentProgramBlock.fields.title}</h1>
+                    <p>{currentProgramBlock.fields.description}</p>
+                    { currentProgramBlock.programmingLength < 3600 &&
+                        <p>
+                          <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
+                        </p>
+                    }
+                  </React.Fragment>
+                }
+                { !currentProgramBlock &&
+                  <div>
+                    <br />
+                    <h1>There's nothing playing on this channel.</h1>
+                    <br /><br />
+                    <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
+                  </div>
+                }
+                { programBlocks &&
+                  <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
+                }
+              </div>
             </div>
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
           { currentProgramBlock &&
             <div>
-              You're on a phone! This is still especially in beta, for you
-              <Video
-                video={currentProgramBlock.currentVideo}
-                timestamp={currentProgramBlock.timestampToStartVideo}
-              />
-              <br />
-              <VideoControls>
-                <MuteButton />
-                <FullscreenButton />
-              </VideoControls>
-              <br />
-              <p>You're watching {this.props.channelTitle}</p>
-              <p>Now playing:</p>
-              <h1>{currentProgramBlock.fields.title}</h1>
-              <p>Description: {currentProgramBlock.fields.description}</p>
+              <MobileVideo>
+                { currentProgramBlock &&
+                  <React.Fragment>
+                    <Video
+                      video={currentProgramBlock.currentVideo}
+                      timestamp={currentProgramBlock.timestampToStartVideo}
+                      className={mobileVideo}
+                    />
+                    <div className={mobileMute}><MuteButton /></div>
+                    <div className={mobileFullscreen}><FullscreenButton /></div>
+                    { this.props.previousChannelSlug &&
+                      <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+                    }
+                    { this.props.nextChannelSlug &&
+                      <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                    }
+                  </React.Fragment>
+                }
+                { !currentProgramBlock &&
+                  <VideoPlaceholderWrapper />
+                }
+              </MobileVideo>
+              <TopMobileText>
+                <Logo>Locally Grown</Logo>
+                <p>You're watching {this.props.channelTitle}</p>
+              </TopMobileText>
+              <BottomMobileText>
+                <p>Now playing:</p>
+                <h1>{currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
+              </BottomMobileText>
             </div>
           }
         </MediaQuery>
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -239,6 +256,62 @@ const VideoPlaceholderWrapper = styled('div')`
   padding-top: 75%;
   background: url(./static_placeholder_simpler.gif);
   background-size: cover;
+`;
+
+const MobileVideo = styled('div')`
+  width: 100vh;
+  height: 100vw;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(90deg);
+  transform-origin: 28% 50%;
+`;
+
+const mobileVideo = css`
+  background-color: #222;
+  width: 64vh;
+  padding-top: 50%;
+`;
+
+const mobileMute = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const mobileFullscreen = css`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const baseMobileText = css`
+  position: absolute;
+  width: calc(100vw - 120px);
+  left: 70px;
+  height: 120px;
+`;
+
+const TopMobileText = styled('div')`
+  ${baseMobileText}
+  top: 1rem;
+`;
+
+const BottomMobileText = styled('div')`
+  ${baseMobileText}
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+`;
+
+const mobileInfo = css`
+  font-size: 12px;
+  font-weight: normal;
+  text-decoration: underline;
+  padding-left: 5px;
 `;
 
 const mapStateToProps = state => ({

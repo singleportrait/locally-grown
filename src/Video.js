@@ -132,10 +132,10 @@ class Video extends Component {
     const videoFields = this.props.video.fields;
 
     return (
-      <div>
+      <React.Fragment>
         {this.props.video &&
-          <div>
-            <ReactPlayerWrapper>
+          <React.Fragment>
+            <ReactPlayerWrapper className={this.props.className}>
               <ReactPlayer
                 ref={this.ref}
                 url={videoFields.url}
@@ -189,9 +189,9 @@ class Video extends Component {
                 <progress className={progressStyle} max={1} value={this.state.played} />
               </div>
             }
-          </div>
+          </React.Fragment>
         }
-      </div>
+      </React.Fragment>
     );
   }
 }

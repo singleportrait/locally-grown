@@ -2,6 +2,13 @@ import styled, { css } from 'react-emotion';
 
 export const padding = '1.25rem';
 
+export const Logo = styled('div')`
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+`;
+
 export const Header = styled('div')`
   display: flex;
   justify-content: space-between;
