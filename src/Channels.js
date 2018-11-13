@@ -3,15 +3,28 @@ import { Link } from 'react-router-dom';
 
 import styled from 'react-emotion';
 
+import { padding, Header } from './styles';
+import WhatIsThisTooltip from './WhatIsThisTooltip';
+
 import * as moment from 'moment';
 
-const ChannelsWrapper = styled('div')`
-  margin: 1.4rem;
-`;
-
 class Channels extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showInfo: false
+    }
+
+    this.toggleInfo = this.toggleInfo.bind(this);
+  }
+
   componentDidMount() {
     document.title = "All Channels | Locally Grown";
+  }
+
+  toggleInfo() {
+    this.setState({ showInfo: !this.state.showInfo });
   }
 
   render() {
@@ -21,9 +34,12 @@ class Channels extends Component {
     // "Nothing playing right now for this channel."
     return (
       <ChannelsWrapper>
-        <h1>Locally Grown Channels</h1>
-        <p>It's {moment(Date.now()).format("h:mma")}.</p>
-        <Link to="/">Back to first program</Link>
+        <Header>
+          <Link to="/">&larr; Back to first program</Link>
+          <WhatIsThisTooltip toggleInfo={this.toggleInfo} showInfo={this.state.showInfo} />
+          <h1>Channels</h1>
+          <div>It's {moment(Date.now()).format("h:mma")}.</div>
+        </Header>
         <hr />
         { this.props.featuredChannels.map(({fields}, i) =>
           <div key={i}>

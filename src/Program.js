@@ -16,6 +16,8 @@ import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
 import CloseIcon from './CloseIcon';
 
+import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+
 import styled, { css } from 'react-emotion';
 
 class Program extends Component {
@@ -219,25 +221,6 @@ const infoColumn = css`
 const tooltipTrigger = css`
   text-decoration: underline;
   margin-left: .3rem;
-  cursor: pointer;
-`;
-
-const Tooltip = styled('div')`
-  position: absolute;
-  z-index: 1;
-  background-color: #fff;
-  color: #000;
-  padding: 1rem;
-  width: 400px;
-  margin-top: 2rem;
-`;
-
-const tooltipHeader = css`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const tooltipCloseButton = css`
   cursor: pointer;
 `;
 

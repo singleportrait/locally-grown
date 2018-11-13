@@ -8,7 +8,7 @@ import styled, { css } from 'react-emotion';
 import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 
 const ProgramBlockInfoContainer = styled('div')`
-  padding-top: 6rem;
+  padding-top: 4rem;
 `;
 
 const NextProgramBlock = styled('div')`
