@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { initializeSession } from './actions/sessionActions';
@@ -28,11 +28,22 @@ class AppContents extends Component {
   }
 
   render() {
+    function NoMatch() {
+      return (
+        <LoadingContainer>
+          <h4>Locally Grown</h4>
+          <h1>Sorry, we couldn't find that.</h1>
+          <br /><br />
+          <h4><Link to="/tv-guide">Find something to watch.</Link></h4>
+        </LoadingContainer>
+      );
+    };
+
     return (
       <Router>
         <div className="App">
           { this.props.channels.isLoaded &&
-            <div>
+            <Switch>
               { this.props.channels.availableChannels.map((channel, i) =>
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <Channel {...props} channel={channel} />
@@ -65,7 +76,8 @@ class AppContents extends Component {
                   </LoadingContainer>
                 )} />
               }
-            </div>
+              <Route component={NoMatch} />
+            </Switch>
           }
           { !this.props.channels.isLoaded &&
             <LoadingContainer>
