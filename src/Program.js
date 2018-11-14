@@ -74,6 +74,7 @@ class Program extends Component {
                   <Video
                     video={currentProgramBlock.currentVideo}
                     timestamp={currentProgramBlock.timestampToStartVideo}
+                    cropControls={true}
                   />
                   <VideoControls>
                     { this.props.previousChannelSlug &&

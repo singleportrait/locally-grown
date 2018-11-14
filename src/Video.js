@@ -11,12 +11,29 @@ const ReactPlayerWrapper = styled('div')`
   position: relative;
   padding-top: 75%;
   background-color: #222;
+  ${props => props.cropControls && 'overflow: hidden;'}
 `;
 
 const reactPlayerStyle = css`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+const croppedReactPlayerStyle = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: -20%;
+`;
+
+const VideoOverlay = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 `;
 
 const progressStyle = css`
@@ -135,7 +152,8 @@ class Video extends Component {
       <React.Fragment>
         {this.props.video &&
           <React.Fragment>
-            <ReactPlayerWrapper className={this.props.className}>
+            <ReactPlayerWrapper className={this.props.className} cropControls={this.props.cropControls}>
+              <VideoOverlay />
               <ReactPlayer
                 ref={this.ref}
                 url={videoFields.url}
@@ -148,8 +166,8 @@ class Video extends Component {
                 onProgress={this.onProgress}
                 onDuration={this.onDuration}
                 width="100%"
-                height="100%"
-                className={reactPlayerStyle}
+                height={this.props.cropControls ? "140%" : "100%"}
+                className={this.props.cropControls ? croppedReactPlayerStyle : reactPlayerStyle}
                 config={{
                   youtube: {
                     playerVars: {
