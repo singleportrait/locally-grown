@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { css } from 'react-emotion';
 
+import TVGuideLink from './TVGuideLink';
+
 import { Logo } from './styles';
 
 const navigation = css`
@@ -18,7 +20,7 @@ class Navigation extends Component {
           <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
           Beta!
         </div>
-        <Link to="/tv-guide">TV Guide</Link>
+        <TVGuideLink />
       </div>
     );
   }

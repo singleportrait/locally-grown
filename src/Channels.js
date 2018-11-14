@@ -40,7 +40,11 @@ class Channels extends Component {
       <ChannelsWrapper>
         <Header>
           <Link to="/">&larr; Back to first program</Link>
-          <WhatIsThisTooltip toggleInfo={this.toggleInfo} showInfo={this.state.showInfo} />
+          <WhatIsThisTooltip
+            toggleInfo={this.toggleInfo}
+            showInfo={this.state.showInfo}
+            showLink={false}
+          />
           <h2>Channels</h2>
           <div>It's {moment(Date.now()).format("h:mma")}.</div>
         </Header>

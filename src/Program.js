@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import { findDOMNode } from 'react-dom';
-import * as moment from 'moment';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 

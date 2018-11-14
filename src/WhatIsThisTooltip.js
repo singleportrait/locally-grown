@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
 
@@ -6,6 +7,12 @@ import { css } from 'react-emotion';
 
 import CloseIcon from './CloseIcon';
 import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+
+const darkLink = css`
+  &, &:visited, &:hover, &:active {
+    color: #000;
+  }
+`;
 
 class WhatIsThisTooltip extends Component {
   render() {
@@ -31,6 +38,12 @@ class WhatIsThisTooltip extends Component {
               </div>
             </div>
             <p>Locally Grown is a project that...</p>
+            { this.props.showLink &&
+              <React.Fragment>
+                <br />
+                <Link to="/channels" className={darkLink}>View all channels</Link>
+              </React.Fragment>
+            }
           </Tooltip>
         </Overlay>
       </div>
@@ -46,5 +59,9 @@ const tooltipTrigger = css`
 const whatIsThisTooltip = css`
   margin-left: 1rem;
 `;
+
+WhatIsThisTooltip.defaultProps = {
+  showLink: true
+}
 
 export default WhatIsThisTooltip;
