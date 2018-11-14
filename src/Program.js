@@ -152,10 +152,10 @@ class Program extends Component {
                     <div className={mobileMute}><MuteButton /></div>
                     <div className={mobileFullscreen}><FullscreenButton /></div>
                     { this.props.previousChannelSlug &&
-                      <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+                      <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
                     }
                     { this.props.nextChannelSlug &&
-                      <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                      <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
                     }
                   </React.Fragment>
                 }
@@ -259,10 +259,22 @@ const mobileFullscreen = css`
   right: 0;
 `;
 
+const mobilePreviousChannel = css`
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+`;
+
+const mobileNextChannel = css`
+  position: absolute;
+  bottom: 0;
+  right: 1rem;
+`;
+
 const baseMobileText = css`
   position: absolute;
-  width: calc(100vw - 120px);
-  left: 70px;
+  width: calc(100vw - 140px);
+  left: 80px;
   height: 120px;
 `;
 
