@@ -57,8 +57,30 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     })
 
     if (programmingLength < 3600) {
-      console.log("- This programming isn't enough to fill the hour!");
+      console.log("- This programming isn't enough to fill the hour...yet!");
+
+      // This is where you append the video content, until you hit 3600
+      let i = 0;
+      while (programmingLength < 3600) {
+        const newVideo = JSON.parse(JSON.stringify(videos[i]));
+        // Calculate start & end time for new copied video
+        newVideo.startTime = programmingLength;
+        newVideo.endTime = programmingLength + newVideo.lengthInSeconds;
+        videos.push(newVideo);
+
+        if (programmingLength < secondsPastTheHour && newVideo.endTime > secondsPastTheHour) {
+          videoToPlayIndex = videos.length - 1;
+          timestampToStartVideo = secondsPastTheHour - programmingLength;
+        }
+
+        programmingLength += newVideo.lengthInSeconds;
+        i = i >= videos.length - 1 ? 0 : i++;
+      }
+
+      // console.log(videos);
+      // console.log(programmingLength);
     }
+
     if (programmingLength < secondsPastTheHour) {
       console.log("- The programming isn't even enough to get to this time in the hour!");
     }
