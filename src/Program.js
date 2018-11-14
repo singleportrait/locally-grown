@@ -294,7 +294,7 @@ const BottomMobileText = styled('div')`
 
 const mobileInfo = css`
   font-size: 12px;
-  font-weight: normal;
+  font-weight: 300;
   text-decoration: underline;
   padding-left: 5px;
 `;
