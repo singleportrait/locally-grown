@@ -71,36 +71,42 @@ class Program extends Component {
     const { programBlocks } = program.fields;
     const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
 
+    const renderDesktopVideo = () => {
+      return (
+        <React.Fragment>
+          <Video
+            video={currentProgramBlock.currentVideo}
+            timestamp={currentProgramBlock.timestampToStartVideo}
+            cropControls={true}
+          />
+          <VideoControls>
+            { this.props.previousChannelSlug &&
+                <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+            }
+
+            <div className={controlButtons}>
+              <MuteButton />
+              <FullscreenButton />
+            </div>
+
+            { this.props.nextChannelSlug &&
+                <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+            }
+          </VideoControls>
+        </React.Fragment>
+      );
+    }
+
     return (
       <React.Fragment>
         <MediaQuery minDeviceWidth={600}>
           <div className={programClass} ref={(c) => { this.container = c; }}>
             <div className={videoAndControlsColumn}>
               { currentProgramBlock && currentProgramBlock.fields.videos &&
-                <React.Fragment>
-                  <Video
-                    video={currentProgramBlock.currentVideo}
-                    timestamp={currentProgramBlock.timestampToStartVideo}
-                    cropControls={true}
-                  />
-                  <VideoControls>
-                    { this.props.previousChannelSlug &&
-                      <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
-                    }
-
-                    <div className={controlButtons}>
-                      <MuteButton />
-                      <FullscreenButton />
-                    </div>
-
-                    { this.props.nextChannelSlug &&
-                      <ChannelButton direction="next" to={this.props.nextChannelSlug} />
-                    }
-                  </VideoControls>
-                </React.Fragment>
+                renderDesktopVideo()
               }
 
-              { !currentProgramBlock || !currentProgramBlock.fields.videos &&
+              { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
                 <VideoPlaceholderWrapper />
               }
             </div>
@@ -137,7 +143,7 @@ class Program extends Component {
                 { !currentProgramBlock &&
                   <div>
                     <br />
-                    <h1>There's nothing playing on this channel.</h1>
+                    <h1>There's nothing playing on this channel right now.</h1>
                     <br /><br />
                     { this.props.programBlocks.error &&
                       <p>{this.props.programBlocks.error}</p>
