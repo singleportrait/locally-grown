@@ -123,7 +123,6 @@ class Program extends Component {
                     description={program.fields.description}
                   />
                 </p>
-                <p>It's {moment(this.props.session.currentHour, "HH").format("h")} o'clock.</p>
                 <hr/>
                 { currentProgramBlock &&
                   <React.Fragment>
