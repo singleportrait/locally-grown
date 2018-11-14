@@ -66,7 +66,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     })
 
     if (programmingLength < 3600) {
-      console.log("- This programming isn't enough to fill the hour...yet!");
+        console.log(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
 
       // This is where you append the video content, until you hit 3600
       let i = 0;
@@ -150,6 +150,10 @@ export const updateCurrentVideo = () => dispatch => {
 }
 
 export const getCurrentProgramBlock = (programBlockId) => dispatch => {
+  if (programBlockId === null) {
+    return dispatch(setCurrentProgramBlock(null));
+  }
+
   const savedProgramBlock = store.getState().programBlocks.loadedProgramBlocks.find(programBlock => {
     return programBlock.sys.id === programBlockId;
   })

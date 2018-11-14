@@ -10,7 +10,13 @@ export default function(state = initialState, action) {
     case SET_SECONDS_UNTIL_NEXT_PROGRAM:
       return {
         ...state,
-        secondsUntilNextProgram: action.secondsUntilNextProgram
+        secondsUntilNextProgram: action.secondsUntilNextProgram,
+        intervalID: action.intervalID,
+        // TODO: Remove currentHour:
+        // currentHour doesn't need to get passed in (we could calculate the
+        // current one here) but this makes it easy to test forcing it to
+        // update to an hour other than the current one
+        currentHour: action.currentHour,
       }
     default:
       return state;

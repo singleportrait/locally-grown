@@ -36,10 +36,16 @@ class Program extends Component {
     document.title = `${this.props.program.fields.title} | Locally Grown`
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.session.currentHour !== prevProps.session.currentHour) {
+      console.log("Current hour updated");
+      this.initializeProgram();
+    }
+  }
+
   initializeProgram() {
-    // TODO: Check whether program blocks exist at a higher level?
-    // If you go to a direct URL of a channel and it has programs, but they don't have any
-    // program blocks inside them, this page errors
+    // Note: This will allow you to come to a direct URL and see that there are
+    // no programs for the current moment.
     if (this.props.program.fields.programBlocks) {
       const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
         return programBlock.fields.startTime === this.props.session.currentHour;
@@ -49,6 +55,7 @@ class Program extends Component {
         this.props.getCurrentProgramBlock(currentProgramBlock.sys.id);
       } else {
         console.log("No current program block!");
+        this.props.getCurrentProgramBlock(null);
       }
     } else {
       console.log("No program blocks!");
