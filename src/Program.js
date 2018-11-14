@@ -113,14 +113,20 @@ class Program extends Component {
             <div className={infoColumnContainer}>
               <div className={infoColumn}>
                 <Navigation />
-                <p>
-                  You're watching {this.props.channelTitle}.
+                <p className={channelTitle}>
+                  You're watching {this.props.channelTitle}
+
+                  { this.props.channelUser &&
+                      <span> by {this.props.channelUser.fields.name}</span>
+                  }
+                  .
                   <InfoTooltip
                     toggleInfo={this.toggleInfo}
                     showInfo={this.state.showInfo}
                     container={() => findDOMNode(this.container)}
                     title={program.fields.title}
                     description={program.fields.description}
+                    user={this.props.channelUser}
                   />
                 </p>
                 <hr/>
@@ -212,26 +218,6 @@ const videoAndControlsColumn = css`
   backface-visibility: hidden;
 `;
 
-const infoColumnContainer = css`
-  position: absolute;
-  right: 0;
-  width: 35%;
-  padding-left: 1.4rem;
-  opacity: 1;
-  transition: opacity 0.4s ease, right 0.4s ease;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  height: calc(100vh - 1.4rem);
-  overflow-x: hidden;
-`;
-
-const infoColumn = css`
-  padding-right: 16px;
-  margin-right: -16px;
-  overflow-y: scroll;
-  height: 100%;
-`;
-
 const VideoControls = styled('div')`
   padding-top: 1rem;
   display: flex;
@@ -315,6 +301,30 @@ const mobileInfo = css`
   font-weight: 300;
   text-decoration: underline;
   padding-left: 5px;
+`;
+
+const infoColumnContainer = css`
+  position: absolute;
+  right: 0;
+  width: 35%;
+  padding-left: 1.4rem;
+  opacity: 1;
+  transition: opacity 0.4s ease, right 0.4s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  height: calc(100vh - 1.4rem);
+  overflow-x: hidden;
+`;
+
+const infoColumn = css`
+  padding-right: 16px;
+  margin-right: -16px;
+  overflow-y: scroll;
+  height: 100%;
+`;
+
+const channelTitle = css`
+  margin: 1rem 0;
 `;
 
 const mapStateToProps = state => ({

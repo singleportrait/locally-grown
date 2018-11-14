@@ -79,7 +79,9 @@ class TVGuide extends Component {
               <Link to={channel.fields.slug} className={channelTitleLink}>
                 <ProgramTitle>
                   <h3>{program.fields.title}</h3>
-                  <p className={channelTitleName}>{channel.fields.title}</p>
+                  { channel.fields.user &&
+                    <p className={channelTitleName}>{channel.fields.user.fields.name}</p>
+                  }
                 </ProgramTitle>
               </Link>
               { hours.map((hour, i) =>
