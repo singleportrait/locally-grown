@@ -69,7 +69,7 @@ class Program extends Component {
         <MediaQuery minDeviceWidth={600}>
           <div className={programClass} ref={(c) => { this.container = c; }}>
             <div className={videoAndControlsColumn}>
-              { currentProgramBlock &&
+              { currentProgramBlock && currentProgramBlock.fields.videos &&
                 <React.Fragment>
                   <Video
                     video={currentProgramBlock.currentVideo}
@@ -93,7 +93,7 @@ class Program extends Component {
                 </React.Fragment>
               }
 
-              { !currentProgramBlock &&
+              { !currentProgramBlock || !currentProgramBlock.fields.videos &&
                 <VideoPlaceholderWrapper />
               }
             </div>
@@ -122,6 +122,9 @@ class Program extends Component {
                           <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
                         </p>
                     }
+                    { this.props.programBlocks.error &&
+                      <p>{this.props.programBlocks.error}</p>
+                    }
                   </React.Fragment>
                 }
                 { !currentProgramBlock &&
@@ -129,6 +132,9 @@ class Program extends Component {
                     <br />
                     <h1>There's nothing playing on this channel.</h1>
                     <br /><br />
+                    { this.props.programBlocks.error &&
+                      <p>{this.props.programBlocks.error}</p>
+                    }
                     <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
                   </div>
                 }

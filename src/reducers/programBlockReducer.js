@@ -1,7 +1,8 @@
-import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, UPDATE_PROGRAM_BLOCK, SET_CURRENT_VIDEO } from '../actions/programBlockTypes';
+import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, UPDATE_PROGRAM_BLOCK, SET_CURRENT_VIDEO, PROGRAM_BLOCK_ERROR } from '../actions/programBlockTypes';
 
 const initialState = {
   isLoaded: false,
+  error: null,
   loadedProgramBlocks: [],
   currentProgramBlock: null,
 }
@@ -37,6 +38,12 @@ export default function(state = initialState, action) {
           videoPlayingIndex: action.index,
           timestampToStartVideo: action.timestamp
         }
+      }
+    case PROGRAM_BLOCK_ERROR:
+      return {
+        ...state,
+        currentProgramBlock: action.currentProgramBlock,
+        error: action.error
       }
     default:
       return state;

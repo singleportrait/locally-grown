@@ -1,4 +1,4 @@
-import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo } from '../actions/programBlockActions';
+import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo, programBlockError } from '../actions/programBlockActions';
 import store from '../store';
 import client from '../services-contentful';
 
@@ -33,6 +33,15 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     const secondsPastTheHour = currentSecondsPastTheHour();
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
+
+    if (!videos) {
+      console.log("No videos!");
+      const loadedProgramBlock = {
+        sys: currentProgramBlock.sys,
+        fields: currentProgramBlock.fields
+      }
+      return dispatch(programBlockError(loadedProgramBlock, "Warning: This program doesn't have any videos!"));
+    }
 
     // Set individual video lengths & full programming length
     videos.forEach((video, i) => {
