@@ -7,6 +7,7 @@ import styled, { css } from 'react-emotion';
 
 import { padding, Header } from './styles';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
+import TVGuideLink from './TVGuideLink';
 
 import * as moment from 'moment';
 
@@ -68,17 +69,19 @@ class Channels extends Component {
     return (
       <ChannelsWrapper>
         <Header>
-          <Link to="/">&larr; Back to first program</Link>
           <WhatIsThisTooltip
             toggleInfo={this.toggleInfo}
             showInfo={this.state.showInfo}
             showLink={false}
           />
           <h2>Channels</h2>
-          <div>It's {moment(Date.now()).format("h:mma")}.</div>
+          <div style={{textAlign: "right"}}>
+            It's {moment(Date.now()).format("h:mma")}.
+            <br />
+            <TVGuideLink />
+          </div>
         </Header>
         <hr />
-        <Link to="/tv-guide">TV Guide</Link>
         <MediaQuery minWidth={600}>
           <div>
             { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
