@@ -17,6 +17,7 @@ export const Header = styled('div')`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  min-height: 50px;
 `;
 
 export const Tooltip = styled('div')`
@@ -27,6 +28,10 @@ export const Tooltip = styled('div')`
   padding: 1rem;
   width: 400px;
   margin-top: 2rem;
+
+  @media (max-width: 600px) {
+    width: calc(100vw - 2rem);
+  }
 `;
 
 export const tooltipHeader = css`

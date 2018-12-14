@@ -102,7 +102,7 @@ class Channels extends Component {
 }
 
 const ChannelsWrapper = styled('div')`
-  margin: 1.4rem;
+  margin: 1rem;
 `;
 
 // TODO: How can I target these rows better? Using modulo or a better formula?
