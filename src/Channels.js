@@ -16,18 +16,18 @@ class Channels extends Component {
     super(props);
 
     this.state = {
-      showInfo: false
+      showTooltip: false
     }
 
-    this.toggleInfo = this.toggleInfo.bind(this);
+    this.toggleTooltip = this.toggleTooltip.bind(this);
   }
 
   componentDidMount() {
     document.title = "All Channels | Locally Grown";
   }
 
-  toggleInfo() {
-    this.setState({ showInfo: !this.state.showInfo });
+  toggleTooltip() {
+    this.setState({ showTooltip: !this.state.showTooltip });
   }
 
   renderChannel(channel, program, isMobile = false) {
@@ -70,8 +70,8 @@ class Channels extends Component {
       <ChannelsWrapper>
         <Header>
           <WhatIsThisTooltip
-            toggleInfo={this.toggleInfo}
-            showInfo={this.state.showInfo}
+            toggleInfo={this.toggleTooltip}
+            showInfo={this.state.showTooltip}
             showLink={false}
           />
           <h2>Channels</h2>

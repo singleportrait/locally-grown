@@ -16,18 +16,18 @@ class TVGuide extends Component {
     super(props);
 
     this.state = {
-      showInfo: false
+      showTooltip: false
     }
 
-    this.toggleInfo = this.toggleInfo.bind(this);
+    this.toggleTooltip = this.toggleTooltip.bind(this);
   }
 
   componentDidMount() {
     document.title = "TV Guide | Locally Grown";
   }
 
-  toggleInfo() {
-    this.setState({ showInfo: !this.state.showInfo });
+  toggleTooltip() {
+    this.setState({ showTooltip: !this.state.showTooltip });
   }
 
   goBack = () => {
@@ -56,7 +56,7 @@ class TVGuide extends Component {
     return (
       <TVGuideWrapper>
         <Header>
-          <WhatIsThisTooltip toggleInfo={this.toggleInfo} showInfo={this.state.showInfo} />
+          <WhatIsThisTooltip toggleInfo={this.toggleTooltip} showInfo={this.state.showTooltip} />
           <h2>TV Guide</h2>
           <div onClick={this.goBack} className={closeButton}>
             <CloseIcon />

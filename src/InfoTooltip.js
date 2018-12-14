@@ -19,7 +19,7 @@ class InfoTooltip extends Component {
           onClick={this.props.toggleInfo}
         >Info</span>
         <Overlay
-          show={this.props.showInfo}
+          show={this.props.show}
           onHide={this.props.toggleInfo}
           placement="bottom"
           rootClose={true}
@@ -61,4 +61,3 @@ const tooltipTrigger = css`
 `;
 
 export default InfoTooltip;
-

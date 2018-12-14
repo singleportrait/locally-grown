@@ -23,7 +23,7 @@ class Program extends Component {
     super(props);
 
     this.state = {
-      showInfo: false
+      showInfoTooltip: false
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
@@ -62,7 +62,7 @@ class Program extends Component {
   }
 
   toggleInfo() {
-    this.setState({ showInfo: !this.state.showInfo });
+    this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
   }
 
   render() {
@@ -121,7 +121,7 @@ class Program extends Component {
                   .
                   <InfoTooltip
                     toggleInfo={this.toggleInfo}
-                    showInfo={this.state.showInfo}
+                    show={this.state.showInfoTooltip}
                     container={() => findDOMNode(this.container)}
                     title={program.fields.title}
                     description={program.fields.description}
