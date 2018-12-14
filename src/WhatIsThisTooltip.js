@@ -8,12 +8,6 @@ import { css } from 'react-emotion';
 import CloseIcon from './CloseIcon';
 import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
 
-const darkLink = css`
-  &, &:visited, &:hover, &:active {
-    color: #000;
-  }
-`;
-
 class WhatIsThisTooltip extends Component {
   render() {
     return (
@@ -52,6 +46,12 @@ class WhatIsThisTooltip extends Component {
     );
   }
 }
+
+const darkLink = css`
+  &, &:visited, &:hover, &:active {
+    color: #000;
+  }
+`;
 
 const tooltipTrigger = css`
   text-decoration: underline;

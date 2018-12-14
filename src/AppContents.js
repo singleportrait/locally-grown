@@ -8,6 +8,7 @@ import { initializeChannels } from './operations/channelOperations';
 import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
+import WhatIsThisTooltip from './WhatIsThisTooltip';
 
 import styled from 'react-emotion';
 
@@ -24,19 +25,33 @@ const LoadingContainer = styled('div')`
 `;
 
 class AppContents extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showTooltip: false
+    }
+
+    this.toggleTooltip = this.toggleTooltip.bind(this);
+  }
+
   componentDidMount() {
     this.props.initializeSession();
     this.props.initializeChannels();
   }
 
+  toggleTooltip() {
+    this.setState({ showTooltip: !this.state.showTooltip });
+  }
+
   render() {
-    function NoPrograms() {
+    const NoPrograms = () => {
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
           <h1>No programs right now.</h1>
           <br /><br />
-          <h4 style={{textDecoration: "underline"}}>What is this?</h4>
+          <WhatIsThisTooltip toggleInfo={this.toggleTooltip} showInfo={this.state.showTooltip} showLink={false} />
         </LoadingContainer>
       );
     };
