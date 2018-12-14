@@ -15,6 +15,7 @@ import ChannelButton from './ChannelButton';
 import InfoTooltip from './InfoTooltip';
 import CurrentProgramBlockInfo from './CurrentProgramBlockInfo';
 import CloseIcon from './CloseIcon';
+import TVGuideLink from './TVGuideLink';
 
 import { Logo, backgroundColor, borderColor } from './styles';
 
@@ -199,14 +200,19 @@ class Program extends Component {
                 }
               </MobileVideo>
               <TopMobileText>
-                <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
-                <p>
-                  You&apos;re watching {this.props.channelTitle}
+                <div>
+                  <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
+                  <p>
+                    You&apos;re watching {this.props.channelTitle}
 
-                  { this.props.channelUser &&
+                    { this.props.channelUser &&
                       <span> by {this.props.channelUser.fields.name}</span>
-                  }
-                </p>
+                    }
+                  </p>
+                </div>
+                { this.state.showMobileProgramInfo &&
+                  <TVGuideLink />
+                }
               </TopMobileText>
               <BottomMobileText>
                 <p>Now playing:</p>
@@ -320,6 +326,7 @@ const TopMobileText = styled('div')`
   top: 1rem;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding-bottom: 1rem;
 `;
 
