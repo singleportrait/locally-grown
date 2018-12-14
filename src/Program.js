@@ -87,7 +87,7 @@ class Program extends Component {
             timestamp={currentProgramBlock.timestampToStartVideo}
             cropControls={true}
           />
-          <VideoControls>
+          <VideoControls hasMultipleChannels={this.props.previousChannelSlug}>
             { this.props.previousChannelSlug &&
                 <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
             }
@@ -250,7 +250,7 @@ const videoAndControlsColumn = css`
 const VideoControls = styled('div')`
   padding-top: 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: ${props => props.hasMultipleChannels ? 'space-between' : 'center'}
 `;
 
 const controlButtons = css`
