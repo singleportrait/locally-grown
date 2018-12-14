@@ -316,8 +316,8 @@ const mobileNextChannel = css`
 
 const baseMobileText = css`
   position: absolute;
-  width: calc(100vw - 140px);
-  left: 80px;
+  width: calc(100vw - 130px);
+  left: 75px;
   height: ${mobileTextHeight};
 `;
 
