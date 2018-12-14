@@ -13,8 +13,10 @@ import MuteButton from './MuteButton';
 import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
 import InfoTooltip from './InfoTooltip';
+import CurrentProgramBlockInfo from './CurrentProgramBlockInfo';
+import CloseIcon from './CloseIcon';
 
-import { Logo } from './styles';
+import { Logo, backgroundColor, borderColor } from './styles';
 
 import styled, { css } from 'react-emotion';
 
@@ -23,10 +25,12 @@ class Program extends Component {
     super(props);
 
     this.state = {
-      showInfoTooltip: false
+      showInfoTooltip: false,
+      showMobileProgramInfo: false
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
+    this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
   }
 
   componentDidMount() {
@@ -65,6 +69,10 @@ class Program extends Component {
     this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
   }
 
+  toggleMobileProgramInfo() {
+    this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
+  }
+
   render() {
     const program = this.props.program;
     const { programBlocks } = program.fields;
@@ -92,6 +100,30 @@ class Program extends Component {
                 <ChannelButton direction="next" to={this.props.nextChannelSlug} />
             }
           </VideoControls>
+        </React.Fragment>
+      );
+    }
+
+    const renderSidebarProgramContent = () => {
+      return (
+        <React.Fragment>
+          { currentProgramBlock &&
+              <CurrentProgramBlockInfo programBlock={currentProgramBlock} error={this.props.programBlocks.error} />
+          }
+          { !currentProgramBlock &&
+              <div>
+                <br />
+                <h1>There&apos;s nothing playing on this channel right now.</h1>
+                <br /><br />
+                { this.props.programBlocks.error &&
+                    <p>{this.props.programBlocks.error}</p>
+                }
+                <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
+              </div>
+          }
+          { programBlocks &&
+              <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
+          }
         </React.Fragment>
       );
     }
@@ -129,35 +161,7 @@ class Program extends Component {
                   />
                 </p>
                 <hr/>
-                { currentProgramBlock &&
-                  <React.Fragment>
-                    <p>Now playing:</p>
-                    <h1>{currentProgramBlock.fields.title}</h1>
-                    <p>{currentProgramBlock.fields.description}</p>
-                    { currentProgramBlock.programmingLength < 3600 &&
-                        <p>
-                          <em>Warning! This block of programming runs out at <strong>{Math.round(currentProgramBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
-                        </p>
-                    }
-                    { this.props.programBlocks.error &&
-                      <p>{this.props.programBlocks.error}</p>
-                    }
-                  </React.Fragment>
-                }
-                { !currentProgramBlock &&
-                  <div>
-                    <br />
-                    <h1>There&apos;s nothing playing on this channel right now.</h1>
-                    <br /><br />
-                    { this.props.programBlocks.error &&
-                      <p>{this.props.programBlocks.error}</p>
-                    }
-                    <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
-                  </div>
-                }
-                { programBlocks &&
-                  <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
-                }
+                { renderSidebarProgramContent() }
               </div>
             </div>
           </div>
@@ -173,9 +177,16 @@ class Program extends Component {
                       timestamp={currentProgramBlock.timestampToStartVideo}
                       className={mobileVideo}
                     />
-                    <div className={mobileMute}><MuteButton /></div>
+                    { !this.state.showMobileProgramInfo &&
+                      <div className={mobileTopRightIcon}><MuteButton /></div>
+                    }
+                    { this.state.showMobileProgramInfo &&
+                      <div className={mobileProgramInfoCloseIcon} onClick={this.toggleMobileProgramInfo}>
+                        <CloseIcon />
+                      </div>
+                    }
                     <div className={mobileFullscreen}><FullscreenButton /></div>
-                    { this.props.previousChannelSlug &&
+                    { this.props.previousChannelSlug && !this.state.showMobileProgramInfo &&
                       <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
                     }
                     { this.props.nextChannelSlug &&
@@ -188,13 +199,26 @@ class Program extends Component {
                 }
               </MobileVideo>
               <TopMobileText>
-                <Logo>Locally Grown</Logo>
-                <p>You&apos;re watching {this.props.channelTitle}</p>
+                <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
+                <p>
+                  You&apos;re watching {this.props.channelTitle}
+
+                  { this.props.channelUser &&
+                      <span> by {this.props.channelUser.fields.name}</span>
+                  }
+                </p>
               </TopMobileText>
               <BottomMobileText>
                 <p>Now playing:</p>
-                <h1>{currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
+                <h1 onClick={this.toggleMobileProgramInfo}>{currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
               </BottomMobileText>
+              { this.state.showMobileProgramInfo &&
+                <MobileProgramInfoContainer>
+                  <MobileProgramInfoContents>
+                    { renderSidebarProgramContent() }
+                  </MobileProgramInfoContents>
+                </MobileProgramInfoContainer>
+              }
             </div>
           }
         </MediaQuery>
@@ -245,16 +269,25 @@ const MobileVideo = styled('div')`
   transform-origin: 28% 50%;
 `;
 
+const mobileVideoWidth = '64vh';
+const mobileTextHeight = `calc((100vh - ${mobileVideoWidth}) / 2 - 1rem)`;
+const mobileInfoContainerHeight = `calc(${mobileVideoWidth} + ${mobileTextHeight} + 1rem)`;
+
 const mobileVideo = css`
   background-color: #222;
-  width: 64vh;
+  width: ${mobileVideoWidth};
   padding-top: 50%;
 `;
 
-const mobileMute = css`
+const mobileTopRightIcon = css`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+const mobileProgramInfoCloseIcon = css`
+  ${mobileTopRightIcon}
+  padding: 1rem;
 `;
 
 const mobileFullscreen = css`
@@ -279,12 +312,15 @@ const baseMobileText = css`
   position: absolute;
   width: calc(100vw - 140px);
   left: 80px;
-  height: 120px;
+  height: ${mobileTextHeight};
 `;
 
 const TopMobileText = styled('div')`
   ${baseMobileText}
   top: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 1rem;
 `;
 
 const BottomMobileText = styled('div')`
@@ -300,6 +336,23 @@ const mobileInfo = css`
   font-weight: 300;
   text-decoration: underline;
   padding-left: 5px;
+`;
+
+const MobileProgramInfoContainer = styled('div')`
+  position: absolute;
+  padding: 0 1rem;
+  width: 100%;
+  height: ${mobileInfoContainerHeight};
+  top: calc(${mobileTextHeight} + 1rem);
+  background-color: ${backgroundColor};
+`;
+
+const MobileProgramInfoContents = styled('div')`
+  border-top: 1px solid ${borderColor};
+  height: ${mobileInfoContainerHeight};
+  padding: 1rem 0;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const infoColumnContainer = css`

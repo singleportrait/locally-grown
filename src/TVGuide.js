@@ -129,6 +129,7 @@ const closeButton = css`
 const TVGuideChart = styled('div')`
   width: calc(100vw - 2rem);
   overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const Row = styled('div')`

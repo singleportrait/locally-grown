@@ -48,6 +48,10 @@ class ProgramBlockInfo extends Component {
             <div>{fields.title}</div>
           </ProgramBlock>
         )}
+
+        { !nextProgramBlock && !sortedProgramBlocks.length &&
+          <p>This program doesn't have any other programming scheduled.</p>
+        }
       </ProgramBlockInfoContainer>
     );
   }

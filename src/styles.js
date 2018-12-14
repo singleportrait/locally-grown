@@ -2,6 +2,10 @@ import styled, { css } from 'react-emotion';
 
 export const padding = '1.25rem';
 
+export const backgroundColor = '#221935';
+
+export const borderColor = '#4E475D';
+
 export const Logo = styled('div')`
   font-weight: 900;
   font-size: 13px;
