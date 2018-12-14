@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'Larsseit';
+  src: url(./../fonts/larsseit-extrabold.woff2) format('woff2'), /* Super Modern Browsers */
+       url(./../fonts/larsseit-extrabold.woff) format('woff'), /* Pretty Modern Browsers */
+       url(./../fonts/larsseit-extrabold.ttf)  format('truetype'); /* Safari, Android, iOS */
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Larsseit';
+  src: url(./../fonts/larsseit-bold.woff2) format('woff2'),
+       url(./../fonts/larsseit-bold.woff) format('woff');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Larsseit';
+  src: url(./../fonts/larsseit-medium.woff2) format('woff2'),
+       url(./../fonts/larsseit-medium.woff) format('woff');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Larsseit';
+  src: url(./../fonts/larsseit-light.woff2) format('woff2'),
+       url(./../fonts/larsseit-light.woff) format('woff'),
+       url(./../fonts/larsseit-light.ttf)  format('truetype');
+  font-weight: 300;
+}

@@ -22,6 +22,10 @@ const findFeaturedLiveChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
   const featuredLiveChannels = channels.filter(channel => {
     const featuredPrograms = channel.fields.programs.filter(program => {
+      if (!program.fields) {
+        return false;
+      }
+
       return program.fields.featured === true &&
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
         moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);

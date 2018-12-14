@@ -1,15 +1,30 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
 import { currentSecondsPastTheHour } from '../helpers';
+import store from '../store';
 
 const resetPrograms = () => dispatch => {
   console.log("It's time to reset the programs!");
 
-  dispatch(setTimeUntilNextProgram(3600));
+  const newHour = new Date().getHours();
+  dispatch(setTimeUntilNextProgram(3600, newHour));
 
-  // TODO: Reload available programs & program blocks to get the next
-  // program block if there is one, or take you to another channel if not
-  //
-  // Also, reset session.currentHour!
+  // This will currently allow for the hour to change to have nothing playing
+  // in the new hour, but I'm fine with that.
+  // TODO: Reload availablePrograms() somehow to properly
+  // set previous & next buttons
+}
+
+const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {
+  clearInterval(store.getState().session.intervalID);
+
+  const newIntervalID = setInterval(() => dispatch(resetPrograms()), 1000 * seconds);
+
+  dispatch({
+    type: SET_SECONDS_UNTIL_NEXT_PROGRAM,
+    secondsUntilNextProgram: seconds,
+    intervalID: newIntervalID,
+    currentHour: currentHour
+  })
 }
 
 export const initializeSession = () => dispatch => {
@@ -22,14 +37,6 @@ export const initializeSession = () => dispatch => {
     secondsUntilNextProgram = 3600;
   }
 
-  dispatch(setTimeUntilNextProgram(secondsUntilNextProgram));
-}
-
-const setTimeUntilNextProgram = (seconds) => dispatch => {
-  setInterval(() => dispatch(resetPrograms()), 1000 * seconds);
-
-  dispatch({
-    type: SET_SECONDS_UNTIL_NEXT_PROGRAM,
-    secondsUntilNextProgram: seconds
-  })
+  const hour = new Date().getHours();
+  dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
 }

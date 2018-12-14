@@ -1,12 +1,13 @@
 // TODO: Import reset css
 @import "shared.scss";
+@import "fonts.scss";
 
 * {
   box-sizing: border-box;
 }
 
 html {
-  background-color: #221935;
+  background-color: $background_color;
 }
 
 body {
@@ -25,34 +26,63 @@ a, a:visited, a:hover, a:active {
 }
 
 hr {
-  border-color: #4E475D;
+  border-color: $border_color;
   border-style: solid;
   border-bottom-width: 0;
   margin: 1rem 0;
 }
 
+p {
+  margin: 0;
+
+  @media (max-width: 600px) {
+    font-size: 12px;
+  }
+}
+
+strong {
+  font-weight: bold;
+  font-size: 1.05em;
+}
+
 h1, h2, h3, h4 {
-  margin: 0.25rem;
+  margin: 0.25rem 0;
   line-height: 1.2;
 }
 
 h1 {
   font-size: 36px;
   font-weight: 900;
+
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
 }
 
 h2 {
   font-size: 30px;
   font-weight: bold;
+
+  @media (max-width: 600px) {
+    font-size: 20px;
+  }
 }
 
 h3 {
   font-size: 24px;
   font-weight: bold;
+
+  @media (max-width: 600px) {
+    font-size: 18px;
+  }
 }
 
 h4 {
   font-size: 18px;
   font-weight: 200;
   line-height: 1.4;
+
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
 }

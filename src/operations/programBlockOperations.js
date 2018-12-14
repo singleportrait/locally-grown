@@ -1,4 +1,4 @@
-import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo } from '../actions/programBlockActions';
+import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo, programBlockError } from '../actions/programBlockActions';
 import store from '../store';
 import client from '../services-contentful';
 
@@ -34,6 +34,15 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
 
+    if (!videos) {
+      console.log("No videos!");
+      const loadedProgramBlock = {
+        sys: currentProgramBlock.sys,
+        fields: currentProgramBlock.fields
+      }
+      return dispatch(programBlockError(loadedProgramBlock, "Warning: This program doesn't have any videos!"));
+    }
+
     // Set individual video lengths & full programming length
     videos.forEach((video, i) => {
       if ('length' in video.fields) {
@@ -57,8 +66,30 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     })
 
     if (programmingLength < 3600) {
-      console.log("- This programming isn't enough to fill the hour!");
+        console.log(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
+
+      // This is where you append the video content, until you hit 3600
+      let i = 0;
+      while (programmingLength < 3600) {
+        const newVideo = JSON.parse(JSON.stringify(videos[i]));
+        // Calculate start & end time for new copied video
+        newVideo.startTime = programmingLength;
+        newVideo.endTime = programmingLength + newVideo.lengthInSeconds;
+        videos.push(newVideo);
+
+        if (programmingLength < secondsPastTheHour && newVideo.endTime > secondsPastTheHour) {
+          videoToPlayIndex = videos.length - 1;
+          timestampToStartVideo = secondsPastTheHour - programmingLength;
+        }
+
+        programmingLength += newVideo.lengthInSeconds;
+        i = i >= videos.length - 1 ? 0 : i++;
+      }
+
+      // console.log(videos);
+      // console.log(programmingLength);
     }
+
     if (programmingLength < secondsPastTheHour) {
       console.log("- The programming isn't even enough to get to this time in the hour!");
     }
@@ -119,6 +150,10 @@ export const updateCurrentVideo = () => dispatch => {
 }
 
 export const getCurrentProgramBlock = (programBlockId) => dispatch => {
+  if (programBlockId === null) {
+    return dispatch(setCurrentProgramBlock(null));
+  }
+
   const savedProgramBlock = store.getState().programBlocks.loadedProgramBlocks.find(programBlock => {
     return programBlock.sys.id === programBlockId;
   })

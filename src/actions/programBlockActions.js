@@ -1,4 +1,4 @@
-import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, SET_CURRENT_VIDEO } from './programBlockTypes';
+import { ADD_PROGRAM_BLOCK, SET_CURRENT_PROGRAM_BLOCK, SET_CURRENT_VIDEO, PROGRAM_BLOCK_ERROR } from './programBlockTypes';
 
 export const addProgramBlock = (programBlock) => dispatch => {
   dispatch({
@@ -20,5 +20,13 @@ export const setCurrentVideo = (currentVideo, index, timestamp) => dispatch => {
     video: currentVideo,
     index: index,
     timestamp: timestamp
+  })
+}
+
+export const programBlockError = (programBlock, error) => dispatch => {
+  dispatch({
+    type: PROGRAM_BLOCK_ERROR,
+    currentProgramBlock: programBlock,
+    error: error
   })
 }

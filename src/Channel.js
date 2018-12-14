@@ -15,6 +15,7 @@ class Channel extends Component {
               <Program
                 program={channelFields.programs[0]}
                 channelTitle={channelFields.title}
+                channelUser={channelFields.user}
                 previousChannelSlug={this.props.channel.previousChannelSlug}
                 nextChannelSlug={this.props.channel.nextChannelSlug}
               />
