@@ -37,7 +37,9 @@ class WhatIsThisTooltip extends Component {
                 <CloseIcon color="#000" />
               </div>
             </div>
-            <p>Locally Grown is a project that...</p>
+            <p>
+              Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.
+            </p>
             { this.props.showLink &&
               <React.Fragment>
                 <br />
