@@ -8,7 +8,7 @@ const fetchChannels = () => dispatch => {
   return new Promise(function(resolve, reject) {
     client.getEntries({
       content_type: 'channel',
-      include: 2
+      include: 3
     }).then(channels => {
       dispatch(setChannels(channels.items));
       resolve(channels.items);

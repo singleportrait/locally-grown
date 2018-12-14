@@ -1,13 +1,34 @@
 import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo, programBlockError } from '../actions/programBlockActions';
 import store from '../store';
-import client from '../services-contentful';
 
 import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
 
+const findProgramBlock = (programBlockId) => {
+  return new Promise(function(resolve, reject) {
+    let matchingProgramBlock = null;
+    store.getState().channels.allChannels.find(channel => {
+      return channel.fields.programs.find(program => {
+        if (program.fields && program.fields.programBlocks) {
+          return program.fields.programBlocks.find(programBlock => {
+            if (programBlock.sys.id === programBlockId) {
+              matchingProgramBlock = programBlock;
+              return programBlock;
+            }
+            return false;
+          });
+        }
+        return false;
+      });
+    });
+
+    resolve(matchingProgramBlock);
+  });
+}
+
 const fetchProgramBlock = (programBlockId) => dispatch => {
   return new Promise(function(resolve, reject) {
-    // TODO: Use video results from initial Contentful fetch
-    client.getEntry(programBlockId)
+    // Using video results from initial Contentful fetch, now
+    findProgramBlock(programBlockId)
     .then(programBlock => {
       dispatch(initializeCurrentProgramBlockVideos(programBlock))
       .then(loadedProgramBlock => {
