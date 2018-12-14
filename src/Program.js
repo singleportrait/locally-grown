@@ -113,7 +113,7 @@ class Program extends Component {
               <div className={infoColumn}>
                 <Navigation />
                 <p className={channelTitle}>
-                  You're watching {this.props.channelTitle}
+                  You&apos;re watching {this.props.channelTitle}
 
                   { this.props.channelUser &&
                       <span> by {this.props.channelUser.fields.name}</span>
@@ -147,7 +147,7 @@ class Program extends Component {
                 { !currentProgramBlock &&
                   <div>
                     <br />
-                    <h1>There's nothing playing on this channel right now.</h1>
+                    <h1>There&apos;s nothing playing on this channel right now.</h1>
                     <br /><br />
                     { this.props.programBlocks.error &&
                       <p>{this.props.programBlocks.error}</p>
@@ -189,7 +189,7 @@ class Program extends Component {
               </MobileVideo>
               <TopMobileText>
                 <Logo>Locally Grown</Logo>
-                <p>You're watching {this.props.channelTitle}</p>
+                <p>You&apos;re watching {this.props.channelTitle}</p>
               </TopMobileText>
               <BottomMobileText>
                 <p>Now playing:</p>

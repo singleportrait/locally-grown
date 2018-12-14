@@ -76,7 +76,7 @@ class Channels extends Component {
           />
           <h2>Channels</h2>
           <div style={{textAlign: "right"}}>
-            It's {moment(Date.now()).format("h:mma")}.
+            It&apos;s {moment(Date.now()).format("h:mma")}.
             <br />
             <TVGuideLink />
           </div>

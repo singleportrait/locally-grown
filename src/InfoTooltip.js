@@ -36,7 +36,7 @@ class InfoTooltip extends Component {
                 <p>{this.props.description}</p>
             }
             {!this.props.description &&
-                <p><em>This program doesn't have a description!</em></p>
+                <p><em>This program doesn&apos;t have a description!</em></p>
             }
             {user &&
               <React.Fragment>

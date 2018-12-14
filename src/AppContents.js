@@ -45,7 +45,7 @@ class AppContents extends Component {
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
-          <h1>Sorry, we couldn't find that.</h1>
+          <h1>Sorry, we couldn&apos;t find that.</h1>
           <br /><br />
           <h4><Link to="/tv-guide">Find something to watch.</Link></h4>
         </LoadingContainer>

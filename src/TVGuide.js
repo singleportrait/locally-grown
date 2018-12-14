@@ -64,7 +64,7 @@ class TVGuide extends Component {
         </Header>
         <hr/>
         { this.props.channels.length === 0 &&
-          <h2>Uh oh! There aren't any featured programs with active programming right now. Come back later!</h2>
+          <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
         }
 
         <TVGuideChart>
