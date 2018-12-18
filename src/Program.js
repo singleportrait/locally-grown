@@ -239,12 +239,53 @@ const programClass = css`
   position: relative;
 `;
 
+const shortAspectRatio = '9/5';
+const shortestAspectRatio = '9/4';
+
 const videoAndControlsColumn = css`
   position: relative;
   width: 65%;
   transition: width 0.4s ease;
   transform: translateZ(0);
   backface-visibility: hidden;
+
+  @media (min-aspect-ratio: ${shortAspectRatio}) {
+    width: 55%;
+    left: 5%;
+  }
+
+  @media (min-aspect-ratio: ${shortestAspectRatio}) {
+    width: 45%;
+    left: 10%;
+  }
+`;
+
+const infoColumnContainer = css`
+  position: absolute;
+  right: 0;
+  width: 35%;
+  padding-left: 1.4rem;
+  opacity: 1;
+  transition: opacity 0.4s ease, right 0.4s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  height: calc(100vh - 1.4rem);
+  overflow-x: hidden;
+
+  @media (min-aspect-ratio: ${shortAspectRatio}) {
+    right: 5%;
+  }
+
+  @media (min-aspect-ratio: ${shortestAspectRatio}) {
+    right: 10%;
+  }
+`;
+
+const infoColumn = css`
+  padding-right: 16px;
+  margin-right: -16px;
+  overflow-y: scroll;
+  height: 100%;
 `;
 
 const VideoControls = styled('div')`
@@ -360,26 +401,6 @@ const MobileProgramInfoContents = styled('div')`
   padding: 1rem 0;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-`;
-
-const infoColumnContainer = css`
-  position: absolute;
-  right: 0;
-  width: 35%;
-  padding-left: 1.4rem;
-  opacity: 1;
-  transition: opacity 0.4s ease, right 0.4s ease;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  height: calc(100vh - 1.4rem);
-  overflow-x: hidden;
-`;
-
-const infoColumn = css`
-  padding-right: 16px;
-  margin-right: -16px;
-  overflow-y: scroll;
-  height: 100%;
 `;
 
 const channelTitle = css`
