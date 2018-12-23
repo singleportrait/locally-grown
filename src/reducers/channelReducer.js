@@ -1,4 +1,4 @@
-import { SET_CHANNELS, SETUP_CHANNELS } from '../actions/channelTypes';
+import { SET_CHANNELS, SETUP_CHANNELS, CHANNELS_LOAD_ERROR } from '../actions/channelTypes';
 
 // HOW BEST TO ORGANIZE THE STORE???
 // currentChannelId = 27
@@ -35,6 +35,12 @@ export default function(state = initialState, action) {
         availableChannels: action.available,
         hiddenChannels: action.hidden,
         currentChannel: action.current
+      }
+    case CHANNELS_LOAD_ERROR:
+      return {
+        ...state,
+        isLoaded: true,
+        error: true
       }
     default:
       return state;

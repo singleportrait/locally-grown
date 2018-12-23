@@ -1,4 +1,4 @@
-import { setChannels, setupChannels } from '../actions/channelActions';
+import { setChannels, setupChannels, errorLoadingChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
 
@@ -13,7 +13,8 @@ const fetchChannels = () => dispatch => {
       dispatch(setChannels(channels.items));
       resolve(channels.items);
     }, error => {
-      // Handle if channels fetch doesn't resolve
+      dispatch(errorLoadingChannels());
+      reject(error);
     });
   });
 }

@@ -78,6 +78,17 @@ class AppContents extends Component {
       );
     }
 
+    function ErrorState() {
+      return (
+        <LoadingContainer>
+          <Logo>Locally Grown</Logo>
+          <h1>Sorry, there was an error loading channels.</h1>
+          <br /><br />
+          <h4>&nbsp;</h4>
+        </LoadingContainer>
+      );
+    }
+
     return (
       <Router>
         <div className="App">
@@ -106,7 +117,12 @@ class AppContents extends Component {
               )} />
 
               { !this.props.channels.currentChannel &&
-                <Route exact path="/" component={NoPrograms} />
+                <Route exact path="/" render={props => (
+                  <React.Fragment>
+                    { this.props.channels.error && ErrorState() }
+                    { !this.props.channels.error && NoPrograms() }
+                  </React.Fragment>
+                )} />
               }
               <Route component={NoMatch} />
             </Switch>
