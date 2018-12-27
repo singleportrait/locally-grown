@@ -168,65 +168,68 @@ class Program extends Component {
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
-          { currentProgramBlock &&
-            <div>
-              <MobileVideo>
-                { currentProgramBlock &&
-                  <React.Fragment>
-                    <Video
-                      video={currentProgramBlock.currentVideo}
-                      timestamp={currentProgramBlock.timestampToStartVideo}
-                      className={mobileVideo}
-                    />
-                    { !this.state.showMobileProgramInfo &&
-                      <div className={mobileTopRightIcon}><MuteButton /></div>
-                    }
-                    { this.state.showMobileProgramInfo &&
-                      <div className={mobileProgramInfoCloseIcon} onClick={this.toggleMobileProgramInfo}>
-                        <CloseIcon />
-                      </div>
-                    }
-                    <div className={mobileFullscreen}><FullscreenButton /></div>
-                    { this.props.previousChannelSlug && !this.state.showMobileProgramInfo &&
-                      <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
-                    }
-                    { this.props.nextChannelSlug &&
-                      <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
-                    }
-                  </React.Fragment>
-                }
-                { !currentProgramBlock &&
-                  <VideoPlaceholderWrapper />
-                }
-              </MobileVideo>
-              <TopMobileText>
-                <div>
-                  <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
-                  <p>
-                    You&apos;re watching {this.props.channelTitle}
+          <div>
+            <MobileVideo>
+              { currentProgramBlock &&
+                <React.Fragment>
+                  <Video
+                    video={currentProgramBlock.currentVideo}
+                    timestamp={currentProgramBlock.timestampToStartVideo}
+                    className={mobileVideo}
+                  />
+                  { !this.state.showMobileProgramInfo &&
+                    <div className={mobileTopRightIcon}><MuteButton /></div>
+                  }
+                  { this.state.showMobileProgramInfo &&
+                    <div className={mobileProgramInfoCloseIcon} onClick={this.toggleMobileProgramInfo}>
+                      <CloseIcon />
+                    </div>
+                  }
+                  <div className={mobileFullscreen}><FullscreenButton /></div>
+                  { this.props.previousChannelSlug && !this.state.showMobileProgramInfo &&
+                    <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
+                  }
+                  { this.props.nextChannelSlug &&
+                    <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
+                  }
+                </React.Fragment>
+              }
+              { !currentProgramBlock &&
+                <VideoPlaceholderWrapper className={mobileVideo} />
+              }
+            </MobileVideo>
+            <TopMobileText>
+              <div>
+                <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
+                <p>
+                  You&apos;re watching {this.props.channelTitle}
 
-                    { this.props.channelUser &&
-                      <span> by {this.props.channelUser.fields.name}</span>
-                    }
-                  </p>
-                </div>
-                { this.state.showMobileProgramInfo &&
-                  <TVGuideLink />
-                }
-              </TopMobileText>
+                  { this.props.channelUser &&
+                    <span> by {this.props.channelUser.fields.name}</span>
+                  }
+                </p>
+              </div>
+              <TVGuideLink />
+            </TopMobileText>
+            { currentProgramBlock &&
               <BottomMobileText>
                 <p>Now playing:</p>
                 <h1 onClick={this.toggleMobileProgramInfo}>{currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
               </BottomMobileText>
-              { this.state.showMobileProgramInfo &&
-                <MobileProgramInfoContainer>
-                  <MobileProgramInfoContents>
-                    { renderSidebarProgramContent() }
-                  </MobileProgramInfoContents>
-                </MobileProgramInfoContainer>
-              }
-            </div>
-          }
+            }
+            { !currentProgramBlock &&
+              <BottomMobileText>
+                <h1>There&apos;s nothing playing on this channel right now.</h1>
+              </BottomMobileText>
+            }
+            { this.state.showMobileProgramInfo &&
+              <MobileProgramInfoContainer>
+                <MobileProgramInfoContents>
+                  { renderSidebarProgramContent() }
+                </MobileProgramInfoContents>
+              </MobileProgramInfoContainer>
+            }
+          </div>
         </MediaQuery>
       </React.Fragment>
     );
