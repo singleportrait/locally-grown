@@ -2,6 +2,8 @@ import { setChannels, setupChannels, errorLoadingChannels } from '../actions/cha
 import client from '../services-contentful';
 import store from '../store';
 
+// import { channelsData } from '../channelsData';
+
 import * as moment from 'moment';
 
 const fetchChannels = () => dispatch => {
@@ -10,7 +12,10 @@ const fetchChannels = () => dispatch => {
       content_type: 'channel',
       include: 3
     }).then(channels => {
+      // console.log(JSON.stringify(channelsData));
+      // console.log(JSON.stringify(channels.items));
       dispatch(setChannels(channels.items));
+      // dispatch(setChannels(channelsData));
       resolve(channels.items);
     }, error => {
       dispatch(errorLoadingChannels());
