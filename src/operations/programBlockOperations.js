@@ -86,7 +86,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       }
     })
 
-    if (programmingLength < 3600) {
+    if (programmingLength === 0) {
+      console.log("- There was an error calculating the programming length for this hour (potentially due to misformated video lengths.");
+    }
+    else if (programmingLength < 3600) {
         console.log(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
 
       // This is where you append the video content, until you hit 3600
