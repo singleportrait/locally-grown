@@ -43,3 +43,17 @@ export const tooltipCloseButton = css`
   cursor: pointer;
 `;
 
+export const programBlockBase = css`
+  position: relative;
+  width: 200px;
+  height: 50px;
+  margin: 5px;
+  padding: 5px .5rem;
+  flex-shrink: 0;
+  cursor: default;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`;
+

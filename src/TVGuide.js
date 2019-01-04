@@ -8,8 +8,9 @@ import * as moment from 'moment';
 
 import CloseIcon from './CloseIcon';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
+import TVGuideProgramBlock from './TVGuideProgramBlock';
 
-import { Header } from './styles';
+import { Header, programBlockBase } from './styles';
 
 class TVGuide extends Component {
   constructor(props) {
@@ -90,15 +91,20 @@ class TVGuide extends Component {
                     <React.Fragment>
                       {hours[0] === hour &&
                         <Link to={channel.fields.slug} className={programBlockLink}>
-                          <ProgramBlock className={firstHour}>
-                            {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
-                          </ProgramBlock>
+                          <TVGuideProgramBlock
+                            firstHour={true}
+                            programBlock={program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour)}
+                            channelSlug={channel.fields.slug}
+                            channelTitle={channel.fields.title}
+                          />
                         </Link>
                       }
                       {hours[0] !== hour &&
-                        <ProgramBlock>
-                          {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour).fields.title}
-                        </ProgramBlock>
+                        <TVGuideProgramBlock
+                          programBlock={program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour)}
+                          channelSlug={channel.fields.slug}
+                          channelTitle={channel.fields.title}
+                        />
                       }
                     </React.Fragment>
                   }
@@ -161,40 +167,14 @@ const ProgramTitle = styled('div')`
   flex-shrink: 0;
 `;
 
-const programBlockBase = css`
-  width: 200px;
-  height: 50px;
-  margin: 5px;
-  padding: 5px .5rem;
-  flex-shrink: 0;
-  cursor: default;
-`;
-
 const ProgramBlockHeader = styled('div')`
   ${programBlockBase};
   font-weight: 500;
   font-size: 15px;
 `;
 
-const ProgramBlock = styled('div')`
-  ${programBlockBase};
-  background-color: rgba(255,255,255,.5);
-  color: #000;
-  font-weight: 500;
-  font-size: 15px;
-`;
-
 const programBlockLink = css`
   text-decoration: none;
-`;
-
-const firstHour = css`
-  background-color: rgba(255,255,255,1);
-  transition: background-color .2s ease;
-  &:hover {
-    cursor: pointer;
-    background-color: rgba(255,255,255,.8);
-  }
 `;
 
 const EmptyProgramBlock = styled('div')`
