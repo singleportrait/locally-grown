@@ -108,7 +108,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         }
 
         programmingLength += newVideo.lengthInSeconds;
-        if (i == 0 || i < videosLength) {
+        if (i === 0 || i < videosLength) {
           i++;
         } else {
           i = 0;
