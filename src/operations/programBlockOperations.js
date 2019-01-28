@@ -71,6 +71,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
         video.lengthInSeconds = videoLengthInSeconds
         video.startTime = programmingLength;
+        video.index = i;
 
         video.endTime = programmingLength + videoLengthInSeconds;
 
@@ -100,6 +101,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         // Calculate start & end time for new copied video
         newVideo.startTime = programmingLength;
         newVideo.endTime = programmingLength + newVideo.lengthInSeconds;
+        newVideo.index = videos.length + 1;
         videos.push(newVideo);
 
         if (programmingLength < secondsPastTheHour && newVideo.endTime > secondsPastTheHour) {
@@ -163,6 +165,7 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
 }
 
 export const updateCurrentVideo = () => dispatch => {
+  // console.log("*** Getting the new video!");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const videoPlayingIndex = currentProgramBlock.videoPlayingIndex;
 

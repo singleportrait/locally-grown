@@ -31,6 +31,12 @@ class Video extends Component {
         this.props.toggleMute(false);
       }
     }
+
+    if (this.props.video.index !== prevProps.video.index &&
+      this.props.video.fields.url === prevProps.video.fields.url) {
+      // console.log("- The new video is the same as the old one, but the index has changed. Let's restart the video");
+      this.onDuration();
+    }
   }
 
   onEnded = () => this.props.updateCurrentVideo();
@@ -90,7 +96,7 @@ class Video extends Component {
     //   console.log("Video: Toggled play/pause");
     // }, 500)
     // console.log("Video: onReady");
-    if (!this.state.previouslyMuted) {
+    // if (!this.state.previouslyMuted) {
       // console.log("This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with
       // un-muted audio, though the following code could theoretically work
@@ -98,7 +104,7 @@ class Video extends Component {
       //   volume: 1,
       //   muted: true
       // })
-    }
+    // }
   }
 
   toggleMute = () => {
