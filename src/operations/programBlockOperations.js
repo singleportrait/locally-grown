@@ -54,6 +54,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     const secondsPastTheHour = currentSecondsPastTheHour();
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
+    let videosLength = videos.length;
 
     if (!videos) {
       console.log("No videos!");
@@ -107,7 +108,11 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         }
 
         programmingLength += newVideo.lengthInSeconds;
-        i = i >= videos.length - 1 ? 0 : i++;
+        if (i == 0 || i < videosLength) {
+          i++;
+        } else {
+          i = 0;
+        }
       }
 
       // console.log(videos);
