@@ -32,7 +32,7 @@ class TVGuideProgramBlock extends Component {
       const title = this.props.programBlock.fields.title;
       const description = this.props.programBlock.fields.description ? `
 ${this.props.programBlock.fields.description}` : "";
-      const URL = "http://localhost:3000/" + this.props.channelSlug;
+      const URL = process.env.REACT_APP_DOMAIN + this.props.channelSlug;
 
       const now = new Date();
       const currentHour = this.props.session.currentHour;
