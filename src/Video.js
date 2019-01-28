@@ -7,39 +7,6 @@ import ReactPlayer from 'react-player';
 
 import styled, { css } from 'react-emotion';
 
-const ReactPlayerWrapper = styled('div')`
-  position: relative;
-  padding-top: 75%;
-  background-color: #222;
-  ${props => props.cropControls && 'overflow: hidden;'}
-`;
-
-const reactPlayerStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const croppedReactPlayerStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-  top: -20%;
-`;
-
-const VideoOverlay = styled('div')`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-`;
-
-const progressStyle = css`
-  background-color: white;
-`;
-
 class Video extends Component {
   constructor(props) {
     super(props);
@@ -213,6 +180,39 @@ class Video extends Component {
     );
   }
 }
+
+const ReactPlayerWrapper = styled('div')`
+  position: relative;
+  padding-top: 75%;
+  background-color: #222;
+  ${props => props.cropControls && 'overflow: hidden;'}
+`;
+
+const reactPlayerStyle = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const croppedReactPlayerStyle = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: -20%;
+`;
+
+const VideoOverlay = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+`;
+
+const progressStyle = css`
+  background-color: white;
+`;
 
 Video.defaultProps = {
   timestamp: 0
