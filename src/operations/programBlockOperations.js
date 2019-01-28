@@ -154,6 +154,8 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
         timestampToStartVideo = secondsPastTheHour - video.startTime;
         console.log("- Found a video to play at timestamp...", timestampToStartVideo);
       }
+    } else {
+      console.log(`- The video ${video.fields.title} is missing its length, which will cause errors`);
     }
   });
 
