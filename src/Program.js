@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import { findDOMNode } from 'react-dom';
+import debounce from 'lodash/debounce';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -27,7 +28,8 @@ class Program extends Component {
 
     this.state = {
       showInfoTooltip: false,
-      showMobileProgramInfo: false
+      showMobileProgramInfo: false,
+      maxMode: false
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
@@ -38,6 +40,8 @@ class Program extends Component {
     this.initializeProgram();
 
     document.title = `${this.props.program.fields.title} | Locally Grown`
+
+    document.addEventListener('mousemove', this.handleEvents);
   }
 
   componentDidUpdate(prevProps) {
@@ -46,6 +50,32 @@ class Program extends Component {
       this.initializeProgram();
     }
   }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousemove', this.handleEvents);
+    this.handleEventEnd.cancel(); // Lodash's debounce-removing tool
+  }
+
+  handleEvents = () => {
+    this.handleEventStart();
+    this.handleEventEnd();
+  }
+
+  handleEventStart = debounce((e) => {
+    // console.log('Preventing or removing max mode');
+    this.setState({ maxMode: false });
+  }, 100, {
+    'leading': true,
+    'trailing': false
+  });
+
+  handleEventEnd = debounce((e) => {
+    // console.log('Starting max mode after 4s debounce');
+    this.setState({ maxMode: true });
+  }, 4000, {
+    'leading': false,
+    'trailing': true
+  });
 
   initializeProgram() {
     // Note: This will allow you to come to a direct URL and see that there are
@@ -87,7 +117,7 @@ class Program extends Component {
             timestamp={currentProgramBlock.timestampToStartVideo}
             cropControls={true}
           />
-          <VideoControls hasMultipleChannels={this.props.previousChannelSlug}>
+          <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={this.state.maxMode}>
             { this.props.previousChannelSlug &&
                 <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
             }
@@ -133,7 +163,7 @@ class Program extends Component {
       <React.Fragment>
         <MediaQuery minDeviceWidth={600}>
           <div className={programClass} ref={(c) => { this.container = c; }}>
-            <div className={videoAndControlsColumn}>
+            <VideoAndControlsColumn maxMode={this.state.maxMode}>
               { currentProgramBlock && currentProgramBlock.fields.videos &&
                 renderDesktopVideo()
               }
@@ -141,8 +171,8 @@ class Program extends Component {
               { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
                 <VideoPlaceholderWrapper />
               }
-            </div>
-            <div className={infoColumnContainer}>
+            </VideoAndControlsColumn>
+            <InfoColumnContainer maxMode={this.state.maxMode} onScroll={this.handleEvents}>
               <div className={infoColumn}>
                 <Navigation />
                 <p className={channelTitle}>
@@ -164,7 +194,7 @@ class Program extends Component {
                 <hr/>
                 { renderSidebarProgramContent() }
               </div>
-            </div>
+            </InfoColumnContainer>
           </div>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
@@ -238,49 +268,59 @@ class Program extends Component {
 
 const programClass = css`
   display: flex;
-  margin: 1.4rem;
+  margin: 1.4rem 1.4rem 0;
   position: relative;
+  overflow: hidden;
+  height: calc(100vh - 1.4rem);
 `;
 
 const shortAspectRatio = '9/5';
 const shortestAspectRatio = '9/4';
+// widthRelativeToBrowserHeight = (Browser width - program padding) * video 4/3 ratio
+const widthRelativeToBrowserHeight = 'calc((100vh - 2.8rem) * 1.333)';
 
-const videoAndControlsColumn = css`
+// The below doesn't work in the case that the video width calculates to > 100% wide
+// We need a 'max-left' somehow, and min() isn't real yet, but maybe we can do something with flex
+// const relativeLeftValue = 'calc((100% - ((100vh - 2.8rem) * 1.333)) / 2)';
+
+const VideoAndControlsColumn = styled('div')`
   position: relative;
-  width: 65%;
-  transition: width 0.4s ease;
   transform: translateZ(0);
   backface-visibility: hidden;
+  transition: width 0.4s ease, left 0.4s ease;
+  left: 0;
+  max-width: 100%;
+  width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
-    width: 55%;
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '55%' };
     left: 5%;
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
-    width: 45%;
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '45%' };
     left: 10%;
   }
 `;
 
-const infoColumnContainer = css`
+const InfoColumnContainer = styled('div')`
   position: absolute;
-  right: 0;
   width: 35%;
   padding-left: 1.4rem;
-  opacity: 1;
-  transition: opacity 0.4s ease, right 0.4s ease;
   transform: translateZ(0);
   backface-visibility: hidden;
   height: calc(100vh - 1.4rem);
   overflow-x: hidden;
+  transition: opacity 0.4s ease, right 0.4s ease;
+  opacity: ${props => props.maxMode ? '0' : '1' };
+  right: ${props => props.maxMode ? '-35%' : '0' };
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
-    right: 5%;
+    right: ${props => props.maxMode ? '-35%' : '5%' };
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
-    right: 10%;
+    right: ${props => props.maxMode ? '-35%' : '10%' };
   }
 `;
 
@@ -293,7 +333,7 @@ const infoColumn = css`
 
 const VideoControls = styled('div')`
   padding-top: 1rem;
-  display: flex;
+  display: ${props => props.maxMode ? 'none' : 'flex'};
   justify-content: ${props => props.hasMultipleChannels ? 'space-between' : 'center'}
 `;
 
