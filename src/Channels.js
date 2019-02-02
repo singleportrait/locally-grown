@@ -82,6 +82,9 @@ class Channels extends Component {
           </div>
         </Header>
         <hr />
+        { this.props.featuredChannels.length === 0 &&
+          <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
+        }
         <MediaQuery minWidth={600}>
           <div>
             { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
