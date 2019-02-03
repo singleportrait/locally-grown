@@ -112,25 +112,57 @@ class Program extends Component {
     const renderDesktopVideo = () => {
       return (
         <React.Fragment>
-          <Video
-            video={currentProgramBlock.currentVideo}
-            timestamp={currentProgramBlock.timestampToStartVideo}
-            cropControls={true}
-          />
-          <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={this.state.maxMode}>
-            { this.props.previousChannelSlug &&
-                <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
-            }
+          { currentProgramBlock && currentProgramBlock.fields.videos &&
+            <React.Fragment>
+              <Video
+                video={currentProgramBlock.currentVideo}
+                timestamp={currentProgramBlock.timestampToStartVideo}
+                cropControls={true}
+              />
+              <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={this.state.maxMode}>
+                { this.props.previousChannelSlug &&
+                    <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+                }
 
-            <div className={controlButtons}>
-              <MuteButton />
-              <FullscreenButton />
-            </div>
+                <div className={controlButtons}>
+                  <MuteButton />
+                  <FullscreenButton />
+                </div>
 
-            { this.props.nextChannelSlug &&
-                <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                { this.props.nextChannelSlug &&
+                    <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+                }
+              </VideoControls>
+            </React.Fragment>
+          }
+          { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
+              <VideoPlaceholderWrapper />
+          }
+        </React.Fragment>
+      );
+    }
+
+    const renderChannelInfo = () => {
+      return (
+        <React.Fragment>
+          <Navigation />
+          <p className={channelTitle}>
+            You&apos;re watching {this.props.channelTitle}
+
+            { this.props.channelUser &&
+                <span> by {this.props.channelUser.fields.name}</span>
             }
-          </VideoControls>
+            .
+            <InfoTooltip
+              toggleInfo={this.toggleInfo}
+              show={this.state.showInfoTooltip}
+              container={() => findDOMNode(this.container)}
+              title={program.fields.title}
+              description={program.fields.description}
+              user={this.props.channelUser}
+            />
+          </p>
+          <hr/>
         </React.Fragment>
       );
     }
@@ -161,45 +193,29 @@ class Program extends Component {
 
     return (
       <React.Fragment>
-        <MediaQuery minDeviceWidth={600}>
-          <div className={programClass} ref={(c) => { this.container = c; }}>
+        <MediaQuery minWidth={800}>
+          <WideProgramContainer ref={(c) => { this.container = c; }}>
             <VideoAndControlsColumn maxMode={this.state.maxMode}>
-              { currentProgramBlock && currentProgramBlock.fields.videos &&
-                renderDesktopVideo()
-              }
-
-              { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
-                <VideoPlaceholderWrapper />
-              }
+              { renderDesktopVideo() }
             </VideoAndControlsColumn>
             <InfoColumnContainer maxMode={this.state.maxMode} onScroll={this.handleEvents}>
               <div className={infoColumn}>
-                <Navigation />
-                <p className={channelTitle}>
-                  You&apos;re watching {this.props.channelTitle}
-
-                  { this.props.channelUser &&
-                      <span> by {this.props.channelUser.fields.name}</span>
-                  }
-                  .
-                  <InfoTooltip
-                    toggleInfo={this.toggleInfo}
-                    show={this.state.showInfoTooltip}
-                    container={() => findDOMNode(this.container)}
-                    title={program.fields.title}
-                    description={program.fields.description}
-                    user={this.props.channelUser}
-                  />
-                </p>
-                <hr/>
+                { renderChannelInfo() }
                 { renderSidebarProgramContent() }
               </div>
             </InfoColumnContainer>
-          </div>
+          </WideProgramContainer>
+        </MediaQuery>
+        <MediaQuery minWidth={400} maxWidth={800}>
+          <MediumProgramContainer>
+            { renderChannelInfo() }
+            { renderDesktopVideo() }
+            { renderSidebarProgramContent() }
+          </MediumProgramContainer>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600}>
           <div>
-            <MobileVideo>
+            <MobileProgramContainer>
               { currentProgramBlock &&
                 <React.Fragment>
                   <Video
@@ -224,10 +240,10 @@ class Program extends Component {
                   }
                 </React.Fragment>
               }
-              { !currentProgramBlock &&
+              { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
                 <VideoPlaceholderWrapper className={mobileVideo} />
               }
-            </MobileVideo>
+            </MobileProgramContainer>
             <TopMobileText>
               <div>
                 <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
@@ -266,12 +282,16 @@ class Program extends Component {
   }
 }
 
-const programClass = css`
+const WideProgramContainer = styled('div')`
   display: flex;
   margin: 1.4rem 1.4rem 0;
   position: relative;
   overflow: hidden;
   height: calc(100vh - 1.4rem);
+`;
+
+const MediumProgramContainer = styled('div')`
+  margin: 1.4rem;
 `;
 
 const shortAspectRatio = '9/5';
@@ -348,7 +368,7 @@ const VideoPlaceholderWrapper = styled('div')`
   background-size: cover;
 `;
 
-const MobileVideo = styled('div')`
+const MobileProgramContainer = styled('div')`
   width: 100vh;
   height: 100vw;
   position: relative;
