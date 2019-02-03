@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactGA from 'react-ga';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -44,8 +45,15 @@ class AppContents extends Component {
     this.setState({ showTooltip: !this.state.showTooltip });
   }
 
+  trackPageview() {
+    ReactGA.pageview(window.location.pathname);
+  };
+
   render() {
     const NoPrograms = () => {
+      // Tracking for no available programs
+      // TODO: This is running twice for some reason - we don't want that
+      // ReactGA.pageview('/no-programs');
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
@@ -57,6 +65,9 @@ class AppContents extends Component {
     };
 
     function NoMatch() {
+      // Tracking for 404 page
+      // TODO: This is running every time for some reason - we don't want that
+      // ReactGA.pageview('/404');
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
@@ -79,6 +90,8 @@ class AppContents extends Component {
     }
 
     function ErrorState() {
+      // Tracking for errors
+      React.pageview('/error');
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
@@ -94,26 +107,41 @@ class AppContents extends Component {
         <div className="App">
           { this.props.channels.isLoaded &&
             <Switch>
-              { this.props.channels.availableChannels.map((channel, i) =>
+              { this.props.channels.availableChannels.map((channel, i) => // Tracking for avail channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
-                  <Channel {...props} channel={channel} />
+                  <React.Fragment>
+                    {this.trackPageview()}
+                    <Channel {...props} channel={channel} />
+                  </React.Fragment>
                 )} />
               )}
-              { this.props.channels.hiddenChannels.map((channel, i) =>
+              { this.props.channels.hiddenChannels.map((channel, i) => // Tracking for hidden channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
-                  <Channel {...props} channel={channel} />
+                  <React.Fragment>
+                    {this.trackPageview()}
+                    <Channel {...props} channel={channel} />
+                  </React.Fragment>
                 )} />
               )}
-              { this.props.channels.currentChannel &&
+              { this.props.channels.currentChannel && // Tracking for root & then new current channel
                 <Route exact path="/" render={props => (
-                  <Redirect to={`/${this.props.channels.currentChannel.fields.slug}`} />
+                  <React.Fragment>
+                    {this.trackPageview()}
+                    <Redirect to={`/${this.props.channels.currentChannel.fields.slug}`} />
+                  </React.Fragment>
                 )} />
               }
-              <Route path="/tv-guide" render={props => (
-                <TVGuide {...props} channels={this.props.channels.featuredChannels} />
+              <Route path="/tv-guide" render={props => ( // Tracking for TV Guide
+                <React.Fragment>
+                  {this.trackPageview()}
+                  <TVGuide {...props} channels={this.props.channels.featuredChannels} />
+                </React.Fragment>
               )} />
-              <Route path="/channels" render={props => (
-                <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
+              <Route path="/channels" render={props => ( // Tracking for channels index
+                <React.Fragment>
+                  {this.trackPageview()}
+                  <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
+                </React.Fragment>
               )} />
 
               { !this.props.channels.currentChannel &&
