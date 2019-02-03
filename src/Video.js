@@ -5,6 +5,8 @@ import { addVideoPlayer, toggleMute } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
 
+import { videoBackgroundColor } from './styles';
+
 import styled, { css } from 'react-emotion';
 
 class Video extends Component {
@@ -190,7 +192,7 @@ class Video extends Component {
 const ReactPlayerWrapper = styled('div')`
   position: relative;
   padding-top: 75%;
-  background-color: #222;
+  background-color: ${videoBackgroundColor};
   ${props => props.cropControls && 'overflow: hidden;'}
 `;
 

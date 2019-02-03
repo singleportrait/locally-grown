@@ -3,6 +3,7 @@ import styled, { css } from 'react-emotion';
 export const padding = '1.25rem';
 
 export const backgroundColor = '#221935';
+export const videoBackgroundColor = '#3f305d';
 
 export const borderColor = '#4E475D';
 

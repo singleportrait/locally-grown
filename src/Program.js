@@ -384,7 +384,6 @@ const mobileTextHeight = `calc((100vh - ${mobileVideoWidth}) / 2 - 1rem)`;
 const mobileInfoContainerHeight = `calc(${mobileVideoWidth} + ${mobileTextHeight} + 1rem)`;
 
 const mobileVideo = css`
-  background-color: #222;
   width: ${mobileVideoWidth};
   padding-top: 50%;
 `;
