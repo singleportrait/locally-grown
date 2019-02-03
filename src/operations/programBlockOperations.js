@@ -69,11 +69,24 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     videos.forEach((video, i) => {
       if ('length' in video.fields) {
         const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
-        video.lengthInSeconds = videoLengthInSeconds
-        video.startTime = programmingLength;
-        video.index = i;
+        video.lengthInSeconds = videoLengthInSeconds;
 
-        video.endTime = programmingLength + videoLengthInSeconds;
+        // Calculate the video info differently if it starts at a custom timestamp
+          // TODO: Change name of the field in the admin to not be confusing
+          // video.fields.startTime to -> video.fields.customStartTimestamp
+        if (video.fields.startTime) {
+          const manualTimestamp = convertTimeToSeconds(video.fields.startTime);
+          if (manualTimestamp === 0) {
+            console.log(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
+          } else {
+            video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
+            video.manualTimestamp = manualTimestamp;
+          }
+        }
+
+        video.startTime = programmingLength;
+        video.endTime = programmingLength + video.lengthInSeconds;
+        video.index = i;
 
         if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
           videoToPlayIndex = i;
@@ -151,7 +164,11 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
     if ('length' in video.fields) {
       if (video.startTime < secondsPastTheHour && video.endTime > secondsPastTheHour) {
         videoToPlayIndex = i;
-        timestampToStartVideo = secondsPastTheHour - video.startTime;
+        if (video.manualTimestamp) {
+          timestampToStartVideo = secondsPastTheHour - video.startTime + video.manualTimestamp;
+        } else {
+          timestampToStartVideo = secondsPastTheHour - video.startTime;
+        }
         console.log("- Found a video to play at timestamp...", timestampToStartVideo);
       }
     } else {
