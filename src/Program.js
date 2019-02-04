@@ -299,27 +299,36 @@ const shortestAspectRatio = '9/4';
 // widthRelativeToBrowserHeight = (Browser width - program padding) * video 4/3 ratio
 const widthRelativeToBrowserHeight = 'calc((100vh - 2.8rem) * 1.333)';
 
-// The below doesn't work in the case that the video width calculates to > 100% wide
-// We need a 'max-left' somehow, and min() isn't real yet, but maybe we can do something with flex
-// const relativeLeftValue = 'calc((100% - ((100vh - 2.8rem) * 1.333)) / 2)';
+// Use the ratio of the video to learn how wide or tall it is, then position
+// it accordingly based on the browser ratio
+const relativeLeftValue = 'calc((100vw - 2.8rem - ((100vh - 2.8rem) * 1.333)) / 2)';
+const relativeTopValue = 'calc(((100vh - 2.8rem - (100vw - 2.8rem) * .75)) / 2)';
 
 const VideoAndControlsColumn = styled('div')`
   position: relative;
   transform: translateZ(0);
   backface-visibility: hidden;
-  transition: width 0.4s ease, left 0.4s ease;
-  left: 0;
+  transition: width 0.4s ease, left 0.4s ease, top 0.4s ease;
   max-width: 100%;
-  width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
+
+  @media (min-aspect-ratio: 4/3) {
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
+    left: ${props => props.maxMode ? relativeLeftValue : '0' };
+  }
+
+  @media (max-aspect-ratio: 4/3) {
+    width: ${props => props.maxMode ? '100%' : '65%' };
+    top: ${props => props.maxMode ? relativeTopValue : '0' };
+  }
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '55%' };
-    left: 5%;
+    left: ${props => props.maxMode ? relativeLeftValue : '5%' };
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '45%' };
-    left: 10%;
+    left: ${props => props.maxMode ? relativeLeftValue : '10%' };
   }
 `;
 
