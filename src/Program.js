@@ -109,7 +109,7 @@ class Program extends Component {
     const { programBlocks } = program.fields;
     const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
 
-    const renderDesktopVideo = () => {
+    const renderDesktopVideo = (allowMaxMode = true) => {
       return (
         <React.Fragment>
           { currentProgramBlock && currentProgramBlock.fields.videos &&
@@ -119,7 +119,7 @@ class Program extends Component {
                 timestamp={currentProgramBlock.timestampToStartVideo}
                 cropControls={true}
               />
-              <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={this.state.maxMode}>
+              <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={allowMaxMode && this.state.maxMode}>
                 { this.props.previousChannelSlug &&
                     <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
                 }
@@ -209,7 +209,7 @@ class Program extends Component {
         <MediaQuery minWidth={400} maxWidth={800}>
           <MediumProgramContainer>
             { renderChannelInfo() }
-            { renderDesktopVideo() }
+            { renderDesktopVideo(false) }
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
