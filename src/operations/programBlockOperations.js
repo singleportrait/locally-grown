@@ -72,10 +72,8 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.lengthInSeconds = videoLengthInSeconds;
 
         // Calculate the video info differently if it starts at a custom timestamp
-          // TODO: Change name of the field in the admin to not be confusing
-          // video.fields.startTime to -> video.fields.customStartTimestamp
-        if (video.fields.startTime) {
-          const manualTimestamp = convertTimeToSeconds(video.fields.startTime);
+        if (video.fields.customStartTimestamp) {
+          const manualTimestamp = convertTimeToSeconds(video.fields.customStartTimestamp);
           if (manualTimestamp === 0) {
             console.log(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
           } else {
