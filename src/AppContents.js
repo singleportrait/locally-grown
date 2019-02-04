@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
+import { Helmet } from 'react-helmet';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -126,6 +127,13 @@ class AppContents extends Component {
               { this.props.channels.currentChannel && // Tracking for root & then new current channel
                 <Route exact path="/" render={props => (
                   <React.Fragment>
+                    <Helmet>
+                      <title>{`${process.env.REACT_APP_NAME}`}</title>
+                      <link rel="canonical" href={process.env.REACT_APP_DOMAIN} />
+                      <meta property="og:title" content={process.env.REACT_APP_NAME} />
+                      <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
+                      <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
+                    </Helmet>
                     {this.trackPageview()}
                     <Redirect to={`/${this.props.channels.currentChannel.fields.slug}`} />
                   </React.Fragment>
@@ -133,12 +141,26 @@ class AppContents extends Component {
               }
               <Route path="/tv-guide" render={props => ( // Tracking for TV Guide
                 <React.Fragment>
+                  <Helmet>
+                    <title>{`TV Guide | ${process.env.REACT_APP_NAME}`}</title>
+                    <link rel="canonical" href={process.env.REACT_APP_DOMAIN + "tv-guide"} />
+                    <meta property="og:title" content={"TV Guide | " + process.env.REACT_APP_NAME} />
+                    <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
+                    <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
+                  </Helmet>
                   {this.trackPageview()}
                   <TVGuide {...props} channels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
               <Route path="/channels" render={props => ( // Tracking for channels index
                 <React.Fragment>
+                  <Helmet>
+                    <title>{`Channels | ${process.env.REACT_APP_NAME}`}</title>
+                    <link rel="canonical" href={process.env.REACT_APP_DOMAIN + "channels"} />
+                    <meta property="og:title" content={"All Channels | " + process.env.REACT_APP_NAME} />
+                    <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
+                    <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
+                  </Helmet>
                   {this.trackPageview()}
                   <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
                 </React.Fragment>

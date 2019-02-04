@@ -24,7 +24,7 @@ class TVGuide extends Component {
   }
 
   componentDidMount() {
-    document.title = "TV Guide | Locally Grown";
+    // document.title = "TV Guide | Locally Grown";
   }
 
   toggleTooltip() {

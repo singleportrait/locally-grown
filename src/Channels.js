@@ -25,7 +25,7 @@ class Channels extends Component {
   }
 
   componentDidMount() {
-    document.title = "All Channels | Locally Grown";
+    // document.title = "All Channels | Locally Grown";
   }
 
   toggleTooltip() {

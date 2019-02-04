@@ -39,7 +39,7 @@ class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
 
-    document.title = `${this.props.program.fields.title} | Locally Grown`
+    // document.title = `${this.props.program.fields.title} | Locally Grown`
 
     document.addEventListener('mousemove', this.handleEvents);
   }
