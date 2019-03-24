@@ -1,9 +1,10 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
 import { currentSecondsPastTheHour } from '../helpers';
 import store from '../store';
+import consoleLog from '../consoleLog';
 
 const resetPrograms = () => dispatch => {
-  console.log("It's time to reset the programs!");
+  consoleLog("It's time to reset the programs!");
 
   const newHour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(3600, newHour));

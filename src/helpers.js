@@ -1,4 +1,5 @@
 import TimeFormat from 'hh-mm-ss';
+import consoleLog from './consoleLog';
 
 export const shuffleArray = array => {
   var currentIndex = array.length
@@ -27,7 +28,7 @@ export const convertTimeToSeconds = time => {
     try {
       return TimeFormat.toS(time);
     } catch (e) {
-      console.log("Error calculating the time", e);
+      consoleLog("Error calculating the time", e);
       return 0;
     }
   }

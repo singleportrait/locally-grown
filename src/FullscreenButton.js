@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import consoleLog from './consoleLog';
 
 import screenfull from 'screenfull';
 import { findDOMNode } from 'react-dom'
@@ -22,7 +23,7 @@ class FullscreenButton extends Component {
     if (screenfull.enabled) {
       screenfull.request(findDOMNode(this.props.video.player));
     } else {
-      console.log("This isn't supported");
+      consoleLog("This isn't supported");
     }
 
     // The official React way (doesn't work immediately)

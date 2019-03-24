@@ -1,6 +1,7 @@
 import { setChannels, setupChannels, errorLoadingChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
+import consoleLog from '../consoleLog';
 
 // import { channelsData } from '../channelsData';
 
@@ -12,8 +13,8 @@ const fetchChannels = () => dispatch => {
       content_type: 'channel',
       include: 3
     }).then(channels => {
-      // console.log(JSON.stringify(channelsData));
-      // console.log(JSON.stringify(channels.items));
+      // consoleLog(JSON.stringify(channelsData));
+      // consoleLog(JSON.stringify(channels.items));
       dispatch(setChannels(channels.items));
       // dispatch(setChannels(channelsData));
       resolve(channels.items);
@@ -36,7 +37,7 @@ const findFeaturedLiveChannels = (channels) => {
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
         moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
     });
-    // console.log("Featured available programs:", featuredPrograms);
+    // consoleLog("Featured available programs:", featuredPrograms);
     return featuredPrograms.length !== 0;
   });
   return featuredLiveChannels;
@@ -55,7 +56,7 @@ const findAvailableChannels = (channels) => {
       return availableProgramBlocks.length !== 0;
     });
     if (availablePrograms.length > 1) {
-      console.log("There are multiple available programs for this channel!");
+      consoleLog("There are multiple available programs for this channel!");
     }
     channel.fields.programs = availablePrograms;
     return availablePrograms.length !== 0;

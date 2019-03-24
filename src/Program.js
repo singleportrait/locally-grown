@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import { findDOMNode } from 'react-dom';
 import debounce from 'lodash/debounce';
+import consoleLog from './consoleLog';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -46,7 +47,7 @@ class Program extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.session.currentHour !== prevProps.session.currentHour) {
-      console.log("Current hour updated");
+      consoleLog("Current hour updated");
       this.initializeProgram();
     }
   }
@@ -62,7 +63,7 @@ class Program extends Component {
   }
 
   handleEventStart = debounce((e) => {
-    // console.log('Preventing or removing max mode');
+    // consoleLog('Preventing or removing max mode');
     this.setState({ maxMode: false });
   }, 100, {
     'leading': true,
@@ -70,7 +71,7 @@ class Program extends Component {
   });
 
   handleEventEnd = debounce((e) => {
-    // console.log('Starting max mode after 4s debounce');
+    // consoleLog('Starting max mode after 4s debounce');
     this.setState({ maxMode: true });
   }, 4000, {
     'leading': false,
@@ -88,11 +89,11 @@ class Program extends Component {
       if (currentProgramBlock) {
         this.props.getCurrentProgramBlock(currentProgramBlock.sys.id);
       } else {
-        console.log("No current program block!");
+        consoleLog("No current program block!");
         this.props.getCurrentProgramBlock(null);
       }
     } else {
-      console.log("No program blocks!");
+      consoleLog("No program blocks!");
     }
   }
 
