@@ -89,7 +89,12 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
         if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
           videoToPlayIndex = i;
+
           timestampToStartVideo = secondsPastTheHour - programmingLength;
+          if (video.manualTimestamp) {
+            consoleLog("Using custom start time");
+            timestampToStartVideo = timestampToStartVideo + video.manualTimestamp;
+          }
         }
 
         programmingLength = video.endTime;
@@ -118,7 +123,12 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
         if (programmingLength < secondsPastTheHour && newVideo.endTime > secondsPastTheHour) {
           videoToPlayIndex = videos.length - 1;
+
           timestampToStartVideo = secondsPastTheHour - programmingLength;
+          if (newVideo.manualTimestamp) {
+            consoleLog("Using custom start time");
+            timestampToStartVideo = timestampToStartVideo + newVideo.manualTimestamp;
+          }
         }
 
         programmingLength += newVideo.lengthInSeconds;
@@ -194,7 +204,7 @@ export const updateCurrentVideo = () => dispatch => {
   }
 
   const newCurrentVideo = currentProgramBlock.fields.videos[newVideoIndex];
-  const newTimestamp = 0;
+  const newTimestamp = newCurrentVideo.manualTimestamp ? newCurrentVideo.manualTimestamp : 0;
 
   dispatch(setCurrentVideo(newCurrentVideo, newVideoIndex, newTimestamp));
 }
