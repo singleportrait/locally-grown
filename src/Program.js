@@ -12,7 +12,6 @@ import Video from './Video';
 import Navigation from './Navigation';
 import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
-import FullscreenButton from './FullscreenButton';
 import ChannelButton from './ChannelButton';
 import InfoTooltip from './InfoTooltip';
 import CurrentProgramBlockInfo from './CurrentProgramBlockInfo';
@@ -127,7 +126,6 @@ class Program extends Component {
 
                 <div className={controlButtons}>
                   <MuteButton />
-                  <FullscreenButton />
                 </div>
 
                 { this.props.nextChannelSlug &&
@@ -232,7 +230,6 @@ class Program extends Component {
                       <CloseIcon />
                     </div>
                   }
-                  <div className={mobileFullscreen}><FullscreenButton /></div>
                   { this.props.previousChannelSlug && !this.state.showMobileProgramInfo &&
                     <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
                   }
@@ -407,12 +404,6 @@ const mobileTopRightIcon = css`
 const mobileProgramInfoCloseIcon = css`
   ${mobileTopRightIcon}
   padding: 1rem;
-`;
-
-const mobileFullscreen = css`
-  position: absolute;
-  top: 0;
-  right: 0;
 `;
 
 const mobilePreviousChannel = css`
