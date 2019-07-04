@@ -3,7 +3,7 @@ import client from '../services-contentful';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
-// import { channelsData } from '../channelsData';
+// import { channelsData } from '../channelsDataJune2019';
 
 import * as moment from 'moment';
 
