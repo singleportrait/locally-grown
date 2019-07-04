@@ -53,6 +53,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
     let programmingLength = 0;
     const secondsPastTheHour = currentSecondsPastTheHour();
+    // consoleLog("- Seconds past the hour: " + secondsPastTheHour);
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
     let videosLength = videos.length;
@@ -78,6 +79,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           if (manualTimestamp === 0) {
             consoleLog(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
           } else {
+            consoleLog("- Converting and saving custom start time");
             video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
             video.manualTimestamp = manualTimestamp;
           }
@@ -87,12 +89,12 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.endTime = programmingLength + video.lengthInSeconds;
         video.index = i;
 
-        if (programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) {
+        if ((programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) || secondsPastTheHour === 0) {
           videoToPlayIndex = i;
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
           if (video.manualTimestamp) {
-            consoleLog("Using custom start time");
+            consoleLog("- Using custom start time in initializeCurrentProgramBlockVideos");
             timestampToStartVideo = timestampToStartVideo + video.manualTimestamp;
           }
         }
@@ -126,7 +128,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
           if (newVideo.manualTimestamp) {
-            consoleLog("Using custom start time");
+            consoleLog("- Using custom start time when repeating videos");
             timestampToStartVideo = timestampToStartVideo + newVideo.manualTimestamp;
           }
         }
@@ -174,6 +176,7 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
       if (video.startTime < secondsPastTheHour && video.endTime > secondsPastTheHour) {
         videoToPlayIndex = i;
         if (video.manualTimestamp) {
+          consoleLog("- Using custom start time in setupCurrentVideoAfterInitialLoad");
           timestampToStartVideo = secondsPastTheHour - video.startTime + video.manualTimestamp;
         } else {
           timestampToStartVideo = secondsPastTheHour - video.startTime;

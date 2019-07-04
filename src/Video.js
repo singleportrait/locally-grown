@@ -23,6 +23,7 @@ class Video extends Component {
   componentDidMount = () => this.props.addVideoPlayer(this.player);
 
   componentDidUpdate = (prevProps, prevState) => {
+    // consoleLog("Timestamp to start:" + this.props.timestamp);
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
       // Resetting the state to be muted FIXES the Vimeo pause issue,
       // but this doesn't fix turning muted back on once you switch
