@@ -8,15 +8,20 @@ import consoleLog from '../consoleLog';
 import * as moment from 'moment';
 
 const fetchChannels = () => dispatch => {
+  // Can use this when working offline
+  // return new Promise(function(resolve, reject) {
+  //   // consoleLog(JSON.stringify(channelsData));
+  //   dispatch(setChannels(channelsData));
+  //   resolve(channelsData);
+  // });
+
   return new Promise(function(resolve, reject) {
     client.getEntries({
       content_type: 'channel',
       include: 3
     }).then(channels => {
-      // consoleLog(JSON.stringify(channelsData));
       // consoleLog(JSON.stringify(channels.items));
       dispatch(setChannels(channels.items));
-      // dispatch(setChannels(channelsData));
       resolve(channels.items);
     }, error => {
       dispatch(errorLoadingChannels());

@@ -7,6 +7,10 @@ const resetPrograms = () => dispatch => {
   consoleLog("It's time to reset the programs!");
 
   const newHour = new Date().getHours();
+
+  // For debugging issues with hour starts:
+  // const newHour = 10;
+
   dispatch(setTimeUntilNextProgram(3600, newHour));
 
   // This will currently allow for the hour to change to have nothing playing
@@ -37,6 +41,9 @@ export const initializeSession = () => dispatch => {
   if (secondsUntilNextProgram < 0) {
     secondsUntilNextProgram = 3600;
   }
+
+  // For debugging issues with hour starts:
+  // secondsUntilNextProgram = 60;
 
   const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
