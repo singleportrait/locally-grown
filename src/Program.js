@@ -208,7 +208,9 @@ class Program extends Component {
         <MediaQuery minWidth={400} maxWidth={800}>
           <MediumProgramContainer>
             { renderChannelInfo() }
-            { renderDesktopVideo(false) }
+            <MediumVideoContainer>
+              { renderDesktopVideo(false) }
+            </MediumVideoContainer>
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
@@ -290,6 +292,14 @@ const WideProgramContainer = styled('div')`
 
 const MediumProgramContainer = styled('div')`
   margin: 1.4rem;
+`;
+
+// On horizontally-rotated phones and very short screens, scale the video to match
+const MediumVideoContainer = styled('div')`
+  @media (min-aspect-ratio: 16/9) {
+    width: calc(90vh * 1.33);
+    margin: 0 auto;
+  }
 `;
 
 const shortAspectRatio = '9/5';
