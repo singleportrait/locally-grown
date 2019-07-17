@@ -9,7 +9,7 @@ const resetPrograms = () => dispatch => {
   const newHour = new Date().getHours();
 
   // For debugging issues with hour starts:
-  // const newHour = 10;
+  // const newHour = 11;
 
   dispatch(setTimeUntilNextProgram(3600, newHour));
 
@@ -43,7 +43,7 @@ export const initializeSession = () => dispatch => {
   }
 
   // For debugging issues with hour starts:
-  // secondsUntilNextProgram = 60;
+  // secondsUntilNextProgram = 30;
 
   const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
