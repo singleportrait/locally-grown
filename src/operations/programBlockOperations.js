@@ -90,6 +90,9 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.index = i;
 
         if ((programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) || secondsPastTheHour === 0) {
+          if (secondsPastTheHour === 0) {
+            console.log("- It's a new hour and the first video has a custom start time");
+          }
           videoToPlayIndex = i;
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
@@ -196,13 +199,13 @@ const setupCurrentVideoAfterInitialLoad = () => dispatch => {
 }
 
 export const updateCurrentVideo = () => dispatch => {
-  // consoleLog("*** Getting the new video!");
+  consoleLog("*** Getting the new video!");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const videoPlayingIndex = currentProgramBlock.videoPlayingIndex;
 
   let newVideoIndex = videoPlayingIndex + 1;
   if (newVideoIndex >= currentProgramBlock.fields.videos.length) {
-    consoleLog("This was the last video! Going back to the beginning");
+    consoleLog("- Either this was the last video and we're going back to the beginning, or this is the only video in this hour block");
     newVideoIndex = 0;
   }
 
