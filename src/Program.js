@@ -212,7 +212,7 @@ class Program extends Component {
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
-        <MediaQuery maxDeviceWidth={600}>
+        <MediaQuery maxDeviceWidth={600} maxWidth={400}>
           <div>
             <MobileProgramContainer>
               { currentProgramBlock &&
