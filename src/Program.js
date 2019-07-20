@@ -5,7 +5,6 @@ import MediaQuery from 'react-responsive';
 import { findDOMNode } from 'react-dom';
 import debounce from 'lodash/debounce';
 import consoleLog from './consoleLog';
-import Overlay from 'react-overlays/lib/Overlay';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
@@ -21,7 +20,6 @@ import TVGuideLink from './TVGuideLink';
 
 import {
   Logo, backgroundColor, borderColor,
-  Tooltip, tooltipHeader, tooltipCloseButton
 } from './styles';
 
 import styled, { css } from 'react-emotion';
@@ -33,13 +31,11 @@ class Program extends Component {
     this.state = {
       showInfoTooltip: false,
       showMobileProgramInfo: false,
-      showMobileOverlay: true,
       maxMode: false
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
     this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
-    this.toggleMobileOverlay = this.toggleMobileOverlay.bind(this);
   }
 
   componentDidMount() {
@@ -108,10 +104,6 @@ class Program extends Component {
 
   toggleMobileProgramInfo() {
     this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
-  }
-
-  toggleMobileOverlay() {
-    this.setState({ showMobileOverlay: !this.state.showMobileOverlay });
   }
 
   render() {
@@ -229,26 +221,6 @@ class Program extends Component {
             <MobileProgramContainer>
               { currentProgramBlock &&
                 <React.Fragment>
-                  <Overlay
-                    show={this.state.showMobileOverlay}
-                    onHide={this.toggleMobileOverlay}
-                  >
-                    <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
-                      <Tooltip>
-                        <div className={tooltipHeader}>
-                          <h4>Welcome to Locally Grown</h4>
-                          <div className={tooltipCloseButton} onClick={this.toggleMobileOverlay}>
-                            <CloseIcon color="#000" />
-                          </div>
-                        </div>
-                        <p>
-                          Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.
-                          <br /><br />
-                          Our mobile site is a work in progress. Please try desktop for the best viewing experience.
-                        </p>
-                      </Tooltip>
-                    </MobileSupportOverlay>
-                  </Overlay>
                   <Video
                     video={currentProgramBlock.currentVideo}
                     timestamp={currentProgramBlock.timestampToStartVideo}
@@ -424,21 +396,6 @@ const MobileProgramContainer = styled('div')`
   justify-content: center;
   transform: rotate(90deg);
   transform-origin: 28% 50%;
-`;
-
-const MobileSupportOverlay = styled('div')`
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  background-color: rgba(0,0,0,.6);
-  display: flex;
-  justify-content: center;
-  padding-top: 200px;
 `;
 
 const mobileVideoWidth = '64vh';

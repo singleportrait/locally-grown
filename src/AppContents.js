@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-ro
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
+import MediaQuery from 'react-responsive';
+import Overlay from 'react-overlays/lib/Overlay';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -11,10 +13,14 @@ import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
+import CloseIcon from './CloseIcon';
 
 import styled from 'react-emotion';
 
-import { Logo } from './styles';
+import {
+  Logo,
+  Tooltip, tooltipHeader, tooltipCloseButton
+} from './styles';
 
 const LoadingContainer = styled('div')`
   display: flex;
@@ -26,15 +32,32 @@ const LoadingContainer = styled('div')`
   width: 100vw;
 `;
 
+const MobileSupportOverlay = styled('div')`
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: rgba(0,0,0,.6);
+  display: flex;
+  justify-content: center;
+  padding-top: 200px;
+`;
+
 class AppContents extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      showTooltip: false
+      showTooltip: false,
+      showMobileOverlay: true,
     }
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
+    this.toggleMobileOverlay = this.toggleMobileOverlay.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +67,10 @@ class AppContents extends Component {
 
   toggleTooltip() {
     this.setState({ showTooltip: !this.state.showTooltip });
+  }
+
+  toggleMobileOverlay() {
+    this.setState({ showMobileOverlay: !this.state.showMobileOverlay });
   }
 
   trackPageview() {
@@ -106,6 +133,28 @@ class AppContents extends Component {
     return (
       <Router>
         <div className="App">
+          <MediaQuery maxDeviceWidth={600} maxWidth={400}>
+            <Overlay
+              show={this.state.showMobileOverlay}
+              onHide={this.toggleMobileOverlay}
+            >
+              <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
+                <Tooltip>
+                  <div className={tooltipHeader}>
+                    <h4>Welcome to Locally Grown</h4>
+                    <div className={tooltipCloseButton} onClick={this.toggleMobileOverlay}>
+                      <CloseIcon color="#000" />
+                    </div>
+                  </div>
+                  <p>
+                      Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.
+                    <br /><br />
+                      Our mobile site is a work in progress. Please try desktop for the best viewing experience.
+                  </p>
+                </Tooltip>
+              </MobileSupportOverlay>
+            </Overlay>
+          </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
               { this.props.channels.availableChannels.map((channel, i) => // Tracking for avail channels
