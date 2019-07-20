@@ -395,15 +395,15 @@ const MobileProgramContainer = styled('div')`
   align-items: center;
   justify-content: center;
   transform: rotate(90deg);
-  transform-origin: 28% 50%;
+  transform-origin: 50vw;
 `;
 
-const mobileVideoWidth = '64vh';
-const mobileTextHeight = `calc((100vh - ${mobileVideoWidth}) / 2 - 1rem)`;
-const mobileInfoContainerHeight = `calc(${mobileVideoWidth} + ${mobileTextHeight} + 1rem)`;
+const mobileVideoWidth = '90vw * 1.33';
+const mobileTextHeight = `calc((100vh - (${mobileVideoWidth})) / 2 - 1rem)`;
+const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeight} + 1rem)`;
 
 const mobileVideo = css`
-  width: ${mobileVideoWidth};
+  width: calc(${mobileVideoWidth});
   padding-top: 50%;
 `;
 

@@ -10,7 +10,7 @@ class App extends Component {
   // <Route path=":channel" component={Channel} />
 
   render() {
-    console.log("Version 4f8877");
+    console.log("Version 7357c4");
 
     ReactGA.initialize('UA-133302828-1', {
       debug: false,
