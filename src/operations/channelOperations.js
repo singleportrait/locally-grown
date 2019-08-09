@@ -31,9 +31,16 @@ const fetchChannels = () => dispatch => {
   });
 }
 
+// This looks at all channels and finds the programs that are featured and
+// "on" for today's current date
 const findFeaturedLiveChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
-  const featuredLiveChannels = channels.filter(channel => {
+
+  // This is all because this code was ALSO updating the original variable's objects
+  // because cloning objects is a no-no...but I need help with my store shape
+  const copiedChannels = JSON.parse(JSON.stringify(channels));
+
+  const featuredLiveChannels = copiedChannels.filter(channel => {
 
     if (process.env.NODE_ENV !== `development`) {
       if (channel.fields.testChannel) {
@@ -41,8 +48,16 @@ const findFeaturedLiveChannels = (channels) => {
       }
     };
 
+    // consoleLog("On channel", channel.fields.title, "there are:");
+    // consoleLog("- These programs:", channel.fields.programs);
+
     const featuredPrograms = channel.fields.programs.filter(program => {
       if (!program.fields) {
+        return false;
+      }
+
+      if (!program.fields.programBlocks) {
+        consoleLog("Didn't find any program blocks in", program.fields.title, ", not including in featuredPrograms");
         return false;
       }
 
@@ -50,26 +65,53 @@ const findFeaturedLiveChannels = (channels) => {
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
         moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
     });
+
     // consoleLog("Featured available programs:", featuredPrograms);
+
+    // TODO: If there are more than one featured & active program,
+    // the links won't work correctly
+    if (featuredPrograms.length > 1) {
+      consoleLog("Warning, this channel has more than 1 active program. Expect bugginess.");
+    }
+
+    // We need to set the featured programs as the new correct programs
+    // for the channel
+    channel.fields.programs = featuredPrograms;
+
     return featuredPrograms.length !== 0;
   });
   return featuredLiveChannels;
 }
 
+// This looks at all channels and finds the ones that have program blocks
+// for this current hour, regardless of whether they are featured or active.
 const findAvailableChannels = (channels) => {
-  // This is all because this code was ALSO updating the original variable's objects
-  // because cloning objects is a no-no...but I need help with my store shape
+
+  // Same reasoning as above for findFeaturedLiveChannels
   const copiedChannels = JSON.parse(JSON.stringify(channels));
 
   const availableChannels = copiedChannels.filter(channel => {
+
+    // Return programs that have program blocks for this hour.
     const availablePrograms = channel.fields.programs.filter(program => {
+      if (!program.fields.programBlocks) {
+        consoleLog("Didn't find any program blocks in", program.fields.title, ", not including in availablePrograms");
+        return false;
+      }
+
       const availableProgramBlocks = program.fields.programBlocks.filter(programBlock => {
         return programBlock.fields.startTime === store.getState().session.currentHour;
       });
+      // consoleLog("Available program blocks:", availableProgramBlocks);
       return availableProgramBlocks.length !== 0;
     });
+
     if (availablePrograms.length > 1) {
       consoleLog("There are multiple available programs for this channel!");
+    }
+    if (availablePrograms.length === 0) {
+      consoleLog("There are no program blocks in this");
+      return false;
     }
     channel.fields.programs = availablePrograms;
     return availablePrograms.length !== 0;
