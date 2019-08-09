@@ -33,6 +33,13 @@ const fetchChannels = () => dispatch => {
 const findFeaturedLiveChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
   const featuredLiveChannels = channels.filter(channel => {
+
+    if (process.env.NODE_ENV !== `development`) {
+      if (channel.fields.testChannel) {
+        return false;
+      }
+    };
+
     const featuredPrograms = channel.fields.programs.filter(program => {
       if (!program.fields) {
         return false;
