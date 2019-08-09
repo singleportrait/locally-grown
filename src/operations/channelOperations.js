@@ -3,7 +3,7 @@ import client from '../services-contentful';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
-// import { channelsData } from '../channelsDataJune2019';
+// import { channelsData } from '../channelsDataAug2019';
 
 import * as moment from 'moment';
 
@@ -20,6 +20,7 @@ const fetchChannels = () => dispatch => {
       content_type: 'channel',
       include: 3
     }).then(channels => {
+      // Can use this to grab the current Contentful data
       // consoleLog(JSON.stringify(channels.items));
       dispatch(setChannels(channels.items));
       resolve(channels.items);
