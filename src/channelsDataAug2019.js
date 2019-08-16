@@ -13469,7 +13469,7 @@ export const channelsData = [
         "fields":{
           "name":"Jamil Baldwin & Westside Ty",
           "slug":"jamil-baldwin-and-westside-ty",
-          "description":"K-SBI is the brainchild of Westside Ty & Jamil Baldwin.\n\nWestside Ty, The Beeper King is an artist, producer, and DJ. He is currently working as DJ for and collaborator with Vince Staples — you can hear them on Beats1 radio show: Ramona Radio. Jamil Baldwin, is the manager of legendary music composer and arranger, Benjamin Wright. He’s also a writer and photographer who's work focuses on creating pieces that display marginalized folks from his community with a dignity not often afforded them in media. \n"
+          "description":"K-SBI is the brainchild of Westside Ty & Jamil Baldwin.\n\nWestside Ty, The Beeper King is an artist, producer, and DJ. He is currently working as DJ for and collaborator with Vince Staples — you can hear them on Beats1 radio show: Ramona Radio. Jamil Baldwin, is the manager of legendary music composer and arranger, Benjamin Wright. He’s also a writer and photographer who's work focuses on creating pieces that display marginalized folks from his community with a dignity not often afforded them in [media](http://google.com). \n"
         }
       }
     }

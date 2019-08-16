@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
+import Markdown from 'react-markdown';
 
 import styled, { css } from 'react-emotion';
 
@@ -88,7 +89,7 @@ Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
                     </div>
                   </div>
                   <p>
-                    {this.props.programBlock.fields.description}
+                    <Markdown source={this.props.programBlock.fields.description} />
                   </p>
                 </Tooltip>
               </Overlay>

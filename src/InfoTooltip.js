@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
+import Markdown from 'react-markdown';
 
 import { css } from 'react-emotion';
 
@@ -33,7 +34,9 @@ class InfoTooltip extends Component {
               </div>
             </div>
             {this.props.description &&
-                <p>{this.props.description}</p>
+              <p>
+                <Markdown source={this.props.description} />
+              </p>
             }
             {!this.props.description &&
                 <p><em>This program doesn&apos;t have a description!</em></p>
@@ -43,7 +46,9 @@ class InfoTooltip extends Component {
                 <br />
                 <p><strong>{user.fields.name}</strong></p>
                 {user.fields.description &&
-                  <p>{user.fields.description}</p>
+                  <p>
+                    <Markdown source={user.fields.description} />
+                  </p>
                 }
               </React.Fragment>
             }

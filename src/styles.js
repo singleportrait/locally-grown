@@ -30,6 +30,10 @@ export const Tooltip = styled('div')`
   width: 400px;
   margin-top: 2rem;
 
+  a {
+    color: inherit;
+  }
+
   @media (max-width: 600px) {
     width: calc(100vw - 2rem);
   }
