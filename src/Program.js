@@ -172,7 +172,10 @@ class Program extends Component {
       return (
         <React.Fragment>
           { currentProgramBlock &&
-              <CurrentProgramBlockInfo programBlock={currentProgramBlock} error={this.props.programBlocks.error} />
+            <CurrentProgramBlockInfo
+              programBlock={currentProgramBlock}
+              error={this.props.programBlocks.error}
+            />
           }
           { !currentProgramBlock &&
               <div>
@@ -186,7 +189,12 @@ class Program extends Component {
               </div>
           }
           { programBlocks &&
-              <ProgramBlockInfo programBlocks={programBlocks} currentHour={this.props.session.currentHour} />
+            <ProgramBlockInfo
+              programBlocks={programBlocks}
+              currentHour={this.props.session.currentHour}
+              channelTitle={this.props.channelTitle}
+              channelSlug={this.props.channelSlug}
+            />
           }
         </React.Fragment>
       );

@@ -1,58 +1,18 @@
 import React, { Component } from 'react';
 import Overlay from 'react-overlays/lib/Overlay';
 
-import * as moment from 'moment';
-
 import { css } from 'react-emotion';
 
 import Tooltip from './Tooltip';
+import RemindLink from './RemindLink';
 
 class InfoAndRemindLinks extends Component {
 
   render() {
 
-    const {
-      fields: {
-        title,
-        description,
-        startTime,
-      }
-    } = this.props.programBlock;
-
-    const renderCalendarLink = () => {
-      const friendlyDescription = description ? `
-${description}` : "";
-      const URL = process.env.REACT_APP_DOMAIN + this.props.channelSlug;
-
-      const now = new Date();
-      let date = moment(now).format("YYYYMMDD");
-
-      const friendlyStartTime = moment(startTime, "HH").format("ha");
-
-      if (this.props.currentHour >= startTime) {
-        date = moment(date).add(1, 'days').format("YYYYMMDD");
-      }
-
-      const calStartTime = moment(startTime, "H").format("HH") + "00";
-      const calEndTime = moment((startTime + 1), "H").format("HH") + "00";
-
-      const detailsString = `${URL}
-
-${title}${friendlyDescription}
-
-Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
-
-      return (
-        <a href={`http://www.google.com/calendar/event?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${date}T${calStartTime}00/${date}T${calEndTime}00&details=${encodeURIComponent(detailsString)}&output=xml&trp=false&sprop=&sprop=name:`}
-          target="_blank" rel="noopener noreferrer nofollow" className={programHoverLink}>
-          Remind Me
-        </a>
-      );
-    }
-
     return (
       <React.Fragment>
-        { description &&
+        { this.props.programBlock.fields.description &&
           <React.Fragment>
             <span className={programHoverLink} onClick={this.props.toggleTooltip} >??</span>
             <Overlay
@@ -64,14 +24,21 @@ Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
             >
               <Tooltip
                 tooltipClassName={programBlockTooltip}
-                title={title}
-                description={description}
+                title={this.props.programBlock.fields.title}
+                description={this.props.programBlock.fields.description}
                 close={this.props.toggleTooltip}
               />
             </Overlay>
           </React.Fragment>
         }
-        { !this.props.firstHour && renderCalendarLink() }
+        { !this.props.firstHour &&
+          <RemindLink
+            programBlock={this.props.programBlock}
+            className={programHoverLink}
+            channelTitle={this.props.channelTitle}
+            channelSlug={this.props.channelSlug}
+          />
+        }
       </React.Fragment>
     );
   }
@@ -92,6 +59,5 @@ const programBlockTooltip = css`
     margin-left: 1rem;
   }
 `;
-
 
 export default InfoAndRemindLinks;

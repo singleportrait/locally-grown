@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 
 import styled, { css } from 'react-emotion';
@@ -33,17 +32,14 @@ class TVGuideProgramBlock extends Component {
       >
         {this.props.programBlock.fields.title}
         <div className={this.props.firstHour ? programHoverFirstHourLinks : programHoverLinks}>
-
           <InfoAndRemindLinks
             show={this.state.showTooltip}
             toggleTooltip={this.toggleTooltip}
             target={() => findDOMNode(this.target)}
             programBlock={this.props.programBlock}
             firstHour={this.props.firstHour}
-            currentHour={this.props.session.currentHour}
             channelSlug={this.props.channelSlug}
             channelTitle={this.props.channelTitle}
-
           />
         </div>
       </ProgramBlock>
@@ -108,9 +104,4 @@ const programHoverFirstHourLinks = css`
   }
 `;
 
-const mapStateToProps = state => ({
-  session: state.session
-});
-
-
-export default connect(mapStateToProps)(TVGuideProgramBlock);
+export default TVGuideProgramBlock;
