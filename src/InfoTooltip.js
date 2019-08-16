@@ -34,9 +34,9 @@ class InfoTooltip extends Component {
               </div>
             </div>
             {this.props.description &&
-              <p>
+              <div>
                 <Markdown source={this.props.description} />
-              </p>
+              </div>
             }
             {!this.props.description &&
                 <p><em>This program doesn&apos;t have a description!</em></p>

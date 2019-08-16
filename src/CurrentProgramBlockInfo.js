@@ -7,9 +7,9 @@ class CurrentProgramBlockInfo extends Component {
       <React.Fragment>
         <p>Now playing:</p>
         <h1>{this.props.programBlock.fields.title}</h1>
-        <p>
+        <div>
           <Markdown source={this.props.programBlock.fields.description} />
-        </p>
+        </div>
         { this.props.programBlock.programmingLength < 3600 &&
             <p>
               <em>Warning! This block of programming runs out at <strong>{Math.round(this.props.programBlock.programmingLength/60)} minutes</strong> after the hour, so you might get some unexpected behavior while viewing this channel.</em>
