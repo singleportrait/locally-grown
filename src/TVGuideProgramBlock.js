@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/lib/Overlay';
-import Markdown from 'react-markdown';
 
 import styled, { css } from 'react-emotion';
 
-import * as moment from 'moment';
-
-import CloseIcon from './CloseIcon';
-import { programBlockBase, Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+import InfoAndRemindLinks from './InfoAndRemindLinks';
+import { programBlockBase } from './styles';
 
 class TVGuideProgramBlock extends Component {
   constructor(props) {
@@ -29,40 +25,6 @@ class TVGuideProgramBlock extends Component {
 
   render() {
 
-    const renderCalendarLink = () => {
-      const title = this.props.programBlock.fields.title;
-      const description = this.props.programBlock.fields.description ? `
-${this.props.programBlock.fields.description}` : "";
-      const URL = process.env.REACT_APP_DOMAIN + this.props.channelSlug;
-
-      const now = new Date();
-      const currentHour = this.props.session.currentHour;
-      let date = moment(now).format("YYYYMMDD");
-
-      let startTime = this.props.programBlock.fields.startTime;
-      let endTime = this.props.programBlock.fields.startTime + 1;
-      const friendlyStartTime = moment(startTime, "HH").format("ha");
-
-      if (currentHour >= startTime) {
-        date = moment(date).add(1, 'days').format("YYYYMMDD");
-      }
-
-      startTime = moment(startTime, "H").format("HH") + "00";
-      endTime = moment(endTime, "H").format("HH") + "00";
-
-      const detailsString = `${URL}
-
-${title}${description}
-
-Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
-
-      return (
-        <a href={`http://www.google.com/calendar/event?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${date}T${startTime}00/${date}T${endTime}00&details=${encodeURIComponent(detailsString)}&output=xml&trp=false&sprop=&sprop=name:`}
-          target="_blank" rel="noopener noreferrer nofollow" className={programHoverLink}>
-          Remind Me
-        </a>
-      );
-    }
 
     return (
       <ProgramBlock
@@ -71,45 +33,23 @@ Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
       >
         {this.props.programBlock.fields.title}
         <div className={this.props.firstHour ? programHoverFirstHourLinks : programHoverLinks}>
-          { this.props.programBlock.fields.description &&
-            <React.Fragment>
-              <span className={programHoverLink} onClick={this.toggleTooltip} >??</span>
-              <Overlay
-                show={this.state.showTooltip}
-                onHide={this.toggleTooltip}
-                placement="bottom"
-                rootClose={true}
-                target={() => findDOMNode(this.target)}
-              >
-                <Tooltip className={programBlockTooltip}>
-                  <div className={tooltipHeader}>
-                    <h4>{this.props.programBlock.fields.title}</h4>
-                    <div className={tooltipCloseButton} onClick={this.toggleTooltip}>
-                      <CloseIcon color="#000" />
-                    </div>
-                  </div>
-                  <p>
-                    <Markdown source={this.props.programBlock.fields.description} />
-                  </p>
-                </Tooltip>
-              </Overlay>
-            </React.Fragment>
-          }
-          { !this.props.firstHour && renderCalendarLink() }
+
+          <InfoAndRemindLinks
+            show={this.state.showTooltip}
+            toggleTooltip={this.toggleTooltip}
+            target={() => findDOMNode(this.target)}
+            programBlock={this.props.programBlock}
+            firstHour={this.props.firstHour}
+            currentHour={this.props.session.currentHour}
+            channelSlug={this.props.channelSlug}
+            channelTitle={this.props.channelTitle}
+
+          />
         </div>
       </ProgramBlock>
     );
   }
 }
-
-const programBlockTooltip = css`
-  margin-left: 100px;
-  margin-top: 2px;
-
-  @media (max-width: 600px) {
-    margin-left: 1rem;
-  }
-`;
 
 const ProgramBlock = styled('div')`
   ${programBlockBase};
@@ -166,13 +106,6 @@ const programHoverFirstHourLinks = css`
   span, a {
     color: #000;
   }
-`;
-
-const programHoverLink = css`
-  text-decoration: underline;
-  cursor: pointer;
-  display: inline-block;
-  padding: 1px 8px 4px;
 `;
 
 const mapStateToProps = state => ({
