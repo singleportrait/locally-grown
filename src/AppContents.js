@@ -13,14 +13,11 @@ import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
-import CloseIcon from './CloseIcon';
+import Tooltip from './Tooltip';
 
 import styled from 'react-emotion';
 
-import {
-  Logo,
-  Tooltip, tooltipHeader, tooltipCloseButton
-} from './styles';
+import { Logo } from './styles';
 
 const LoadingContainer = styled('div')`
   display: flex;
@@ -87,7 +84,11 @@ class AppContents extends Component {
           <Logo>Locally Grown</Logo>
           <h1>No programs right now.</h1>
           <br /><br />
-          <WhatIsThisTooltip toggleInfo={this.toggleTooltip} showInfo={this.state.showTooltip} showLink={false} />
+          <WhatIsThisTooltip
+            toggleInfo={this.toggleTooltip}
+            showInfo={this.state.showTooltip}
+            showLink={false}
+          />
         </LoadingContainer>
       );
     };
@@ -130,6 +131,9 @@ class AppContents extends Component {
       );
     }
 
+    const mobileOverlayTitle="Welcome to Locally Grown";
+    const mobileOverlayDescription="Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.\n\nOur mobile site is a work in progress. Please try desktop for the best viewing experience.";
+
     return (
       <Router>
         <div className="App">
@@ -139,19 +143,12 @@ class AppContents extends Component {
               onHide={this.toggleMobileOverlay}
             >
               <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
-                <Tooltip>
-                  <div className={tooltipHeader}>
-                    <h4>Welcome to Locally Grown</h4>
-                    <div className={tooltipCloseButton} onClick={this.toggleMobileOverlay}>
-                      <CloseIcon color="#000" />
-                    </div>
-                  </div>
-                  <p>
-                      Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.
-                    <br /><br />
-                      Our mobile site is a work in progress. Please try desktop for the best viewing experience.
-                  </p>
-                </Tooltip>
+                <Tooltip
+                  close={this.toggleMobileOverlay}
+                  title={mobileOverlayTitle}
+                  description={mobileOverlayDescription}
+                  ignorePositioning={true}
+                />
               </MobileSupportOverlay>
             </Overlay>
           </MediaQuery>

@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import Overlay from 'react-overlays/lib/Overlay';
-import Markdown from 'react-markdown';
 
 import * as moment from 'moment';
 
 import { css } from 'react-emotion';
 
-import CloseIcon from './CloseIcon';
-import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+import Tooltip from './Tooltip';
 
 class InfoAndRemindLinks extends Component {
 
@@ -64,17 +62,12 @@ Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
               rootClose={true}
               target={this.props.target}
             >
-              <Tooltip className={programBlockTooltip}>
-                <div className={tooltipHeader}>
-                  <h4>{title}</h4>
-                  <div className={tooltipCloseButton} onClick={this.props.toggleTooltip}>
-                    <CloseIcon color="#000" />
-                  </div>
-                </div>
-                <div>
-                  <Markdown source={description} />
-                </div>
-              </Tooltip>
+              <Tooltip
+                tooltipClassName={programBlockTooltip}
+                title={title}
+                description={description}
+                close={this.props.toggleTooltip}
+              />
             </Overlay>
           </React.Fragment>
         }

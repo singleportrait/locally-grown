@@ -21,33 +21,6 @@ export const Header = styled('div')`
   min-height: 50px;
 `;
 
-export const Tooltip = styled('div')`
-  position: absolute;
-  z-index: 1;
-  background-color: #fff;
-  color: #000;
-  padding: 1rem;
-  width: 400px;
-  margin-top: 2rem;
-
-  a {
-    color: inherit;
-  }
-
-  @media (max-width: 600px) {
-    width: calc(100vw - 2rem);
-  }
-`;
-
-export const tooltipHeader = css`
-  display: flex;
-  justify-content: space-between;
-`;
-
-export const tooltipCloseButton = css`
-  cursor: pointer;
-`;
-
 export const programBlockBase = css`
   position: relative;
   width: 200px;
