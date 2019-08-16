@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import MediaQuery from 'react-responsive';
-import Overlay from 'react-overlays/lib/Overlay';
+import Overlay from 'react-overlays/Overlay';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -15,7 +15,7 @@ import Channels from './Channels';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
 import Tooltip from './Tooltip';
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 import { Logo } from './styles';
 

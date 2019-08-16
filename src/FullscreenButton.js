@@ -7,7 +7,7 @@ import { findDOMNode } from 'react-dom'
 
 import FullscreenIcon from './FullscreenIcon';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 const fullscreenButton = css`
   padding: 1rem;

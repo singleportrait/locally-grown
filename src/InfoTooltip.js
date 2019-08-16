@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/lib/Overlay';
+import Overlay from 'react-overlays/Overlay';
 import Markdown from 'react-markdown';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 import Tooltip from './Tooltip';
 

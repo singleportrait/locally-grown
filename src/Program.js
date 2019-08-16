@@ -22,7 +22,8 @@ import {
   Logo, backgroundColor, borderColor,
 } from './styles';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 class Program extends Component {
   constructor(props) {

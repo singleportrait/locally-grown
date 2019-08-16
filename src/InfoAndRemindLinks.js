@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Overlay from 'react-overlays/lib/Overlay';
+import Overlay from 'react-overlays/Overlay';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 import Tooltip from './Tooltip';
 import RemindLink from './RemindLink';

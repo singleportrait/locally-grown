@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import { Link } from 'react-router-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import { padding, Header } from './styles';
 import WhatIsThisTooltip from './WhatIsThisTooltip';

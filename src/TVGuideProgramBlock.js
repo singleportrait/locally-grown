@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import InfoAndRemindLinks from './InfoAndRemindLinks';
 import { programBlockBase } from './styles';

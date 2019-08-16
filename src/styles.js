@@ -1,4 +1,5 @@
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 export const padding = '1.25rem';
 
@@ -21,7 +22,7 @@ export const Header = styled('div')`
   min-height: 50px;
 `;
 
-export const programBlockBase = css`
+export const programBlockBase = `
   position: relative;
   width: 200px;
   height: 50px;

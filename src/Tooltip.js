@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import styled, { css } from 'react-emotion';
 import Markdown from 'react-markdown';
+
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import CloseIcon from './CloseIcon';
 
