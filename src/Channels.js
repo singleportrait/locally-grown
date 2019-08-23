@@ -15,22 +15,8 @@ import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 import * as moment from 'moment';
 
 class Channels extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showTooltip: false
-    }
-
-    this.toggleTooltip = this.toggleTooltip.bind(this);
-  }
-
   componentDidMount() {
     // document.title = "All Channels | Locally Grown";
-  }
-
-  toggleTooltip() {
-    this.setState({ showTooltip: !this.state.showTooltip });
   }
 
   renderChannel(channel, program, isMobile = false) {
@@ -94,11 +80,7 @@ class Channels extends Component {
     return (
       <ChannelsWrapper>
         <Header>
-          <WhatIsThisTooltip
-            toggleInfo={this.toggleTooltip}
-            showInfo={this.state.showTooltip}
-            showLink={false}
-          />
+          <WhatIsThisTooltip showLink={false} />
           <h2>Channels</h2>
           <div style={{textAlign: "right"}}>
             It&apos;s {moment(Date.now()).format("h:mma")}.

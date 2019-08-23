@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { css } from 'emotion';
 
 export const padding = '1.25rem';
 

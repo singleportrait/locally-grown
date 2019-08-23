@@ -91,3 +91,18 @@ h4 {
     font-size: 16px;
   }
 }
+
+// Overrides for react-tooltip library, if we use it
+// .__react_component_tooltip {
+//   border-radius: 0 !important;
+//   font-size: inherit !important;
+//   padding: inherit !important;
+
+//   &.show {
+//     opacity: inherit !important;
+//   }
+
+//   &:before, &:after {
+//     border: none !important;
+//   }
+// }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/Overlay';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import Markdown from 'react-markdown';
 
 import { css } from 'emotion';
@@ -37,30 +37,35 @@ class InfoTooltip extends Component {
       );
     };
 
+    // Could potentially use <Overlay> instead of <OverlayTrigger> to set a manual container for the tooltip on <WideProgramContainer>, so that this awkward custom positioning doesn't have to happen in the sidebar
+    const renderTooltip = (
+      <Popover id="info-and-remind-links">
+        <Tooltip
+          title={this.props.title}
+          descriptionHTML={renderDescription()}
+          relativePosition={true}
+          tooltipClassName={infoTooltipStyle}
+        />
+      </Popover>
+    );
+
     return (
-      <React.Fragment>
-        <span
-          className={tooltipTrigger}
-          ref={(t) => { this.target = t; }}
-          onClick={this.props.toggleInfo}
-        >Info</span>
-        <Overlay
-          show={this.props.show}
-          onHide={this.props.toggleInfo}
-          placement="bottom"
-          rootClose={true}
-          target={() => findDOMNode(this.target)}
-        >
-          <Tooltip
-            title={this.props.title}
-            descriptionHTML={renderDescription()}
-            close={this.props.toggleInfo}
-          />
-        </Overlay>
-      </React.Fragment>
+      <OverlayTrigger
+        trigger="click"
+        rootClose="true"
+        placement="left"
+        overlay={renderTooltip}
+      >
+        <span className={tooltipTrigger}>Info</span>
+      </OverlayTrigger>
     );
   }
 }
+
+const infoTooltipStyle = css`
+  top: 4rem;
+  left: 2rem;
+`;
 
 const tooltipTrigger = css`
   text-decoration: underline;

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
@@ -8,35 +7,16 @@ import InfoAndRemindLinks from './InfoAndRemindLinks';
 import { programBlockBase } from './styles';
 
 class TVGuideProgramBlock extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showTooltip: false,
-    }
-
-    this.toggleTooltip = this.toggleTooltip.bind(this);
-  }
-
-  toggleTooltip(e) {
-    this.setState({ showTooltip: !this.state.showTooltip });
-    e.preventDefault();
-  }
 
   render() {
-
 
     return (
       <ProgramBlock
         className={this.props.firstHour && firstHour}
-        ref={(t) => { this.target = t; }}
       >
         {this.props.programBlock.fields.title}
         <div className={this.props.firstHour ? programHoverFirstHourLinks : programHoverLinks}>
           <InfoAndRemindLinks
-            show={this.state.showTooltip}
-            toggleTooltip={this.toggleTooltip}
-            target={() => findDOMNode(this.target)}
             programBlock={this.props.programBlock}
             firstHour={this.props.firstHour}
             channelSlug={this.props.channelSlug}
