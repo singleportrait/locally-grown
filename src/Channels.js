@@ -108,42 +108,79 @@ const ChannelsWrapper = styled('div')`
   margin: 1rem;
 `;
 
-// TODO: How can I target these rows better? Using modulo or a better formula?
-// This only works up to 18 channels
+// Fun :)
+const desktopImageWidth = '40vw';
+const mobileImageWidth = '70vw';
+
+const desktopPadding = `(((100vw - ${desktopImageWidth}) - 2rem) / 4)`;
+const mobilePadding = `(((100vw - ${mobileImageWidth}) - 2rem) / 4)`;
+
 const channelContainer = css`
   display: flex;
   margin: ${padding} 0;
   text-decoration: none;
   position: relative;
-  &:nth-of-type(2), &:nth-of-type(10) {
-    padding-left: calc(15vw - 2.8rem);
+
+  &:nth-of-type(8n),
+  &:nth-of-type(8n + 2) {
+    padding-left: calc(${desktopPadding});
   }
-  &:nth-of-type(3), &:nth-of-type(11) {
-    padding-left: calc(30vw - 2.8rem);
+
+  &:nth-of-type(8n + 3) {
+    padding-left: calc(${desktopPadding} * 2);
   }
-  &:nth-of-type(4), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7),
-  &:nth-of-type(12), &:nth-of-type(13), &:nth-of-type(14), &:nth-of-type(15) {
+
+  &:nth-of-type(8n + 4),
+  &:nth-of-type(8n + 5),
+  &:nth-of-type(8n + 6),
+  &:nth-of-type(8n + 7) {
     &, > div { flex-direction: row-reverse; }
     text-align: right;
   }
-  &:nth-of-type(4), &:nth-of-type(12) {
-    padding-right: 15vw;
+
+  &:nth-of-type(8n + 4),
+  &:nth-of-type(8n + 6) {
+    padding-right: calc(${desktopPadding});
   }
-  &:nth-of-type(5), &:nth-of-type(13) {
+
+  &:nth-of-type(8n + 5) {
+    // Nothing
   }
-  &:nth-of-type(6), &:nth-of-type(14) {
-    padding-right: 15vw;
-  }
-  &:nth-of-type(7), &:nth-of-type(15) {
-    padding-right: 30vw;
-  }
-  &:nth-of-type(8), &:nth-of-type(16) {
-    padding-left: 15vw;
+
+  &:nth-of-type(8n + 7) {
+    padding-right: calc(${desktopPadding} * 2);
   }
 
   @media screen and (max-width: 600px) {
-    // Mobile calculation for the complex ones:
-    // padding-left: calc((40vw - 2rem) / 3);
+    &:nth-of-type(8n),
+    &:nth-of-type(8n + 2) {
+      padding-left: calc(${mobilePadding});
+    }
+
+    &:nth-of-type(8n + 3) {
+      padding-left: calc(${mobilePadding} * 2);
+    }
+
+    &:nth-of-type(8n + 4),
+    &:nth-of-type(8n + 5),
+    &:nth-of-type(8n + 6),
+    &:nth-of-type(8n + 7) {
+      &, > div { flex-direction: row-reverse; }
+      text-align: right;
+    }
+
+    &:nth-of-type(8n + 4),
+    &:nth-of-type(8n + 6) {
+      padding-right: calc(${mobilePadding});
+    }
+
+    &:nth-of-type(8n + 5) {
+      // Nothing
+    }
+
+    &:nth-of-type(8n + 7) {
+      padding-right: calc(${mobilePadding} * 2);
+    }
   }
 `;
 
@@ -158,13 +195,13 @@ const ProgramContainer = styled('div')`
 `;
 
 const ProgramImageContainer = styled('div')`
-  width: 40vw;
+  width: ${desktopImageWidth};
   height: 30vw;
   position: relative;
 
   @media screen and (max-width: 600px) {
-    width: 60vw;
-    height: 45vw;
+    width: ${mobileImageWidth};
+    height: 50vw;
   }
 `;
 
