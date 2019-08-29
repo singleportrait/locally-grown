@@ -5,6 +5,8 @@ import * as moment from 'moment';
 
 import styled, { css } from 'react-emotion';
 
+import ProgramBlockInfoDescription from './ProgramBlockInfoDescription';
+
 import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 
 const ProgramBlockInfoContainer = styled('div')`
@@ -16,12 +18,12 @@ const NextProgramBlock = styled('div')`
 `;
 
 const ProgramBlock = styled('div')`
-  opacity: .6;
   display: flex;
   margin-bottom: .5rem;
 `;
 
 const programBlocksTime = css`
+  opacity: .6;
   min-width: 4rem;
 `;
 
@@ -42,12 +44,20 @@ class ProgramBlockInfo extends Component {
             </h4>
           </NextProgramBlock>
         }
-        { sortedProgramBlocks.map(({fields}, i) =>
+        { sortedProgramBlocks.map((programBlock, i) =>
           <ProgramBlock key={i}>
-            <div className={programBlocksTime}>{moment(fields.startTime, "HH").format("ha")}</div>
-            <div>{fields.title}</div>
+            <div className={programBlocksTime}>{moment(programBlock.fields.startTime, "HH").format("ha")}</div>
+            <ProgramBlockInfoDescription
+              programBlock={programBlock}
+              channelSlug={this.props.channelSlug}
+              channelTitle={this.props.channelTitle}
+            />
           </ProgramBlock>
         )}
+
+        { !nextProgramBlock && !sortedProgramBlocks.length &&
+          <p>This program doesn't have any other programming scheduled.</p>
+        }
       </ProgramBlockInfoContainer>
     );
   }

@@ -1,15 +1,41 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
+import Markdown from 'react-markdown';
 
 import { css } from 'react-emotion';
 
-import CloseIcon from './CloseIcon';
-import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
+import Tooltip from './Tooltip';
 
 class InfoTooltip extends Component {
   render() {
     const user = this.props.user;
+
+    const renderDescription = () => {
+      return (
+        <React.Fragment>
+          {this.props.description &&
+            <div>
+              <Markdown source={this.props.description} />
+            </div>
+          }
+          {!this.props.description &&
+            <p><em>This program doesn&apos;t have a description!</em></p>
+          }
+          {user &&
+            <React.Fragment>
+              <br />
+              <p><strong>{user.fields.name}</strong></p>
+              {user.fields.description &&
+                <div>
+                  <Markdown source={user.fields.description} />
+                </div>
+              }
+            </React.Fragment>
+          }
+        </React.Fragment>
+      );
+    };
 
     return (
       <React.Fragment>
@@ -25,29 +51,11 @@ class InfoTooltip extends Component {
           rootClose={true}
           target={() => findDOMNode(this.target)}
         >
-          <Tooltip>
-            <div className={tooltipHeader}>
-              <h4>{this.props.title}</h4>
-              <div className={tooltipCloseButton} onClick={this.props.toggleInfo}>
-                <CloseIcon color="#000" />
-              </div>
-            </div>
-            {this.props.description &&
-                <p>{this.props.description}</p>
-            }
-            {!this.props.description &&
-                <p><em>This program doesn&apos;t have a description!</em></p>
-            }
-            {user &&
-              <React.Fragment>
-                <br />
-                <p><strong>{user.fields.name}</strong></p>
-                {user.fields.description &&
-                  <p>{user.fields.description}</p>
-                }
-              </React.Fragment>
-            }
-          </Tooltip>
+          <Tooltip
+            title={this.props.title}
+            descriptionHTML={renderDescription()}
+            close={this.props.toggleInfo}
+          />
         </Overlay>
       </React.Fragment>
     );

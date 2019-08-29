@@ -1,11 +1,16 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
 import { currentSecondsPastTheHour } from '../helpers';
 import store from '../store';
+import consoleLog from '../consoleLog';
 
 const resetPrograms = () => dispatch => {
-  console.log("It's time to reset the programs!");
+  consoleLog("It's time to reset the programs!");
 
   const newHour = new Date().getHours();
+
+  // For debugging issues with hour starts:
+  // const newHour = 11;
+
   dispatch(setTimeUntilNextProgram(3600, newHour));
 
   // This will currently allow for the hour to change to have nothing playing
@@ -36,6 +41,9 @@ export const initializeSession = () => dispatch => {
   if (secondsUntilNextProgram < 0) {
     secondsUntilNextProgram = 3600;
   }
+
+  // For debugging issues with hour starts:
+  // secondsUntilNextProgram = 30;
 
   const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));

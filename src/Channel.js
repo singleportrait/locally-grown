@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -7,8 +8,19 @@ import Program from './Program';
 class Channel extends Component {
   render() {
     const channelFields = this.props.channel.fields;
+
+    const channelTitle = `${channelFields.title} | ${process.env.REACT_APP_NAME}`;
+    const channelURL = process.env.REACT_APP_DOMAIN + channelFields.slug;
+    const shareImageURL = (channelFields.programs[0].fields.previewImage ? channelFields.programs[0].fields.previewImage.fields.file.url : process.env.REACT_APP_DOMAIN + "share.png");
     return (
       <div className="channel">
+        <Helmet>
+          <title>{channelTitle}</title>
+          <link rel="canonical" href={channelURL} />
+          <meta property="og:title" content={channelTitle} />
+          <meta property="og:description" content={channelFields.description} />
+          <meta property="og:image" content={shareImageURL} />
+        </Helmet>
         { channelFields &&
           <div>
             { channelFields.programs.length > 0 &&
@@ -16,6 +28,7 @@ class Channel extends Component {
                 program={channelFields.programs[0]}
                 channelTitle={channelFields.title}
                 channelUser={channelFields.user}
+                channelSlug={channelFields.slug}
                 previousChannelSlug={this.props.channel.previousChannelSlug}
                 nextChannelSlug={this.props.channel.nextChannelSlug}
               />

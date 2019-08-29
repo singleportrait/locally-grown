@@ -4,6 +4,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 html {
@@ -34,6 +35,10 @@ hr {
 
 p {
   margin: 0;
+
+  &:not(:first-of-type) {
+    margin-top: 1rem;
+  }
 
   @media (max-width: 600px) {
     font-size: 12px;

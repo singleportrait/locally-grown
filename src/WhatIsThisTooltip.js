@@ -5,17 +5,23 @@ import Overlay from 'react-overlays/lib/Overlay';
 
 import { css } from 'react-emotion';
 
-import CloseIcon from './CloseIcon';
-import { Tooltip, tooltipHeader, tooltipCloseButton } from './styles';
-
-const darkLink = css`
-  &, &:visited, &:hover, &:active {
-    color: #000;
-  }
-`;
+import Tooltip from './Tooltip';
 
 class WhatIsThisTooltip extends Component {
   render() {
+
+    const renderDescription = () => {
+      return (
+        <React.Fragment>
+          <p>Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.</p>
+
+          { this.props.showLink &&
+            <p><Link to="/channels">View all channels</Link></p>
+          }
+        </React.Fragment>
+      );
+    }
+
     return (
       <div>
         <h4
@@ -30,21 +36,12 @@ class WhatIsThisTooltip extends Component {
           rootClose={true}
           target={() => findDOMNode(this.target)}
         >
-          <Tooltip className={whatIsThisTooltip}>
-            <div className={tooltipHeader}>
-              <h4>What is Locally Grown?</h4>
-              <div className={tooltipCloseButton} onClick={this.props.toggleInfo}>
-                <CloseIcon color="#000" />
-              </div>
-            </div>
-            <p>Locally Grown is a project that...</p>
-            { this.props.showLink &&
-              <React.Fragment>
-                <br />
-                <Link to="/channels" className={darkLink}>View all channels</Link>
-              </React.Fragment>
-            }
-          </Tooltip>
+          <Tooltip
+            tooltipClassName={whatIsThisTooltip}
+            title={"What is Locally Grown?"}
+            descriptionHTML={renderDescription()}
+            close={this.props.toggleInfo}
+          />
         </Overlay>
       </div>
     );

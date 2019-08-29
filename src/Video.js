@@ -1,44 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import consoleLog from './consoleLog';
+
 import { updateCurrentVideo } from './operations/programBlockOperations';
 import { addVideoPlayer, toggleMute } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
 
+import { videoBackgroundColor } from './styles';
+
 import styled, { css } from 'react-emotion';
-
-const ReactPlayerWrapper = styled('div')`
-  position: relative;
-  padding-top: 75%;
-  background-color: #222;
-  ${props => props.cropControls && 'overflow: hidden;'}
-`;
-
-const reactPlayerStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const croppedReactPlayerStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-  top: -20%;
-`;
-
-const VideoOverlay = styled('div')`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-`;
-
-const progressStyle = css`
-  background-color: white;
-`;
 
 class Video extends Component {
   constructor(props) {
@@ -52,6 +23,7 @@ class Video extends Component {
   componentDidMount = () => this.props.addVideoPlayer(this.player);
 
   componentDidUpdate = (prevProps, prevState) => {
+    // consoleLog("Timestamp to start:" + this.props.timestamp);
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
       // Resetting the state to be muted FIXES the Vimeo pause issue,
       // but this doesn't fix turning muted back on once you switch
@@ -63,6 +35,12 @@ class Video extends Component {
       if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.videoStore.muted) {
         this.props.toggleMute(false);
       }
+    }
+
+    if (this.props.video.index !== prevProps.video.index &&
+      this.props.video.fields.url === prevProps.video.fields.url) {
+      // consoleLog("- The new video is the same as the old one, but the index has changed. Let's restart the video");
+      this.onDuration();
     }
   }
 
@@ -76,7 +54,7 @@ class Video extends Component {
       // so we don't need to have this sanity check around it
       // this.seekToTimestamp(duration);
     }
-    // console.log("Video: Setting duration");
+    // consoleLog("Video: Setting duration");
     this.seekToTimestamp(duration);
     this.setState({
       duration: duration
@@ -90,10 +68,10 @@ class Video extends Component {
     // TODO: Handle what should happen if the duration is greater than the
     // timestamp we passed in (could happen from user error)
     if (duration <= this.props.timestamp) {
-      console.log("Video: This timestamp is longer than the video!");
+      consoleLog("Video: This timestamp is longer than the video!");
     }
 
-    // console.log("Seeking to timestamp...");
+    // consoleLog("Seeking to timestamp...");
     this.player.seekTo(this.props.timestamp);
   }
 
@@ -110,33 +88,33 @@ class Video extends Component {
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
     // This doesn't reliably trigger for Vimeo videos
-    // console.log("Video: Playing...");
+    // consoleLog("Video: Playing...");
   }
 
   onReady = () => {
     // Was trying to get the videos to start playing by using a timeout
     // rather than user trigger, but didn't work
-    // console.log("Video: On ready");
+    // consoleLog("Video: On ready");
     // setTimeout(() => {
     //   this.playPause();
     //   setTimeout(this.playPause, 500);
-    //   console.log("Video: Toggled play/pause");
+    //   consoleLog("Video: Toggled play/pause");
     // }, 500)
-    // console.log("Video: onReady");
-    if (!this.state.previouslyMuted) {
-      // console.log("This shouldn't be muted anymore");
+    // consoleLog("Video: onReady");
+    // if (!this.state.previouslyMuted) {
+      // consoleLog("This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with
       // un-muted audio, though the following code could theoretically work
       // this.setState({
       //   volume: 1,
       //   muted: true
       // })
-    }
+    // }
   }
 
   toggleMute = () => {
     // Vimeo videos break once you try to unmute the videos and change the channel
-    // console.log("Video: Toggling mute");
+    // consoleLog("Video: Toggling mute");
     this.props.toggleMute(this.props.videoStore.muted);
   }
 
@@ -213,6 +191,39 @@ class Video extends Component {
     );
   }
 }
+
+const ReactPlayerWrapper = styled('div')`
+  position: relative;
+  padding-top: 75%;
+  background-color: ${videoBackgroundColor};
+  ${props => props.cropControls && 'overflow: hidden;'}
+`;
+
+const reactPlayerStyle = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const croppedReactPlayerStyle = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: -20%;
+`;
+
+const VideoOverlay = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+`;
+
+const progressStyle = css`
+  background-color: white;
+`;
 
 Video.defaultProps = {
   timestamp: 0
