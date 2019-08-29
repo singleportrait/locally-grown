@@ -19,7 +19,7 @@ class Channels extends Component {
     // document.title = "All Channels | Locally Grown";
   }
 
-  renderChannel(channel, program, isMobile = false) {
+  renderChannel(channel, program) {
     const currentHour = this.props.session.currentHour;
     const nextHour = currentHour + 1;
     let nextProgramBlock = null;
@@ -28,8 +28,6 @@ class Channels extends Component {
     // TODO: If there isn't anything playing, show the next thing that is
     // const sortedProgramBlocks = getRelativeSortedProgramBlocks(this.props.programBlocks, this.props.currentHour);
     // const nextProgramBlock = sortedProgramBlocks.shift();
-    const programClasses = isMobile ? mobileProgramImageContainerStyle : undefined;
-    const imageClasses = isMobile || !currentProgramBlock ? textOverImageStyle : undefined;
 
     if (!currentProgramBlock) {
       const sortedProgramBlocks = getRelativeSortedProgramBlocks(program.fields.programBlocks, currentHour);
@@ -39,26 +37,28 @@ class Channels extends Component {
 
     return (
       <Link to={channel.fields.slug} className={channelContainer}>
-        <ProgramContainer className={isMobile ? mobileProgramContainer : ''}>
-          <ProgramImageContainer className={programClasses}>
-            <ProgramImage className={imageClasses} backgroundImage={program.fields.previewImage && program.fields.previewImage.fields.file.url} />
-            { !currentProgramBlock && !isMobile &&
-              <NoCurrentProgramBlockText>
-                Nothing playing on this channel right now!
-              </NoCurrentProgramBlockText>
+        <ProgramContainer>
+          <ProgramImageContainer>
+            <ProgramImage className={!currentProgramBlock && textOverImageStyle} backgroundImage={program.fields.previewImage && program.fields.previewImage.fields.file.url} />
+            { !currentProgramBlock &&
+              <MediaQuery minWidth={600}>
+                <NoCurrentProgramBlockText>
+                  Nothing playing on this channel right now!
+                </NoCurrentProgramBlockText>
+              </MediaQuery>
             }
           </ProgramImageContainer>
-          <ProgramInfo className={isMobile ? mobileProgramInfo : ''}>
+          <ProgramInfo>
             { currentProgramBlock &&
               <React.Fragment>
                 <h2>{currentProgramBlock.fields.title}</h2>
-                <h3 className={isMobile ? undefined : timeWindowStyle}>{moment(currentHour, "HH").format("h")}&ndash;{moment(nextHour, "HH").format("ha")}</h3>
+                <h3 className={timeWindowStyle}>{moment(currentHour, "HH").format("h")}&ndash;{moment(nextHour, "HH").format("ha")}</h3>
               </React.Fragment>
             }
             { !currentProgramBlock && nextProgramBlock &&
               <React.Fragment>
                 <h2>Next up: {nextProgramBlock.fields.title}</h2>
-                <h3 className={isMobile ? undefined : timeWindowStyle}>{moment(nextProgramBlock.fields.startTime, "HH").format("h")}&ndash;{moment(nextProgramBlock.fields.startTime + 1, "HH").format("ha")}</h3>
+                <h3 className={timeWindowStyle}>{moment(nextProgramBlock.fields.startTime, "HH").format("h")}&ndash;{moment(nextProgramBlock.fields.startTime + 1, "HH").format("ha")}</h3>
               </React.Fragment>
             }
             <h4>
@@ -67,8 +67,10 @@ class Channels extends Component {
                 <div>by {channel.fields.user.fields.name}</div>
               }
             </h4>
-            { !currentProgramBlock && isMobile &&
-              <p>Nothing playing on this channel right now!</p>
+            { !currentProgramBlock &&
+              <MediaQuery minWidth={600}>
+                <p>Nothing playing on this channel right now!</p>
+              </MediaQuery>
             }
           </ProgramInfo>
         </ProgramContainer>
@@ -92,20 +94,11 @@ class Channels extends Component {
         { this.props.featuredChannels.length === 0 &&
           <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
         }
-        <MediaQuery minWidth={600}>
-          <div>
-            { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
-              <React.Fragment key={i}>{this.renderChannel(channel, program)}</React.Fragment>
-            ))}
-          </div>
-        </MediaQuery>
-        <MediaQuery maxWidth={600}>
-          <div>
-            { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
-              <React.Fragment key={i}>{this.renderChannel(channel, program, true)}</React.Fragment>
-            ))}
-          </div>
-        </MediaQuery>
+        <div>
+          { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
+            <React.Fragment key={i}>{this.renderChannel(channel, program)}</React.Fragment>
+          ))}
+        </div>
       </ChannelsWrapper>
     );
   }
@@ -151,31 +144,35 @@ const channelContainer = css`
 
 const ProgramContainer = styled('div')`
   display: flex;
-`;
 
-const mobileProgramContainer = css`
-  position: relative;
-  display: block;
-  text-align: left;
+  @media screen and (max-width: 600px) {
+    position: relative;
+    // display: block;
+    // text-align: left;
+  }
 `;
 
 const ProgramImageContainer = styled('div')`
   width: 40vw;
   height: 30vw;
   position: relative;
-`;
 
-const mobileProgramImageContainerStyle = css`
-  width: 60vw;
-  height: 45vw;
+  @media screen and (max-width: 600px) {
+    width: 60vw;
+    height: 45vw;
+  }
 `;
 
 const ProgramImage = styled('div')`
   width: 100%;
   height: 100%;
   background-image: url(${props => props.backgroundImage || './static_placeholder4.png'});
-  // background-image: url('samurai.png');
+  // background-image: url('samurai.png'); // Testing
   background-size: cover;
+
+  @media screen and (max-width: 600px) {
+    opacity: .3;
+  }
 `;
 
 const textOverImageStyle = css`
@@ -194,20 +191,22 @@ const NoCurrentProgramBlockText = styled('h4')`
 `;
 
 const timeWindowStyle = css`
-  margin: 1rem 0;
+  @media screen and (min-width: 600px) {
+    margin: 1rem 0;
+  }
 `;
 
 const ProgramInfo = styled('div')`
   padding: 0 ${padding};
   max-width: 30vw;
-`;
 
-const mobileProgramInfo = css`
-  position: absolute;
-  padding: 0 1rem;
-  top: .75rem;
-  left: 0;
-  max-width: none;
+  @media screen and (max-width: 600px) {
+    position: absolute;
+    padding: 0 1rem;
+    top: .75rem;
+    left: 0;
+    max-width: none;
+  }
 `;
 
 const mapStateToProps = state => ({
