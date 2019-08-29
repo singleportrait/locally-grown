@@ -52,7 +52,7 @@ class InfoTooltip extends Component {
     return (
       <OverlayTrigger
         trigger="click"
-        rootClose="true"
+        rootClose={true}
         placement="left"
         overlay={renderTooltip}
       >

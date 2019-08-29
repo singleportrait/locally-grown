@@ -34,7 +34,7 @@ class WhatIsThisTooltip extends Component {
     return (
       <OverlayTrigger
         placement="bottom-start"
-        rootClose="true"
+        rootClose={true}
         trigger="click"
         overlay={renderTooltip}
       >

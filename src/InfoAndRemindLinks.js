@@ -26,7 +26,7 @@ class InfoAndRemindLinks extends Component {
         { this.props.programBlock.fields.description &&
           <OverlayTrigger
             trigger="click"
-            rootClose="true"
+            rootClose={true}
             placement="bottom-start"
             overlay={renderTooltip}
             popperConfig={{

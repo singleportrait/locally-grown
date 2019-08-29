@@ -50,7 +50,7 @@ class ProgramBlockInfoDescription extends Component {
     return (
       <OverlayTrigger
         placement="bottom-start"
-        rootClose="true"
+        rootClose={true}
         trigger="click"
         overlay={renderTooltip}
       >
