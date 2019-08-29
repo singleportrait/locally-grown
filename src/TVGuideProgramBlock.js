@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import styled from '@emotion/styled';
 import { css } from 'emotion';
 
 import InfoAndRemindLinks from './InfoAndRemindLinks';
@@ -11,8 +10,8 @@ class TVGuideProgramBlock extends Component {
   render() {
 
     return (
-      <ProgramBlock
-        className={this.props.firstHour && firstHour}
+      <div
+        className={this.props.firstHour ? firstHour : otherHours}
       >
         {this.props.programBlock.fields.title}
         <div className={this.props.firstHour ? programHoverFirstHourLinks : programHoverLinks}>
@@ -23,14 +22,13 @@ class TVGuideProgramBlock extends Component {
             channelTitle={this.props.channelTitle}
           />
         </div>
-      </ProgramBlock>
+      </div>
     );
   }
 }
 
-const ProgramBlock = styled('div')`
+const programBlockBaseStyle = `
   ${programBlockBase};
-  background-color: #999;
   color: #000;
   font-weight: 500;
   font-size: 15px;
@@ -41,6 +39,7 @@ const ProgramBlock = styled('div')`
 `;
 
 const firstHour = css`
+  ${programBlockBaseStyle}
   background-color: #fff;
 
   span, a {
@@ -56,6 +55,11 @@ const firstHour = css`
       background: linear-gradient(to right, rgba(210,209,214,0) 0%,rgba(210,209,214,1) 10%,rgba(210,209,214,1) 100%);
     }
   }
+`;
+
+const otherHours = css`
+  ${programBlockBaseStyle}
+  background-color: #999;
 `;
 
 const programHoverBase = css`
