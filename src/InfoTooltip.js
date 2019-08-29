@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
+import Overlay from 'react-bootstrap/Overlay';
 import Markdown from 'react-markdown';
 
 import { css } from 'emotion';
@@ -8,18 +7,25 @@ import { css } from 'emotion';
 import Tooltip from './Tooltip';
 
 class InfoTooltip extends Component {
+  constructor(props) {
+    super(props);
+
+    this.target = React.createRef();
+  }
+
   render() {
+    const description = this.props.description;
     const user = this.props.user;
 
     const renderDescription = () => {
       return (
         <React.Fragment>
-          {this.props.description &&
+          {description &&
             <div>
-              <Markdown source={this.props.description} />
+              <Markdown source={description} />
             </div>
           }
-          {!this.props.description &&
+          {!description &&
             <p><em>This program doesn&apos;t have a description!</em></p>
           }
           {user &&
@@ -37,35 +43,35 @@ class InfoTooltip extends Component {
       );
     };
 
-    // Could potentially use <Overlay> instead of <OverlayTrigger> to set a manual container for the tooltip on <WideProgramContainer>, so that this awkward custom positioning doesn't have to happen in the sidebar
-    const renderTooltip = (
-      <Popover id="info-and-remind-links">
-        <Tooltip
-          title={this.props.title}
-          descriptionHTML={renderDescription()}
-          relativePosition={true}
-          tooltipClassName={infoTooltipStyle}
-        />
-      </Popover>
-    );
-
     return (
-      <OverlayTrigger
-        trigger="click"
-        rootClose={true}
-        placement="left"
-        overlay={renderTooltip}
-      >
-        <span className={tooltipTrigger}>Info</span>
-      </OverlayTrigger>
+      <React.Fragment>
+        <span
+          className={tooltipTrigger}
+          ref={this.target}
+          onClick={this.props.toggleInfo}
+        >Info</span>
+
+        <Overlay
+          show={this.props.show}
+          onHide={this.props.toggleInfo}
+          rootClose={true}
+          target={this.target.current}
+          placement="bottom"
+        >
+          {({
+            ...props
+          }) => (
+            <Tooltip
+              {...props}
+              title={this.props.title}
+              descriptionHTML={renderDescription()}
+            />
+          )}
+        </Overlay>
+      </React.Fragment>
     );
   }
 }
-
-const infoTooltipStyle = css`
-  top: 4rem;
-  left: 2rem;
-`;
 
 const tooltipTrigger = css`
   text-decoration: underline;

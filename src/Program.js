@@ -29,10 +29,12 @@ class Program extends Component {
     super(props);
 
     this.state = {
+      showInfoTooltip: false,
       showMobileProgramInfo: false,
       maxMode: false
     }
 
+    this.toggleInfo = this.toggleInfo.bind(this);
     this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
   }
 
@@ -100,6 +102,10 @@ class Program extends Component {
     this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
   }
 
+  toggleInfo() {
+    this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
+  }
+
   render() {
     const program = this.props.program;
     const { programBlocks } = program.fields;
@@ -149,6 +155,8 @@ class Program extends Component {
             }
             .
             <InfoTooltip
+              toggleInfo={this.toggleInfo}
+              show={this.state.showInfoTooltip}
               title={program.fields.title}
               description={program.fields.description}
               user={this.props.channelUser}

@@ -8,6 +8,7 @@ class Tooltip extends Component {
   render() {
     return (
       <TooltipWrapper
+        {...this.props}
         className={this.props.tooltipClassName}
         relativePosition={this.props.relativePosition}
       >
