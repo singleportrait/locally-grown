@@ -429,7 +429,7 @@ const mobileNextChannel = css`
   right: 1rem;
 `;
 
-const baseMobileText = css`
+const baseMobileText = `
   position: absolute;
   width: calc(100vw - 130px);
   left: 75px;
