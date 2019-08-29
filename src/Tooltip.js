@@ -10,7 +10,6 @@ class Tooltip extends Component {
       <TooltipWrapper
         {...this.props}
         className={this.props.tooltipClassName}
-        relativePosition={this.props.relativePosition}
       >
         <div className={this.props.titleClassName}>
           <h4>
@@ -31,7 +30,7 @@ class Tooltip extends Component {
 }
 
 const TooltipWrapper = styled('div')`
-  position: ${props => props.relativePosition ? 'relative' : 'absolute'};
+  position: absolute;
   z-index: 1;
   background-color: #fff;
   color: #000;
@@ -58,7 +57,6 @@ Tooltip.defaultProps = {
   titleClassName: tooltipTitleStyle,
   description: undefined,
   descriptionHTML: undefined,
-  relativePosition: undefined,
 }
 
 export default Tooltip;

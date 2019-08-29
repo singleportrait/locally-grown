@@ -134,8 +134,9 @@ const channelContainer = css`
   &:nth-of-type(8n + 5),
   &:nth-of-type(8n + 6),
   &:nth-of-type(8n + 7) {
-    &, > div { flex-direction: row-reverse; }
     text-align: right;
+
+    &, > div { flex-direction: row-reverse; }
   }
 
   &:nth-of-type(8n + 4),
@@ -165,8 +166,9 @@ const channelContainer = css`
     &:nth-of-type(8n + 5),
     &:nth-of-type(8n + 6),
     &:nth-of-type(8n + 7) {
-      &, > div { flex-direction: row-reverse; }
       text-align: right;
+
+      &, > div { flex-direction: row-reverse; }
     }
 
     &:nth-of-type(8n + 4),
