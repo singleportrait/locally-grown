@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import * as moment from 'moment';
 
@@ -13,22 +14,8 @@ import TVGuideProgramBlock from './TVGuideProgramBlock';
 import { Header, programBlockBase } from './styles';
 
 class TVGuide extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showTooltip: false
-    }
-
-    this.toggleTooltip = this.toggleTooltip.bind(this);
-  }
-
   componentDidMount() {
     // document.title = "TV Guide | Locally Grown";
-  }
-
-  toggleTooltip() {
-    this.setState({ showTooltip: !this.state.showTooltip });
   }
 
   goBack = () => {
@@ -57,7 +44,7 @@ class TVGuide extends Component {
     return (
       <TVGuideWrapper>
         <Header>
-          <WhatIsThisTooltip toggleInfo={this.toggleTooltip} showInfo={this.state.showTooltip} />
+          <WhatIsThisTooltip />
           <h2>TV Guide</h2>
           <div onClick={this.goBack} className={closeButton}>
             <CloseIcon />

@@ -1,25 +1,31 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/lib/Overlay';
+import Overlay from 'react-bootstrap/Overlay';
 import Markdown from 'react-markdown';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 import Tooltip from './Tooltip';
 
 class InfoTooltip extends Component {
+  constructor(props) {
+    super(props);
+
+    this.target = React.createRef();
+  }
+
   render() {
+    const description = this.props.description;
     const user = this.props.user;
 
     const renderDescription = () => {
       return (
         <React.Fragment>
-          {this.props.description &&
+          {description &&
             <div>
-              <Markdown source={this.props.description} />
+              <Markdown source={description} />
             </div>
           }
-          {!this.props.description &&
+          {!description &&
             <p><em>This program doesn&apos;t have a description!</em></p>
           }
           {user &&
@@ -41,21 +47,26 @@ class InfoTooltip extends Component {
       <React.Fragment>
         <span
           className={tooltipTrigger}
-          ref={(t) => { this.target = t; }}
+          ref={this.target}
           onClick={this.props.toggleInfo}
         >Info</span>
+
         <Overlay
           show={this.props.show}
           onHide={this.props.toggleInfo}
-          placement="bottom"
           rootClose={true}
-          target={() => findDOMNode(this.target)}
+          target={this.target.current}
+          placement="bottom"
         >
-          <Tooltip
-            title={this.props.title}
-            descriptionHTML={renderDescription()}
-            close={this.props.toggleInfo}
-          />
+          {({
+            ...props
+          }) => (
+            <Tooltip
+              {...props}
+              title={this.props.title}
+              descriptionHTML={renderDescription()}
+            />
+          )}
         </Overlay>
       </React.Fragment>
     );

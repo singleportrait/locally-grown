@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import MediaQuery from 'react-responsive';
-import Overlay from 'react-overlays/lib/Overlay';
+import Overlay from 'react-overlays/Overlay';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -15,7 +15,7 @@ import Channels from './Channels';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
 import Tooltip from './Tooltip';
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 import { Logo } from './styles';
 
@@ -49,11 +49,9 @@ class AppContents extends Component {
     super(props);
 
     this.state = {
-      showTooltip: false,
       showMobileOverlay: true,
     }
 
-    this.toggleTooltip = this.toggleTooltip.bind(this);
     this.toggleMobileOverlay = this.toggleMobileOverlay.bind(this);
   }
 
@@ -84,11 +82,7 @@ class AppContents extends Component {
           <Logo>Locally Grown</Logo>
           <h1>No programs right now.</h1>
           <br /><br />
-          <WhatIsThisTooltip
-            toggleInfo={this.toggleTooltip}
-            showInfo={this.state.showTooltip}
-            showLink={false}
-          />
+          <WhatIsThisTooltip showLink={false} />
         </LoadingContainer>
       );
     };
@@ -132,7 +126,7 @@ class AppContents extends Component {
     }
 
     const mobileOverlayTitle="Welcome to Locally Grown";
-    const mobileOverlayDescription="Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.\n\nOur mobile site is a work in progress. Please try desktop for the best viewing experience.";
+    const mobileOverlayDescription="Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.\n\nOur mobile site is a work in progress. Please try desktop for the best viewing experience.\n\nTap anywhere to begin.";
 
     return (
       <Router>
@@ -142,14 +136,18 @@ class AppContents extends Component {
               show={this.state.showMobileOverlay}
               onHide={this.toggleMobileOverlay}
             >
-              <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
-                <Tooltip
-                  close={this.toggleMobileOverlay}
-                  title={mobileOverlayTitle}
-                  description={mobileOverlayDescription}
-                  ignorePositioning={true}
-                />
-              </MobileSupportOverlay>
+                {({
+                  ...props
+                }) => (
+                <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
+                  <Tooltip
+                    close={this.toggleMobileOverlay}
+                    title={mobileOverlayTitle}
+                    description={mobileOverlayDescription}
+                    ignorePositioning={true}
+                  />
+                </MobileSupportOverlay>
+                )}
             </Overlay>
           </MediaQuery>
           { this.props.channels.isLoaded &&

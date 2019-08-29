@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import { Link } from 'react-router-dom';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import { padding, Header } from './styles';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
@@ -14,25 +15,11 @@ import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 import * as moment from 'moment';
 
 class Channels extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showTooltip: false
-    }
-
-    this.toggleTooltip = this.toggleTooltip.bind(this);
-  }
-
   componentDidMount() {
     // document.title = "All Channels | Locally Grown";
   }
 
-  toggleTooltip() {
-    this.setState({ showTooltip: !this.state.showTooltip });
-  }
-
-  renderChannel(channel, program, isMobile = false) {
+  renderChannel(channel, program) {
     const currentHour = this.props.session.currentHour;
     const nextHour = currentHour + 1;
     let nextProgramBlock = null;
@@ -41,8 +28,6 @@ class Channels extends Component {
     // TODO: If there isn't anything playing, show the next thing that is
     // const sortedProgramBlocks = getRelativeSortedProgramBlocks(this.props.programBlocks, this.props.currentHour);
     // const nextProgramBlock = sortedProgramBlocks.shift();
-    const programClasses = isMobile ? mobileProgramImageContainerStyle : undefined;
-    const imageClasses = isMobile || !currentProgramBlock ? textOverImageStyle : undefined;
 
     if (!currentProgramBlock) {
       const sortedProgramBlocks = getRelativeSortedProgramBlocks(program.fields.programBlocks, currentHour);
@@ -52,26 +37,28 @@ class Channels extends Component {
 
     return (
       <Link to={channel.fields.slug} className={channelContainer}>
-        <ProgramContainer className={isMobile ? mobileProgramContainer : ''}>
-          <ProgramImageContainer className={programClasses}>
-            <ProgramImage className={imageClasses} backgroundImage={program.fields.previewImage && program.fields.previewImage.fields.file.url} />
-            { !currentProgramBlock && !isMobile &&
-              <NoCurrentProgramBlockText>
-                Nothing playing on this channel right now!
-              </NoCurrentProgramBlockText>
+        <ProgramContainer>
+          <ProgramImageContainer>
+            <ProgramImage className={!currentProgramBlock && textOverImageStyle} backgroundImage={program.fields.previewImage && program.fields.previewImage.fields.file.url} />
+            { !currentProgramBlock &&
+              <MediaQuery minWidth={600}>
+                <NoCurrentProgramBlockText>
+                  Nothing playing on this channel right now!
+                </NoCurrentProgramBlockText>
+              </MediaQuery>
             }
           </ProgramImageContainer>
-          <ProgramInfo className={isMobile ? mobileProgramInfo : ''}>
+          <ProgramInfo>
             { currentProgramBlock &&
               <React.Fragment>
                 <h2>{currentProgramBlock.fields.title}</h2>
-                <h3 className={isMobile ? undefined : timeWindowStyle}>{moment(currentHour, "HH").format("h")}&ndash;{moment(nextHour, "HH").format("ha")}</h3>
+                <h3 className={timeWindowStyle}>{moment(currentHour, "HH").format("h")}&ndash;{moment(nextHour, "HH").format("ha")}</h3>
               </React.Fragment>
             }
             { !currentProgramBlock && nextProgramBlock &&
               <React.Fragment>
                 <h2>Next up: {nextProgramBlock.fields.title}</h2>
-                <h3 className={isMobile ? undefined : timeWindowStyle}>{moment(nextProgramBlock.fields.startTime, "HH").format("h")}&ndash;{moment(nextProgramBlock.fields.startTime + 1, "HH").format("ha")}</h3>
+                <h3 className={timeWindowStyle}>{moment(nextProgramBlock.fields.startTime, "HH").format("h")}&ndash;{moment(nextProgramBlock.fields.startTime + 1, "HH").format("ha")}</h3>
               </React.Fragment>
             }
             <h4>
@@ -80,8 +67,10 @@ class Channels extends Component {
                 <div>by {channel.fields.user.fields.name}</div>
               }
             </h4>
-            { !currentProgramBlock && isMobile &&
-              <p>Nothing playing on this channel right now!</p>
+            { !currentProgramBlock &&
+              <MediaQuery minWidth={600}>
+                <p>Nothing playing on this channel right now!</p>
+              </MediaQuery>
             }
           </ProgramInfo>
         </ProgramContainer>
@@ -93,11 +82,7 @@ class Channels extends Component {
     return (
       <ChannelsWrapper>
         <Header>
-          <WhatIsThisTooltip
-            toggleInfo={this.toggleTooltip}
-            showInfo={this.state.showTooltip}
-            showLink={false}
-          />
+          <WhatIsThisTooltip showLink={false} />
           <h2>Channels</h2>
           <div style={{textAlign: "right"}}>
             It&apos;s {moment(Date.now()).format("h:mma")}.
@@ -109,20 +94,11 @@ class Channels extends Component {
         { this.props.featuredChannels.length === 0 &&
           <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
         }
-        <MediaQuery minWidth={600}>
-          <div>
-            { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
-              <React.Fragment key={i}>{this.renderChannel(channel, program)}</React.Fragment>
-            ))}
-          </div>
-        </MediaQuery>
-        <MediaQuery maxWidth={600}>
-          <div>
-            { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
-              <React.Fragment key={i}>{this.renderChannel(channel, program, true)}</React.Fragment>
-            ))}
-          </div>
-        </MediaQuery>
+        <div>
+          { this.props.featuredChannels.map((channel) => channel.fields.programs.map((program, i) =>
+            <React.Fragment key={i}>{this.renderChannel(channel, program)}</React.Fragment>
+          ))}
+        </div>
       </ChannelsWrapper>
     );
   }
@@ -132,67 +108,115 @@ const ChannelsWrapper = styled('div')`
   margin: 1rem;
 `;
 
-// TODO: How can I target these rows better? Using modulo or a better formula?
-// This only works up to 18 channels
+// Fun :)
+const desktopImageWidth = '40vw';
+const mobileImageWidth = '70vw';
+
+const desktopPadding = `(((100vw - ${desktopImageWidth}) - 2rem) / 4)`;
+const mobilePadding = `(((100vw - ${mobileImageWidth}) - 2rem) / 4)`;
+
 const channelContainer = css`
   display: flex;
   margin: ${padding} 0;
   text-decoration: none;
   position: relative;
-  &:nth-child(2), &:nth-child(10) {
-    padding-left: calc(15vw - 2.8rem);
+
+  &:nth-of-type(8n),
+  &:nth-of-type(8n + 2) {
+    padding-left: calc(${desktopPadding});
   }
-  &:nth-child(3), &:nth-child(11) {
-    padding-left: calc(30vw - 2.8rem);
+
+  &:nth-of-type(8n + 3) {
+    padding-left: calc(${desktopPadding} * 2);
   }
-  &:nth-child(4), &:nth-child(5), &:nth-child(6), &:nth-child(7),
-  &:nth-child(12), &:nth-child(13), &:nth-child(14), &:nth-child(15) {
-    &, > div { flex-direction: row-reverse; }
+
+  &:nth-of-type(8n + 4),
+  &:nth-of-type(8n + 5),
+  &:nth-of-type(8n + 6),
+  &:nth-of-type(8n + 7) {
     text-align: right;
+
+    &, > div { flex-direction: row-reverse; }
   }
-  &:nth-child(4), &:nth-child(12) {
-    padding-right: 15vw;
+
+  &:nth-of-type(8n + 4),
+  &:nth-of-type(8n + 6) {
+    padding-right: calc(${desktopPadding});
   }
-  &:nth-child(5), &:nth-child(13) {
+
+  &:nth-of-type(8n + 5) {
+    // Nothing
   }
-  &:nth-child(6), &:nth-child(14) {
-    padding-right: 15vw;
+
+  &:nth-of-type(8n + 7) {
+    padding-right: calc(${desktopPadding} * 2);
   }
-  &:nth-child(7), &:nth-child(15) {
-    padding-right: 30vw;
-  }
-  &:nth-child(8), &:nth-child(16) {
-    padding-left: 15vw;
+
+  @media screen and (max-width: 600px) {
+    &:nth-of-type(8n),
+    &:nth-of-type(8n + 2) {
+      padding-left: calc(${mobilePadding});
+    }
+
+    &:nth-of-type(8n + 3) {
+      padding-left: calc(${mobilePadding} * 2);
+    }
+
+    &:nth-of-type(8n + 4),
+    &:nth-of-type(8n + 5),
+    &:nth-of-type(8n + 6),
+    &:nth-of-type(8n + 7) {
+      text-align: right;
+
+      &, > div { flex-direction: row-reverse; }
+    }
+
+    &:nth-of-type(8n + 4),
+    &:nth-of-type(8n + 6) {
+      padding-right: calc(${mobilePadding});
+    }
+
+    &:nth-of-type(8n + 5) {
+      // Nothing
+    }
+
+    &:nth-of-type(8n + 7) {
+      padding-right: calc(${mobilePadding} * 2);
+    }
   }
 `;
 
 const ProgramContainer = styled('div')`
   display: flex;
-`;
 
-const mobileProgramContainer = css`
-  position: relative;
-  display: block;
-  text-align: left;
+  @media screen and (max-width: 600px) {
+    position: relative;
+    // display: block;
+    // text-align: left;
+  }
 `;
 
 const ProgramImageContainer = styled('div')`
-  width: 40vw;
+  width: ${desktopImageWidth};
   height: 30vw;
   position: relative;
-`;
 
-const mobileProgramImageContainerStyle = css`
-  width: 60vw;
-  height: 45vw;
+  @media screen and (max-width: 600px) {
+    width: ${mobileImageWidth};
+    height: 50vw;
+  }
 `;
 
 const ProgramImage = styled('div')`
   width: 100%;
   height: 100%;
   background-image: url(${props => props.backgroundImage || './static_placeholder4.png'});
-  // background-image: url('samurai.png');
+  // background-image: url('samurai.png'); // Testing
   background-size: cover;
+
+  @media screen and (max-width: 600px) {
+    opacity: .3;
+  }
 `;
 
 const textOverImageStyle = css`
@@ -211,20 +235,22 @@ const NoCurrentProgramBlockText = styled('h4')`
 `;
 
 const timeWindowStyle = css`
-  margin: 1rem 0;
+  @media screen and (min-width: 600px) {
+    margin: 1rem 0;
+  }
 `;
 
 const ProgramInfo = styled('div')`
   padding: 0 ${padding};
   max-width: 30vw;
-`;
 
-const mobileProgramInfo = css`
-  position: absolute;
-  padding: 0 1rem;
-  top: .75rem;
-  left: 0;
-  max-width: none;
+  @media screen and (max-width: 600px) {
+    position: absolute;
+    padding: 0 1rem;
+    top: .75rem;
+    left: 0;
+    max-width: none;
+  }
 `;
 
 const mapStateToProps = state => ({

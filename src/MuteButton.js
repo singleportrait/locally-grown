@@ -5,7 +5,7 @@ import { toggleMute } from './actions/videoActions';
 import MuteIcon from './MuteIcon';
 import UnmuteIcon from './UnmuteIcon';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 const muteButton = css`
   padding: 1rem;

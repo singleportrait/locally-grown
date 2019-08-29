@@ -1,55 +1,34 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
 
-import styled, { css } from 'react-emotion';
+import { css } from 'emotion';
 
 import InfoAndRemindLinks from './InfoAndRemindLinks';
 import { programBlockBase } from './styles';
 
 class TVGuideProgramBlock extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showTooltip: false,
-    }
-
-    this.toggleTooltip = this.toggleTooltip.bind(this);
-  }
-
-  toggleTooltip(e) {
-    this.setState({ showTooltip: !this.state.showTooltip });
-    e.preventDefault();
-  }
 
   render() {
 
-
     return (
-      <ProgramBlock
-        className={this.props.firstHour && firstHour}
-        ref={(t) => { this.target = t; }}
+      <div
+        className={this.props.firstHour ? firstHour : otherHours}
       >
         {this.props.programBlock.fields.title}
         <div className={this.props.firstHour ? programHoverFirstHourLinks : programHoverLinks}>
           <InfoAndRemindLinks
-            show={this.state.showTooltip}
-            toggleTooltip={this.toggleTooltip}
-            target={() => findDOMNode(this.target)}
             programBlock={this.props.programBlock}
             firstHour={this.props.firstHour}
             channelSlug={this.props.channelSlug}
             channelTitle={this.props.channelTitle}
           />
         </div>
-      </ProgramBlock>
+      </div>
     );
   }
 }
 
-const ProgramBlock = styled('div')`
+const programBlockBaseStyle = `
   ${programBlockBase};
-  background-color: #999;
   color: #000;
   font-weight: 500;
   font-size: 15px;
@@ -60,6 +39,7 @@ const ProgramBlock = styled('div')`
 `;
 
 const firstHour = css`
+  ${programBlockBaseStyle}
   background-color: #fff;
 
   span, a {
@@ -75,6 +55,11 @@ const firstHour = css`
       background: linear-gradient(to right, rgba(210,209,214,0) 0%,rgba(210,209,214,1) 10%,rgba(210,209,214,1) 100%);
     }
   }
+`;
+
+const otherHours = css`
+  ${programBlockBaseStyle}
+  background-color: #999;
 `;
 
 const programHoverBase = css`

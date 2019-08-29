@@ -1,29 +1,14 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
-import Overlay from 'react-overlays/lib/Overlay';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import Markdown from 'react-markdown';
 
-import { css } from 'react-emotion';
+import { css } from 'emotion';
 
 import Tooltip from './Tooltip';
 import RemindLink from './RemindLink';
 
 class ProgramBlockInfoDescription extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showDescription: false,
-    }
-
-    this.toggleDescription = this.toggleDescription.bind(this);
-  }
-
-  toggleDescription(e) {
-    console.log("Toggling description");
-    this.setState({ showDescription: !this.state.showDescription });
-    e.preventDefault();
-  }
 
   render() {
 
@@ -40,9 +25,9 @@ class ProgramBlockInfoDescription extends Component {
           { description &&
             <React.Fragment>
               <Markdown source={description} />
-              <br />
             </React.Fragment>
           }
+          <br />
           <RemindLink
             programBlock={this.props.programBlock}
             channelTitle={this.props.channelTitle}
@@ -52,26 +37,27 @@ class ProgramBlockInfoDescription extends Component {
       );
     }
 
-    return(
-      <React.Fragment>
-        <div className={programBlockDescriptionLink} ref={(t) => { this.target = t; }} onClick={this.toggleDescription}>
+    const renderTooltip = (
+      <Popover id="popover-info-description">
+        <Tooltip
+          title={title}
+          tooltipClassName={descriptionTooltipStyle}
+          descriptionHTML={renderDescription()}
+        />
+      </Popover>
+    );
+
+    return (
+      <OverlayTrigger
+        placement="bottom-start"
+        rootClose={true}
+        trigger="click"
+        overlay={renderTooltip}
+      >
+        <div className={programBlockDescriptionLink}>
           {title}
         </div>
-        <Overlay
-          show={this.state.showDescription}
-          onHide={this.toggleDescription}
-          placement="bottom"
-          rootClose={true}
-          target={() => findDOMNode(this.target)}
-        >
-          <Tooltip
-            title={"Info"}
-            showTitle={false}
-            tooltipClassName={descriptionTooltipStyle}
-            descriptionHTML={renderDescription()}
-          />
-        </Overlay>
-      </React.Fragment>
+      </OverlayTrigger>
     );
   }
 }

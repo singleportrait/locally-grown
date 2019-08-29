@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
-import { findDOMNode } from 'react-dom';
 import debounce from 'lodash/debounce';
 import consoleLog from './consoleLog';
 
@@ -22,7 +21,8 @@ import {
   Logo, backgroundColor, borderColor,
 } from './styles';
 
-import styled, { css } from 'react-emotion';
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 class Program extends Component {
   constructor(props) {
@@ -98,12 +98,12 @@ class Program extends Component {
     }
   }
 
-  toggleInfo() {
-    this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
-  }
-
   toggleMobileProgramInfo() {
     this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
+  }
+
+  toggleInfo() {
+    this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
   }
 
   render() {
@@ -157,7 +157,6 @@ class Program extends Component {
             <InfoTooltip
               toggleInfo={this.toggleInfo}
               show={this.state.showInfoTooltip}
-              container={() => findDOMNode(this.container)}
               title={program.fields.title}
               description={program.fields.description}
               user={this.props.channelUser}
@@ -203,7 +202,7 @@ class Program extends Component {
     return (
       <React.Fragment>
         <MediaQuery minWidth={800}>
-          <WideProgramContainer ref={(c) => { this.container = c; }}>
+          <WideProgramContainer>
             <VideoAndControlsColumn maxMode={this.state.maxMode}>
               { renderDesktopVideo() }
             </VideoAndControlsColumn>
@@ -438,7 +437,7 @@ const mobileNextChannel = css`
   right: 1rem;
 `;
 
-const baseMobileText = css`
+const baseMobileText = `
   position: absolute;
   width: calc(100vw - 130px);
   left: 75px;
