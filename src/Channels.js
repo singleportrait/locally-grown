@@ -115,30 +115,35 @@ const channelContainer = css`
   margin: ${padding} 0;
   text-decoration: none;
   position: relative;
-  &:nth-child(2), &:nth-child(10) {
+  &:nth-of-type(2), &:nth-of-type(10) {
     padding-left: calc(15vw - 2.8rem);
   }
-  &:nth-child(3), &:nth-child(11) {
+  &:nth-of-type(3), &:nth-of-type(11) {
     padding-left: calc(30vw - 2.8rem);
   }
-  &:nth-child(4), &:nth-child(5), &:nth-child(6), &:nth-child(7),
-  &:nth-child(12), &:nth-child(13), &:nth-child(14), &:nth-child(15) {
+  &:nth-of-type(4), &:nth-of-type(5), &:nth-of-type(6), &:nth-of-type(7),
+  &:nth-of-type(12), &:nth-of-type(13), &:nth-of-type(14), &:nth-of-type(15) {
     &, > div { flex-direction: row-reverse; }
     text-align: right;
   }
-  &:nth-child(4), &:nth-child(12) {
+  &:nth-of-type(4), &:nth-of-type(12) {
     padding-right: 15vw;
   }
-  &:nth-child(5), &:nth-child(13) {
+  &:nth-of-type(5), &:nth-of-type(13) {
   }
-  &:nth-child(6), &:nth-child(14) {
+  &:nth-of-type(6), &:nth-of-type(14) {
     padding-right: 15vw;
   }
-  &:nth-child(7), &:nth-child(15) {
+  &:nth-of-type(7), &:nth-of-type(15) {
     padding-right: 30vw;
   }
-  &:nth-child(8), &:nth-child(16) {
+  &:nth-of-type(8), &:nth-of-type(16) {
     padding-left: 15vw;
+  }
+
+  @media screen and (max-width: 600px) {
+    // Mobile calculation for the complex ones:
+    // padding-left: calc((40vw - 2rem) / 3);
   }
 `;
 
