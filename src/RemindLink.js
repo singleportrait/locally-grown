@@ -37,7 +37,17 @@ ${title}${friendlyDescription}
 Playing at ${friendlyStartTime} on ${this.props.channelTitle}.`;
 
     return (
-      <a href={`http://www.google.com/calendar/event?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${date}T${calStartTime}00/${date}T${calEndTime}00&details=${encodeURIComponent(detailsString)}&output=xml&trp=false&sprop=&sprop=name:`}
+      <a href={`
+http://www.google.com/calendar/event
+?action=TEMPLATE
+&text=${encodeURIComponent(title)}
+&dates=${date}T${calStartTime}00/${date}T${calEndTime}00
+&details=${encodeURIComponent(detailsString)}
+&output=xml
+&trp=false
+&sprop=
+&sprop=name:
+`}
         target="_blank" rel="noopener noreferrer nofollow" className={this.props.className}>
         Remind Me
       </a>
