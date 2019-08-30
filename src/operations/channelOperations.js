@@ -3,9 +3,59 @@ import client from '../services-contentful';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
+import { normalize, schema } from 'normalizr';
 // import { channelsData } from '../channelsDataAug2019';
 
 import * as moment from 'moment';
+
+const normalizeData = () => {
+  // Finally got this working. Found the working code in this repo:
+  // https://github.com/Vizzuality/care_usa/blob/f4708f1d3a5ba4f957f97bdadd86a246b128de14/stories/src/components/filters/filters.duck.js
+  // https://github.com/Vizzuality/care_usa/blob/f4708f1d3a5ba4f957f97bdadd86a246b128de14/stories/src/schemas.js
+  //
+  // Docs:
+  // https://github.com/paularmstrong/normalizr
+  const processContentfulSchema = {
+    idAttribute: value => value.sys.id,
+    processStrategy: value => ({ ...value.fields })
+  }
+
+  const video = new schema.Entity('videos', { }, processContentfulSchema);
+
+  const programBlock = new schema.Entity('programBlocks', {
+    videos: [video]
+  }, processContentfulSchema);
+
+  const program = new schema.Entity('programs', {
+    programBlocks: [programBlock]
+  }, processContentfulSchema);
+
+  const channel = new schema.Entity('channels', {
+    programs: [program]
+  }, processContentfulSchema);
+
+  const entries = client.getEntries({
+    content_type: "channel",
+    include: 3,
+  }).then(entries => {
+    const normalizedData = normalize(entries.items, [channel]);
+
+    // consoleLog("Normalized data", normalizedData);
+
+    // Can call this like:
+    // normalizedData.entities.channels["2HdrJ1Rqhyq0IwQYouGiAA"];
+    // normalizedData.entities.channels[channelId]
+
+    // To find and edit all program blocks for a program, for instance:
+    // normalizedData.entities.programs["1jc00QwzEFcAH310GMvZnh"].programBlocks.forEach((programBlockId, i) => {
+    //   const foundProgramBlock = normalizedData.entities.programBlocks[programBlockId];
+    //   foundProgramBlock.index = i;
+    //   consoleLog(foundProgramBlock);
+    // });
+  });
+};
+
+normalizeData();
 
 const fetchChannels = () => dispatch => {
   // Can use this when working offline
