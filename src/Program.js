@@ -95,6 +95,7 @@ class Program extends Component {
       }
     } else {
       consoleLog("No program blocks!");
+      this.props.getCurrentProgramBlock(null);
     }
   }
 
