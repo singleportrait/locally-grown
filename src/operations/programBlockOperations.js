@@ -44,7 +44,10 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   consoleLog("- Initializing program block", currentProgramBlock.fields.title);
   return new Promise(function(resolve, reject) {
-    let videos = currentProgramBlock.fields.videos;
+    // Doing this copy ish again, to prevent overwriting original info before we're ready,
+    // and especially to prevent duplicate videos from not getting correct
+    // indexes and start & end times
+    let videos = JSON.parse(JSON.stringify(currentProgramBlock.fields.videos));
 
     if (currentProgramBlock.fields.isRandom) {
       consoleLog("- This program block is random.");
@@ -74,7 +77,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       if ('length' in video.fields) {
         const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
         video.lengthInSeconds = videoLengthInSeconds;
-        // consoleLog("- Setting up video", video.fields.title);
+        // consoleLog("- Setting up video", i, video.fields.title);
 
         // Calculate the video info differently if it starts at a custom timestamp
         if (video.fields.customStartTimestamp) {
@@ -82,7 +85,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           if (manualTimestamp === 0) {
             consoleLog(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
           } else {
-            consoleLog("- - Converting and saving custom start time:", manualTimestamp);
+            // consoleLog("- - Converting and saving custom start time:", manualTimestamp);
             video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
             video.manualTimestamp = manualTimestamp;
           }
@@ -117,13 +120,13 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       consoleLog(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
 
       // This is where you append the video content, until you hit 3600
-      let i = 0;
+      let j = 0;
       while (programmingLength < 3600) {
-        const newVideo = JSON.parse(JSON.stringify(videos[i]));
+        const newVideo = JSON.parse(JSON.stringify(videos[j]));
         // Calculate start & end time for new copied video
         newVideo.startTime = programmingLength;
         newVideo.endTime = programmingLength + newVideo.lengthInSeconds;
-        newVideo.index = videos.length + 1;
+        newVideo.index = videos.length;
         videos.push(newVideo);
 
         if (programmingLength < secondsPastTheHour && newVideo.endTime > secondsPastTheHour) {
@@ -131,20 +134,20 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
           if (newVideo.manualTimestamp) {
-            consoleLog("- Using custom start time when repeating videos");
+            // consoleLog("- Using custom start time when repeating videos");
             timestampToStartVideo = timestampToStartVideo + newVideo.manualTimestamp;
           }
         }
 
         programmingLength += newVideo.lengthInSeconds;
-        if (i === 0 || i < videosLength) {
-          i++;
+        if (j === 0 || j < videosLength) {
+          j++;
         } else {
-          i = 0;
+          j = 0;
         }
       }
 
-      // consoleLog(videos);
+      // consoleLog("Original videos object", videos);
       // consoleLog(programmingLength);
     }
 
@@ -155,6 +158,9 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     if (secondsPastTheHour === 0) {
       videoToPlayIndex = 0;
     }
+
+    // Using what we've done to set it back on the object
+    currentProgramBlock.fields.videos = videos;
 
     const loadedProgramBlock = {
       sys: currentProgramBlock.sys,
@@ -171,7 +177,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
 // Finds the video to play after switching away from the channel
 const setupCurrentVideoAfterInitialLoad = () => dispatch => {
-  // consoleLog("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
+  consoleLog("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
   const secondsPastTheHour = currentSecondsPastTheHour();
   const videos = currentProgramBlock.fields.videos;
