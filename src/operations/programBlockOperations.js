@@ -53,6 +53,8 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
     let programmingLength = 0;
     const secondsPastTheHour = currentSecondsPastTheHour();
+    // Testing for when the hour switches to a new one
+    // const secondsPastTheHour = 0;
     // consoleLog("- Seconds past the hour: " + secondsPastTheHour);
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
@@ -72,6 +74,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       if ('length' in video.fields) {
         const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
         video.lengthInSeconds = videoLengthInSeconds;
+        // consoleLog("- Setting up video", video.fields.title);
 
         // Calculate the video info differently if it starts at a custom timestamp
         if (video.fields.customStartTimestamp) {
@@ -79,7 +82,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           if (manualTimestamp === 0) {
             consoleLog(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
           } else {
-            consoleLog("- Converting and saving custom start time");
+            consoleLog("- - Converting and saving custom start time:", manualTimestamp);
             video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
             video.manualTimestamp = manualTimestamp;
           }
@@ -90,14 +93,11 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.index = i;
 
         if ((programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) || secondsPastTheHour === 0) {
-          if (secondsPastTheHour === 0) {
-            console.log("- It's a new hour and the first video has a custom start time");
-          }
           videoToPlayIndex = i;
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
           if (video.manualTimestamp) {
-            consoleLog("- Using custom start time in initializeCurrentProgramBlockVideos");
+            // consoleLog("- - Using custom start time in initializeCurrentProgramBlockVideos");
             timestampToStartVideo = timestampToStartVideo + video.manualTimestamp;
           }
         }
@@ -114,7 +114,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       consoleLog("- There was an error calculating the programming length for this hour (potentially due to misformated video lengths.");
     }
     else if (programmingLength < 3600) {
-        consoleLog(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
+      consoleLog(`- This programming ends at ${Math.round(programmingLength/60)} minutes past the hour, but we're duplicating videos until the content is long enough!`);
 
       // This is where you append the video content, until you hit 3600
       let i = 0;
@@ -150,6 +150,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 
     if (programmingLength < secondsPastTheHour) {
       consoleLog("- The programming isn't even enough to get to this time in the hour!");
+    }
+
+    if (secondsPastTheHour === 0) {
+      videoToPlayIndex = 0;
     }
 
     const loadedProgramBlock = {
