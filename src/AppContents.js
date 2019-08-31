@@ -118,7 +118,7 @@ class AppContents extends Component {
 
     function ErrorState() {
       // Tracking for errors
-      React.pageview('/error');
+      ReactGA.pageview('/error');
       return (
         <LoadingContainer>
           <Logo>Locally Grown</Logo>
