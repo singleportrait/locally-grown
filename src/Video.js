@@ -132,6 +132,10 @@ class Video extends Component {
     // }
   }
 
+  onError = (e) => {
+    consoleLog("- Video errored", e);
+  }
+
   toggleMute = () => {
     // Vimeo videos break once you try to unmute the videos and change the channel
     // consoleLog("Video: Toggling mute");
@@ -163,6 +167,7 @@ class Video extends Component {
                 onEnded={this.onEnded}
                 onProgress={this.onProgress}
                 onDuration={this.onDuration}
+                onError={this.onError}
                 width="100%"
                 height={this.props.cropControls ? "140%" : "100%"}
                 className={this.props.cropControls ? croppedReactPlayerStyle : reactPlayerStyle}
