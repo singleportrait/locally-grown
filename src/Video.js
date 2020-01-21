@@ -17,15 +17,30 @@ class Video extends Component {
     super(props);
 
     this.state = {
-      playing: true
+      playing: true,
+      // url: null,
     }
   }
 
-  componentDidMount = () => this.props.addVideoPlayer(this.player);
+  componentDidMount = () => {
+    this.props.addVideoPlayer(this.player);
+
+    // consoleLog("- Mounting video", this.props.video.fields.url);
+
+    // Using this fixed the console error, but doesn't update the video correctly the first time you switch channels
+    // Error: "ReactPlayer: the attempt to load <URL> is being deferred until the player has loaded"
+    // Reference react-player issue & fix: https://github.com/CookPete/react-player/issues/413
+    // Might need to move the video fields to the Redux store to get it working correctly
+    // this.setState({
+    //   url: this.props.video.fields.url
+    // })
+  }
 
   componentDidUpdate = (prevProps, prevState) => {
-    // consoleLog("Timestamp to start:" + this.props.timestamp);
+    // consoleLog("- Timestamp to start:" + this.props.timestamp);
+    // consoleLog("- Updating component");
     if (this.props.video.sys.id !== prevProps.video.sys.id) {
+      // consoleLog("- New video will play");
       // Resetting the state to be muted FIXES the Vimeo pause issue,
       // but this doesn't fix turning muted back on once you switch
       // HOWEVER, somehow when switching back to Youtube from Vimeo
@@ -36,6 +51,10 @@ class Video extends Component {
       if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.videoStore.muted) {
         this.props.toggleMute(false);
       }
+      // Using this (in combination with setState when mounting, above) brought back the console error the above approach fixed
+      // this.setState({
+      //   url: this.props.video.fields.url
+      // })
     }
 
     if (this.props.video.index !== prevProps.video.index &&
