@@ -74,7 +74,7 @@ class Video extends Component {
       // so we don't need to have this sanity check around it
       // this.seekToTimestamp(duration);
     }
-    // consoleLog("Video: Setting duration");
+    // consoleLog("- Video: Setting duration");
     this.seekToTimestamp(duration);
     this.setState({
       duration: duration
@@ -91,7 +91,7 @@ class Video extends Component {
       consoleLog("Video: This timestamp is longer than the video!");
     }
 
-    // consoleLog("Seeking to timestamp...");
+    // consoleLog("- Seeking to timestamp...");
     this.player.seekTo(this.props.timestamp);
   }
 
@@ -108,21 +108,21 @@ class Video extends Component {
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
     // This doesn't reliably trigger for Vimeo videos
-    // consoleLog("Video: Playing...");
+    // consoleLog("- Video: Playing...");
   }
 
   onReady = () => {
     // Was trying to get the videos to start playing by using a timeout
     // rather than user trigger, but didn't work
-    // consoleLog("Video: On ready");
+    // consoleLog("- Video: On ready");
     // setTimeout(() => {
     //   this.playPause();
     //   setTimeout(this.playPause, 500);
-    //   consoleLog("Video: Toggled play/pause");
+    //   consoleLog("- Video: Toggled play/pause");
     // }, 500)
-    // consoleLog("Video: onReady");
+    // consoleLog("- Video: onReady");
     // if (!this.state.previouslyMuted) {
-      // consoleLog("This shouldn't be muted anymore");
+      // consoleLog("- This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with
       // un-muted audio, though the following code could theoretically work
       // this.setState({
