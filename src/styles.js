@@ -35,3 +35,9 @@ export const programBlockBase = `
   -webkit-box-orient: vertical;
 `;
 
+export const VideoPlaceholderWrapper = styled('div')`
+  position: relative;
+  padding-top: 75%;
+  background: url(./static_placeholder_simpler.gif);
+  background-size: cover;
+`;

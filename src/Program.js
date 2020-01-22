@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
 import consoleLog from './consoleLog';
@@ -9,16 +8,14 @@ import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import Video from './Video';
 import Navigation from './Navigation';
-import ProgramBlockInfo from './ProgramBlockInfo';
 import MuteButton from './MuteButton';
 import ChannelButton from './ChannelButton';
 import InfoTooltip from './InfoTooltip';
-import CurrentProgramBlockInfo from './CurrentProgramBlockInfo';
-import CloseIcon from './CloseIcon';
-import TVGuideLink from './TVGuideLink';
+import ProgramSidebar from './ProgramSidebar';
+import MobileProgram from './MobileProgram';
 
 import {
-  Logo, backgroundColor, borderColor,
+  VideoPlaceholderWrapper,
 } from './styles';
 
 import styled from '@emotion/styled';
@@ -169,33 +166,13 @@ class Program extends Component {
 
     const renderSidebarProgramContent = () => {
       return (
-        <React.Fragment>
-          { currentProgramBlock &&
-            <CurrentProgramBlockInfo
-              programBlock={currentProgramBlock}
-              error={this.props.programBlocks.error}
-            />
-          }
-          { !currentProgramBlock &&
-              <div>
-                <br />
-                <h1>There&apos;s nothing playing on this channel right now.</h1>
-                <br /><br />
-                { this.props.programBlocks.error &&
-                    <p>{this.props.programBlocks.error}</p>
-                }
-                <Link to="/tv-guide">Check out the TV Guide</Link> to find something.
-              </div>
-          }
-          { programBlocks &&
-            <ProgramBlockInfo
-              programBlocks={programBlocks}
-              currentHour={this.props.session.currentHour}
-              channelTitle={this.props.channelTitle}
-              channelSlug={this.props.channelSlug}
-            />
-          }
-        </React.Fragment>
+        <ProgramSidebar
+          currentProgramBlock={currentProgramBlock}
+          programBlocks={programBlocks}
+          currentHour={this.props.session.currentHour}
+          channelTitle={this.props.channelTitle}
+          channelSlug={this.props.channelSlug}
+        ></ProgramSidebar>
       );
     }
 
@@ -224,67 +201,17 @@ class Program extends Component {
           </MediumProgramContainer>
         </MediaQuery>
         <MediaQuery maxDeviceWidth={600} maxWidth={400}>
-          <div>
-            <MobileProgramContainer>
-              { currentProgramBlock &&
-                <React.Fragment>
-                  <Video
-                    video={currentProgramBlock.currentVideo}
-                    timestamp={currentProgramBlock.timestampToStartVideo}
-                    className={mobileVideo}
-                  />
-                  { !this.state.showMobileProgramInfo &&
-                    <div className={mobileTopRightIcon}><MuteButton /></div>
-                  }
-                  { this.state.showMobileProgramInfo &&
-                    <div className={mobileProgramInfoCloseIcon} onClick={this.toggleMobileProgramInfo}>
-                      <CloseIcon />
-                    </div>
-                  }
-                  { this.props.previousChannelSlug && !this.state.showMobileProgramInfo &&
-                    <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
-                  }
-                  { this.props.nextChannelSlug &&
-                    <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
-                  }
-                </React.Fragment>
-              }
-              { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
-                <VideoPlaceholderWrapper className={mobileVideo} />
-              }
-            </MobileProgramContainer>
-            <TopMobileText>
-              <div>
-                <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
-                <p>
-                  You&apos;re watching {this.props.channelTitle}
-
-                  { this.props.channelUser &&
-                    <span> by {this.props.channelUser.fields.name}</span>
-                  }
-                </p>
-              </div>
-              <TVGuideLink />
-            </TopMobileText>
-            { currentProgramBlock &&
-              <BottomMobileText>
-                <p>Now playing:</p>
-                <h1 onClick={this.toggleMobileProgramInfo}>{currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
-              </BottomMobileText>
-            }
-            { !currentProgramBlock &&
-              <BottomMobileText>
-                <h1>There&apos;s nothing playing on this channel right now.</h1>
-              </BottomMobileText>
-            }
-            { this.state.showMobileProgramInfo &&
-              <MobileProgramInfoContainer>
-                <MobileProgramInfoContents>
-                  { renderSidebarProgramContent() }
-                </MobileProgramInfoContents>
-              </MobileProgramInfoContainer>
-            }
-          </div>
+          <MobileProgram
+            currentProgramBlock={currentProgramBlock}
+            programBlocks={programBlocks}
+            showMobileProgramInfo={this.state.showMobileProgramInfo}
+            toggleMobileProgramInfo={this.toggleMobileProgramInfo}
+            previousChannelSlug={this.props.previousChannelSlug}
+            nextChannelSlug={this.props.nextChannelSlug}
+            channelTitle={this.props.channelTitle}
+            channelUser={this.props.channelUser}
+            currentHour={this.props.session.currentHour}
+          ></MobileProgram>
         </MediaQuery>
       </React.Fragment>
     );
@@ -385,104 +312,6 @@ const VideoControls = styled('div')`
 
 const controlButtons = css`
   display: flex;
-`;
-
-const VideoPlaceholderWrapper = styled('div')`
-  position: relative;
-  padding-top: 75%;
-  background: url(./static_placeholder_simpler.gif);
-  background-size: cover;
-`;
-
-const MobileProgramContainer = styled('div')`
-  width: 100vh;
-  height: 100vw;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(90deg);
-  transform-origin: 50vw;
-`;
-
-const mobileVideoWidth = '90vw * 1.33';
-const mobileTextHeight = `calc((100vh - (${mobileVideoWidth})) / 2 - 1rem)`;
-const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeight} + 1rem)`;
-
-const mobileVideo = css`
-  width: calc(${mobileVideoWidth});
-  padding-top: 50%;
-`;
-
-const mobileTopRightIcon = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const mobileProgramInfoCloseIcon = css`
-  ${mobileTopRightIcon}
-  padding: 1rem;
-`;
-
-const mobilePreviousChannel = css`
-  position: absolute;
-  bottom: 0;
-  left: 1rem;
-`;
-
-const mobileNextChannel = css`
-  position: absolute;
-  bottom: 0;
-  right: 1rem;
-`;
-
-const baseMobileText = `
-  position: absolute;
-  width: calc(100vw - 130px);
-  left: 75px;
-  height: ${mobileTextHeight};
-`;
-
-const TopMobileText = styled('div')`
-  ${baseMobileText}
-  top: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-bottom: 1rem;
-`;
-
-const BottomMobileText = styled('div')`
-  ${baseMobileText}
-  bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-`;
-
-const mobileInfo = css`
-  font-size: 12px;
-  font-weight: 300;
-  text-decoration: underline;
-  padding-left: 5px;
-`;
-
-const MobileProgramInfoContainer = styled('div')`
-  position: absolute;
-  padding: 0 1rem;
-  width: 100%;
-  height: ${mobileInfoContainerHeight};
-  top: calc(${mobileTextHeight} + 1rem);
-  background-color: ${backgroundColor};
-`;
-
-const MobileProgramInfoContents = styled('div')`
-  border-top: 1px solid ${borderColor};
-  height: ${mobileInfoContainerHeight};
-  padding: 1rem 0;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
 `;
 
 const channelTitle = css`
