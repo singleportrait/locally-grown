@@ -45,7 +45,7 @@ class MobileProgram extends Component {
             </React.Fragment>
           }
           { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
-            <VideoPlaceholderWrapper className={mobileVideo} />
+            <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
           }
         </MobileProgramContainer>
         <TopMobileText>

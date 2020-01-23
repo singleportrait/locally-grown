@@ -39,7 +39,7 @@ export const programBlockBase = `
 
 export const VideoPlaceholderWrapper = styled('div')`
   position: relative;
-  padding-top: 75%;
+  padding-top: ${props => props.isMobile ? '50%' : '75%'};
   background: url(./static_placeholder_simpler.gif);
   background-size: cover;
 `;
