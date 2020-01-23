@@ -133,7 +133,14 @@ class Video extends Component {
   }
 
   onError = (e) => {
-    consoleLog("- Video errored", e);
+    consoleLog("- Video errored"); // Can pass `e` in if you like
+
+    const error404Regex = /was not found/g;
+
+    if (error404Regex.test(e)) {
+      // TODO: Show users a message that the video isn't working
+      consoleLog("-- Because it wasn't found");
+    }
   }
 
   toggleMute = () => {
