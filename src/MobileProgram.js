@@ -116,7 +116,6 @@ const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeig
 
 const mobileVideo = css`
   width: calc(${mobileVideoWidth});
-  padding-top: 50%;
 `;
 
 const mobileTopRightIcon = css`
