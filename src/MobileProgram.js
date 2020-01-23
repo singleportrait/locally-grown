@@ -12,6 +12,7 @@ import TVGuideLink from './TVGuideLink';
 
 import {
   Logo, backgroundColor, borderColor, VideoPlaceholderWrapper,
+  mobileViewportHeight,
 } from './styles';
 
 class MobileProgram extends Component {
@@ -25,6 +26,7 @@ class MobileProgram extends Component {
                 video={this.props.currentProgramBlock.currentVideo}
                 timestamp={this.props.currentProgramBlock.timestampToStartVideo}
                 className={mobileVideo}
+                isMobile={true}
               />
               { !this.props.showMobileProgramInfo &&
                 <div className={mobileTopRightIcon}><MuteButton /></div>
@@ -43,7 +45,7 @@ class MobileProgram extends Component {
             </React.Fragment>
           }
           { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
-            <VideoPlaceholderWrapper className={mobileVideo} />
+            <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
           }
         </MobileProgramContainer>
         <TopMobileText>
@@ -89,23 +91,22 @@ class MobileProgram extends Component {
 }
 
 const MobileProgramContainer = styled('div')`
-  width: 100vh;
+  transform: rotate(90deg);
+  transform-origin: 50vw;
+  width: ${mobileViewportHeight};
   height: 100vw;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(90deg);
-  transform-origin: 50vw;
 `;
 
 const mobileVideoWidth = '90vw * 1.33';
-const mobileTextHeight = `calc((100vh - (${mobileVideoWidth})) / 2 - 1rem)`;
+const mobileTextHeight = `calc((${mobileViewportHeight} - (${mobileVideoWidth})) / 2 - 1rem)`;
 const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeight} + 1rem)`;
 
 const mobileVideo = css`
   width: calc(${mobileVideoWidth});
-  padding-top: 50%;
 `;
 
 const mobileTopRightIcon = css`

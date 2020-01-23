@@ -7,6 +7,8 @@ export const videoBackgroundColor = '#000';
 
 export const borderColor = '#4E475D';
 
+export const mobileViewportHeight = window.innerHeight + 'px';
+
 export const Logo = styled('div')`
   font-weight: 900;
   font-size: 13px;
@@ -37,7 +39,7 @@ export const programBlockBase = `
 
 export const VideoPlaceholderWrapper = styled('div')`
   position: relative;
-  padding-top: 75%;
+  padding-top: ${props => props.isMobile ? '50%' : '75%'};
   background: url(./static_placeholder_simpler.gif);
   background-size: cover;
 `;

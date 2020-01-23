@@ -154,7 +154,10 @@ class Video extends Component {
       <React.Fragment>
         {this.props.video &&
           <React.Fragment>
-            <ReactPlayerWrapper className={this.props.className} cropControls={this.props.cropControls}>
+            <ReactPlayerWrapper
+              className={this.props.className}
+              isMobile={this.props.isMobile}
+            >
               <VideoOverlay />
               <ReactPlayer
                 ref={this.ref}
@@ -169,8 +172,8 @@ class Video extends Component {
                 onDuration={this.onDuration}
                 onError={this.onError}
                 width="100%"
-                height={this.props.cropControls ? "140%" : "100%"}
-                className={this.props.cropControls ? croppedReactPlayerStyle : reactPlayerStyle}
+                height="140%"
+                className={croppedReactPlayerStyle}
                 config={{
                   youtube: {
                     playerVars: {
@@ -219,20 +222,13 @@ class Video extends Component {
 
 const ReactPlayerWrapper = styled('div')`
   position: relative;
-  padding-top: 75%;
   background-color: ${videoBackgroundColor};
-  ${props => props.cropControls && 'overflow: hidden;'}
-`;
-
-const reactPlayerStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
+  overflow: hidden;
+  padding-top: ${props => props.isMobile ? '50%' : '75%'};
 `;
 
 const croppedReactPlayerStyle = css`
   position: absolute;
-  top: 0;
   left: 0;
   top: -20%;
 `;
@@ -251,7 +247,8 @@ const progressStyle = css`
 `;
 
 Video.defaultProps = {
-  timestamp: 0
+  timestamp: 0,
+  isMobile: false,
 }
 
 const mapStateToProps = state => ({

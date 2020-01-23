@@ -116,7 +116,6 @@ class Program extends Component {
               <Video
                 video={currentProgramBlock.currentVideo}
                 timestamp={currentProgramBlock.timestampToStartVideo}
-                cropControls={true}
               />
               <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={allowMaxMode && this.state.maxMode}>
                 { this.props.previousChannelSlug &&
