@@ -45,7 +45,6 @@ class MobileProgram extends Component {
               video={this.props.currentProgramBlock.currentVideo}
               timestamp={this.props.currentProgramBlock.timestampToStartVideo}
               className={mobileVideo}
-              cropControls={true}
               isMobile={true}
             />
           }
