@@ -22,11 +22,6 @@ class MobileProgram extends Component {
         <MobileProgramContainer>
           { this.props.currentProgramBlock &&
             <React.Fragment>
-              <Video
-                video={this.props.currentProgramBlock.currentVideo}
-                timestamp={this.props.currentProgramBlock.timestampToStartVideo}
-                className={mobileVideo}
-              />
               { !this.props.showMobileProgramInfo &&
                 <div className={mobileTopRightIcon}><MuteButton /></div>
               }
@@ -42,6 +37,17 @@ class MobileProgram extends Component {
                 <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
               }
             </React.Fragment>
+          }
+        </MobileProgramContainer>
+        <MobileProgramContainer className={videoContainer}>
+          { this.props.currentProgramBlock &&
+            <Video
+              video={this.props.currentProgramBlock.currentVideo}
+              timestamp={this.props.currentProgramBlock.timestampToStartVideo}
+              className={mobileVideo}
+              cropControls={true}
+              isMobile={true}
+            />
           }
           { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
             <VideoPlaceholderWrapper className={mobileVideo} />
@@ -94,10 +100,14 @@ const MobileProgramContainer = styled('div')`
   transform-origin: 50vw;
   width: ${mobileViewportHeight};
   height: 100vw;
-  position: relative;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const videoContainer = css`
+  z-index: -1; // Necessary because of the transform
 `;
 
 const mobileVideoWidth = '90vw * 1.33';
