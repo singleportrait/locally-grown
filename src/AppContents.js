@@ -17,7 +17,7 @@ import Tooltip from './Tooltip';
 
 import styled from '@emotion/styled';
 
-import { Logo } from './styles';
+import { Logo, mobileViewportHeight } from './styles';
 
 const LoadingContainer = styled('div')`
   display: flex;
@@ -25,13 +25,13 @@ const LoadingContainer = styled('div')`
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  height: 100vh;
+  height: 100vh; // TODO: Could replace this on mobile if it becomes a scroll problem
   width: 100vw;
 `;
 
 const MobileSupportOverlay = styled('div')`
   width: 100vw;
-  height: 100vh;
+  height: ${mobileViewportHeight};
   position: absolute;
   top: 0;
   left: 0;
