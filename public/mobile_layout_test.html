@@ -1,0 +1,132 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+
+    :root {
+      --bar-height: 70px; /* If you change this you must change the max aspect ratio below */
+      --video-padding: 10px;
+      --viewport-height: 100vh; /* Fallback before javascript kicks in */
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overscroll-behavior-y: contain; /* Chrome only */
+    }
+
+    body {
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+
+    .bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      height: var(--bar-height);
+    }
+
+    .bar--top {
+      background-color: gray;
+    }
+
+    .bar--bottom {
+      background-color: gray;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .video_container {
+      transform: rotate(90deg);
+      transform-origin: 50vw;
+      height: 100vw;
+      width: calc(var(--viewport-height) - (var(--bar-height) * 2));
+      background-color: aqua;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+
+    .video_rotated {
+      --video-wide-screen-width: var(--viewport-height) - (var(--bar-height) * 2) - (var(--video-padding) * 2);
+      position: relative;
+      width: 100%;
+      background-color: pink;
+      overflow: hidden;
+
+      width: calc(var(--video-wide-screen-width));
+      max-width: calc(var(--video-wide-screen-width));
+      padding-top: calc((var(--video-wide-screen-width)) * .75);
+      /*
+      padding-top: 10%;
+      */
+    }
+
+    /* Aspect ratio width to height */
+    /* If the info bars are 100px tall, the video logic will shift at 300px wide and 600px tall */
+    /* If the bars are 70px tall, the video logic will shift at 360px wide and 600px tall */
+    /* Etc... */
+    @media (max-aspect-ratio: 360/600) {
+      .video_rotated {
+        --video-tall-screen-width: 100vw - (var(--video-padding) * 2);
+        background-color: gold;
+        max-width: calc((var(--video-tall-screen-width)) * 1.33);
+        padding-top: calc(var(--video-tall-screen-width));
+      }
+    }
+
+    .video_iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      top: -20%;
+    }
+
+    .button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #000;
+      flex-shrink: 0;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="app">
+    <div class="bar bar--top">
+      <div class="button button--left">&larr;</div>
+      <h4>You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound. You're watching Colored TV by Def Sound</h4>
+      <div class="button button--right">&sung;</div>
+    </div>
+    <div class="video_container">
+        <div class="video_rotated">
+          <iframe class="video_iframe" frameborder="0" allowfullscreen="1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" title="YouTube video player" width="100%" height="140%" src="https://www.youtube.com/embed/gSfVVXql-I4?autoplay=1&mute=1&controls=0&origin=http%3A%2F%2Flocalhost%3A3000&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&widgetid=1" id="widget4"></iframe>
+        </div>
+    </div>
+    <div class="bar bar--bottom">
+      <div class="button button--bottom">&rarr;</div>
+      <h4>Now playing: Black, Blues, Black! with Maya Angelou</h4>
+    </div>
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      // First we get the viewport height (the full height since we're only using "100vh" currently)
+      let vh = window.innerHeight;
+      // Then we set the value in the --vh custom property to the root of the document
+      document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+    });
+
+    window.addEventListener('resize', () => {
+      // We execute the same script as before
+      let vh = window.innerHeight;
+      document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+    });
+  </script>
+</body>
+</html>
