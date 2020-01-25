@@ -21,13 +21,20 @@ class MobileProgram extends Component {
       <React.Fragment>
         <MobileProgramContainer>
           { this.props.currentProgramBlock &&
+            <Video
+              video={this.props.currentProgramBlock.currentVideo}
+              timestamp={this.props.currentProgramBlock.timestampToStartVideo}
+              className={mobileVideo}
+              isMobile={true}
+            />
+          }
+          { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
+            <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
+          }
+        </MobileProgramContainer>
+        <MobileProgramContainer>
+          { this.props.currentProgramBlock &&
             <React.Fragment>
-              <Video
-                video={this.props.currentProgramBlock.currentVideo}
-                timestamp={this.props.currentProgramBlock.timestampToStartVideo}
-                className={mobileVideo}
-                isMobile={true}
-              />
               { !this.props.showMobileProgramInfo &&
                 <div className={mobileTopRightIcon}><MuteButton /></div>
               }
@@ -43,9 +50,6 @@ class MobileProgram extends Component {
                 <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
               }
             </React.Fragment>
-          }
-          { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
-            <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
           }
         </MobileProgramContainer>
         <TopMobileText>
@@ -95,7 +99,7 @@ const MobileProgramContainer = styled('div')`
   transform-origin: 50vw;
   width: ${mobileViewportHeight};
   height: 100vw;
-  position: relative;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
