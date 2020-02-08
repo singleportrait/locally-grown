@@ -127,7 +127,7 @@ class AppContents extends Component {
       <Router>
         <div className="App">
           <MediaQuery maxDeviceWidth={600} maxWidth={400}>
-            { this.props.session.lowBatteryMode !== true &&
+            { this.props.session.lowBatteryMode === undefined &&
               <LowBatteryTest />
             }
             { this.props.session.lowBatteryMode === true &&

@@ -20,9 +20,7 @@ class LowBatteryTest extends Component {
 
   setSuspended = () => {
     consoleLog("Is this really suspended?", this.state.suspended);
-    if (this.state.suspended) {
-      this.props.setLowBatteryMode(true);
-    }
+    this.props.setLowBatteryMode(this.state.suspended);
   }
 
   handleSuspend = (event) => {
@@ -38,7 +36,7 @@ class LowBatteryTest extends Component {
       suspended: true
     });
 
-    setTimeout(this.setSuspended, 100);
+    setTimeout(this.setSuspended, 150);
   }
 
   handlePlay = (event) => {

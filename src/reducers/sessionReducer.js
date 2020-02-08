@@ -3,7 +3,7 @@ import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from '../actions
 const initialState = {
   currentHour: new Date().getHours(),
   secondsUntilNextProgram: null,
-  lowBatteryMode: false
+  lowBatteryMode: undefined
 }
 
 export default function(state = initialState, action) {
