@@ -7,6 +7,8 @@ import { setLowBatteryMode } from './actions/sessionActions';
 
 import lowBatteryTestVideo from './purpleBackground100px.mp4';
 
+import { mobileViewportHeight } from './styles';
+
 class LowBatteryTest extends Component {
   constructor(props) {
     super(props);
@@ -51,30 +53,40 @@ class LowBatteryTest extends Component {
 
   render() {
     return (
-      <Video
-        autoPlay
-        muted
-        playsInline
-        loop
-        onSuspend={this.handleSuspend}
-        onPlay={this.handlePlay}
-        onClick={this.handleTestVideoClick}
-      >
-        <source src={lowBatteryTestVideo} type="video/mp4" />
-        Sorry, your browser doesn't support embedded videos.
-      </Video>
+      <VideoWrapper>
+        <Video
+          autoPlay
+          muted
+          playsInline
+          loop
+          onSuspend={this.handleSuspend}
+          onPlay={this.handlePlay}
+          onClick={this.handleTestVideoClick}
+        >
+          <source src={lowBatteryTestVideo} type="video/mp4" />
+          Sorry, your browser doesn't support embedded videos.
+        </Video>
+      </VideoWrapper>
     );
   }
 }
 
+const VideoWrapper = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: ${mobileViewportHeight};
+  width: 100vw;
+  position: absolute;
+`;
+
 const Video = styled('video')`
   width: 50px;
   height: 50px;
-  position: absolute;
-  top: 50%;
-  opacity: 1;
-  z-index: 100;
-  // visibility: hidden;
+  opacity: .1;
+  z-index: 2;
+  margin-top: -45px; // To lay this out exactly underneath the "Loading..." text on page load, so you don't see the video.
 `;
 
 const mapStateToProps = state => ({

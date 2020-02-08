@@ -26,23 +26,23 @@ const LoadingContainer = styled('div')`
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  height: 100vh; // TODO: Could replace this on mobile if it becomes a scroll problem
+  height: ${mobileViewportHeight};
   width: 100vw;
 `;
 
 const MobileSupportOverlay = styled('div')`
-  width: 100vw;
-  height: ${mobileViewportHeight};
   position: absolute;
+  height: ${mobileViewportHeight};
+  width: 100vw;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 3;
   background-color: rgba(0,0,0,.6);
   display: flex;
   justify-content: center;
-  padding-top: 200px;
+  padding-top: 250px; // To hide the Youtube play button if the videos aren't loading
 `;
 
 class AppContents extends Component {
@@ -52,8 +52,6 @@ class AppContents extends Component {
     this.state = {
       showMobileOverlay: true,
     }
-
-    this.toggleMobileOverlay = this.toggleMobileOverlay.bind(this);
   }
 
   componentDidMount() {
@@ -63,10 +61,6 @@ class AppContents extends Component {
 
   toggleTooltip() {
     this.setState({ showTooltip: !this.state.showTooltip });
-  }
-
-  toggleMobileOverlay() {
-    this.setState({ showMobileOverlay: !this.state.showMobileOverlay });
   }
 
   trackPageview() {
@@ -127,24 +121,24 @@ class AppContents extends Component {
     }
 
     const mobileOverlayTitle="Low battery warning!";
-    const mobileOverlayDescription="Locally Grown acts funny when your phone is in Low Battery Mode. We recommend turning it off to get the best experience.";
+    const mobileOverlayDescription="Locally Grown can't deliver videos to you when your phone is in Low Battery Mode.\n\nPlease turn that off so we can get to work. We’ll wait...";
 
     return (
       <Router>
         <div className="App">
           <MediaQuery maxDeviceWidth={600} maxWidth={400}>
-            <LowBatteryTest />
-            {this.props.session.lowBatteryMode === true &&
+            { this.props.session.lowBatteryMode !== true &&
+              <LowBatteryTest />
+            }
+            { this.props.session.lowBatteryMode === true &&
               <Overlay
                 show={this.state.showMobileOverlay}
-                onHide={this.toggleMobileOverlay}
               >
                 {({
                   ...props
                 }) => (
-                  <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
+                  <MobileSupportOverlay>
                     <Tooltip
-                      close={this.toggleMobileOverlay}
                       title={mobileOverlayTitle}
                       description={mobileOverlayDescription}
                       ignorePositioning={true}
