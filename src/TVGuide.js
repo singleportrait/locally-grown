@@ -176,5 +176,4 @@ const mapStateToProps = state => ({
   session: state.session
 });
 
-
 export default connect(mapStateToProps)(TVGuide);

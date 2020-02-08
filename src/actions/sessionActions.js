@@ -1,4 +1,4 @@
-import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from './sessionTypes';
+import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from './sessionTypes';
 import { currentSecondsPastTheHour } from '../helpers';
 import store from '../store';
 import consoleLog from '../consoleLog';
@@ -47,4 +47,11 @@ export const initializeSession = () => dispatch => {
 
   const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
+}
+
+export const setLowBatteryMode = (lowBatteryMode) => dispatch => {
+  dispatch({
+    type: SET_LOW_BATTERY_MODE,
+    lowBatteryMode: lowBatteryMode
+  })
 }

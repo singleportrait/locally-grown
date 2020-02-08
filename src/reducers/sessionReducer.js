@@ -1,8 +1,9 @@
-import { SET_SECONDS_UNTIL_NEXT_PROGRAM } from '../actions/sessionTypes';
+import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from '../actions/sessionTypes';
 
 const initialState = {
   currentHour: new Date().getHours(),
-  secondsUntilNextProgram: null
+  secondsUntilNextProgram: null,
+  lowBatteryMode: false
 }
 
 export default function(state = initialState, action) {
@@ -17,6 +18,11 @@ export default function(state = initialState, action) {
         // current one here) but this makes it easy to test forcing it to
         // update to an hour other than the current one
         currentHour: action.currentHour,
+      }
+    case SET_LOW_BATTERY_MODE:
+      return {
+        ...state,
+        lowBatteryMode: action.lowBatteryMode,
       }
     default:
       return state;

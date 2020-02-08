@@ -14,6 +14,7 @@ import TVGuide from './TVGuide';
 import Channels from './Channels';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
 import Tooltip from './Tooltip';
+import LowBatteryTest from './LowBatteryTest';
 
 import styled from '@emotion/styled';
 
@@ -125,30 +126,33 @@ class AppContents extends Component {
       );
     }
 
-    const mobileOverlayTitle="Welcome to Locally Grown";
-    const mobileOverlayDescription="Locally Grown is something you can leave on because you trust us. So trust us when we say this is best used on anything but your phone.\n\nOur mobile site is a work in progress. Please try desktop for the best viewing experience.\n\nTap anywhere to begin.";
+    const mobileOverlayTitle="Low battery warning!";
+    const mobileOverlayDescription="Locally Grown acts funny when your phone is in Low Battery Mode. We recommend turning it off to get the best experience.";
 
     return (
       <Router>
         <div className="App">
           <MediaQuery maxDeviceWidth={600} maxWidth={400}>
-            <Overlay
-              show={this.state.showMobileOverlay}
-              onHide={this.toggleMobileOverlay}
-            >
+            <LowBatteryTest />
+            {this.props.session.lowBatteryMode === true &&
+              <Overlay
+                show={this.state.showMobileOverlay}
+                onHide={this.toggleMobileOverlay}
+              >
                 {({
                   ...props
                 }) => (
-                <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
-                  <Tooltip
-                    close={this.toggleMobileOverlay}
-                    title={mobileOverlayTitle}
-                    description={mobileOverlayDescription}
-                    ignorePositioning={true}
-                  />
-                </MobileSupportOverlay>
+                  <MobileSupportOverlay onClick={this.toggleMobileOverlay}>
+                    <Tooltip
+                      close={this.toggleMobileOverlay}
+                      title={mobileOverlayTitle}
+                      description={mobileOverlayDescription}
+                      ignorePositioning={true}
+                    />
+                  </MobileSupportOverlay>
                 )}
-            </Overlay>
+              </Overlay>
+            }
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
@@ -229,7 +233,8 @@ class AppContents extends Component {
 }
 
 const mapStateToProps = state => ({
-  channels: state.channels
+  channels: state.channels,
+  session: state.session,
 });
 
 export default connect(mapStateToProps, { initializeSession, initializeChannels })(AppContents);
