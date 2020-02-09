@@ -30,6 +30,8 @@ const LoadingContainer = styled('div')`
   width: 100vw;
 `;
 
+const mobileLowBatteryTooltipHeight = "200px";
+
 const MobileSupportOverlay = styled('div')`
   position: absolute;
   height: ${mobileViewportHeight};
@@ -42,7 +44,8 @@ const MobileSupportOverlay = styled('div')`
   background-color: rgba(0,0,0,.6);
   display: flex;
   justify-content: center;
-  padding-top: 250px; // To hide the Youtube play button if the videos aren't loading
+  // Padding-top to hide the Youtube play button if the videos aren't loading
+  padding-top: calc((${mobileViewportHeight} - ${mobileLowBatteryTooltipHeight}) / 2);
 `;
 
 class AppContents extends Component {
@@ -51,6 +54,7 @@ class AppContents extends Component {
 
     this.state = {
       showMobileOverlay: true,
+      reloadingPage: false,
     }
   }
 
@@ -66,6 +70,11 @@ class AppContents extends Component {
   trackPageview() {
     ReactGA.pageview(window.location.pathname);
   };
+
+  retestLowBatteryMode = () => {
+    this.setState({ reloadingPage: true });
+    window.location.reload(false);
+  }
 
   render() {
     const NoPrograms = () => {
@@ -121,8 +130,23 @@ class AppContents extends Component {
     }
 
     const mobileOverlayTitle="Low battery warning!";
-    const mobileOverlayDescription="Locally Grown can't deliver videos to you when your phone is in Low Battery Mode.\n\nPlease turn that off so we can get to work. We’ll wait...";
 
+    const renderMobileLowBatteryDescription = () => {
+      return (
+        <div>
+          Locally Grown can't deliver videos to you when your phone is in Low Battery Mode.
+          <br />
+          <br />
+          Please turn that off so we can get to work. We’ll wait...
+          <br />
+          <br />
+          { this.state.reloadingPage && "Reloading..." }
+          { !this.state.reloadingPage &&
+            <button onClick={this.retestLowBatteryMode}>Ok, it's off now.</button>
+          }
+        </div>
+      );
+    }
     return (
       <Router>
         <div className="App">
@@ -140,7 +164,7 @@ class AppContents extends Component {
                   <MobileSupportOverlay>
                     <Tooltip
                       title={mobileOverlayTitle}
-                      description={mobileOverlayDescription}
+                      descriptionHTML={renderMobileLowBatteryDescription()}
                       ignorePositioning={true}
                     />
                   </MobileSupportOverlay>
