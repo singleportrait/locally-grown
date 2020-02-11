@@ -18,8 +18,8 @@ import {
   VideoPlaceholderWrapper,
 } from './styles';
 
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
 
 class Program extends Component {
   constructor(props) {

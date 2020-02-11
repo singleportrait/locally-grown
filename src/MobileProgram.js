@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
+import consoleLog from './consoleLog';
 
 import Video from './Video';
 import MuteButton from './MuteButton';
@@ -15,11 +16,54 @@ import {
   mobileViewportHeight,
 } from './styles';
 
+let mobileViewportHeightX = (window.orientation === 0 ? window.innerHeight : window.innerWidth) + "px";
+let mobileViewportWidthX = (window.orientation === 0 ? window.innerWidth : window.innerHeight) + "px";
+
 class MobileProgram extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      mobileViewportHeightX: (window.orientation === 0 ? window.innerHeight : window.innerWidth) + "px",
+      mobileViewportWidthX: (window.orientation === 0 ? window.innerWidth : window.innerHeight) + "px",
+    }
+  }
+
+  componentDidMount() {
+    console.log("Orientation:", window.orientation === 0 ? "vertical" : "horizontal");
+    consoleLog("Viewport size:", mobileViewportHeightX, mobileViewportWidthX);
+
+    window.addEventListener('orientationchange', this.handleOrientationChange);
+
+    window.addEventListener('scroll', this.handleOrientationChange);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('orientationchange', this.handleOrientationChange);
+  }
+
+  handleOrientationChange = (e) => {
+    consoleLog("Orientation changed");
+    consoleLog("Orientation:", window.orientation === 0 ? "vertical" : "horizontal");
+
+    this.setState({
+      mobileViewportHeightX: (window.orientation === 0 ? window.innerHeight : window.innerWidth) + "px",
+      mobileViewportWidthX: (window.orientation === 0 ? window.innerWidth : window.innerHeight) + "px",
+    });
+
+    consoleLog("Viewport size:", this.state.mobileViewportHeightX, this.state.mobileViewportWidthX);
+    // this.props.calculateWindowDimensions();
+    // consoleLog(e);
+    // consoleLog(window.screen.orientation);
+  }
+
   render() {
     return (
       <React.Fragment>
-        <MobileProgramContainer>
+        <MobileProgramContainer
+          height={this.state.mobileViewportHeightX}
+          width={this.state.mobileViewportWidthX}
+        >
           { this.props.currentProgramBlock &&
             <Video
               video={this.props.currentProgramBlock.currentVideo}
@@ -32,7 +76,10 @@ class MobileProgram extends Component {
             <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
           }
         </MobileProgramContainer>
-        <MobileProgramContainer>
+        <MobileProgramContainer
+          height={this.state.mobileViewportHeightX}
+          width={this.state.mobileViewportWidthX}
+        >
           { this.props.currentProgramBlock &&
             <React.Fragment>
               { !this.props.showMobileProgramInfo &&
@@ -96,17 +143,26 @@ class MobileProgram extends Component {
 
 const MobileProgramContainer = styled('div')`
   transform: rotate(90deg);
-  transform-origin: 50vw;
-  width: ${mobileViewportHeight};
-  height: 100vw;
+  // transform-origin: 50vw;
+  // transform-origin: 50vw;
+  // width: ${mobileViewportHeight};
+  // height: 100vw;
+  // width: ${mobileViewportHeightX};
+  // height: ${mobileViewportWidthX};
+  // transform-origin: calc(${mobileViewportWidthX} / 2);
+  width: ${props => props.height};
+  height: ${props => props.width};
+  transform-origin: calc(${props => props.width} / 2);
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const mobileVideoWidth = '90vw * 1.33';
-const mobileTextHeight = `calc((${mobileViewportHeight} - (${mobileVideoWidth})) / 2 - 1rem)`;
+// const mobileTextHeight = `calc((${mobileViewportHeightX} - (${mobileVideoWidth})) / 2 - 1rem)`;
+// const mobileVideoWidth = '90vw * 1.33';
+const mobileVideoWidth = `(${mobileViewportWidthX} * .9) * 1.33`;
+const mobileTextHeight = `calc((${mobileViewportHeightX} - (${mobileVideoWidth})) / 2 - 1rem)`;
 const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeight} + 1rem)`;
 
 const mobileVideo = css`
@@ -138,7 +194,7 @@ const mobileNextChannel = css`
 
 const baseMobileText = `
   position: absolute;
-  width: calc(100vw - 130px);
+  width: calc(${mobileViewportWidthX} - 130px);
   left: 75px;
   height: ${mobileTextHeight};
 `;

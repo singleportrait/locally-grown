@@ -5,6 +5,7 @@ import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import MediaQuery from 'react-responsive';
 import Overlay from 'react-overlays/Overlay';
+import consoleLog from './consoleLog';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -16,9 +17,16 @@ import WhatIsThisTooltip from './WhatIsThisTooltip';
 import Tooltip from './Tooltip';
 import LowBatteryTest from './LowBatteryTest';
 
+// import { calculateWindowSize, mobileViewportHeightX, mobileViewportWidthX } from './calculateWindowSize';
+
 import styled from '@emotion/styled';
 
 import { Logo, mobileViewportHeight } from './styles';
+
+// let mobileViewportHeightX = (window.orientation === 0 ? window.innerHeight : window.innerWidth) + "px";
+// let mobileViewportWidthX = (window.orientation === 0 ? window.innerWidth : window.innerHeight) + "px";
+let mobileViewportHeightX = "724px";
+let mobileViewportWidthX = "325px";
 
 const LoadingContainer = styled('div')`
   display: flex;
@@ -26,16 +34,16 @@ const LoadingContainer = styled('div')`
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  height: ${mobileViewportHeight};
-  width: 100vw;
+  height: ${mobileViewportHeightX};
+  width: ${mobileViewportWidthX};
 `;
 
 const mobileLowBatteryTooltipHeight = "200px";
 
 const MobileSupportOverlay = styled('div')`
   position: absolute;
-  height: ${mobileViewportHeight};
-  width: 100vw;
+  height: ${mobileViewportHeightX};
+  width: ${mobileViewportWidthX};
   top: 0;
   left: 0;
   right: 0;
@@ -61,6 +69,27 @@ class AppContents extends Component {
   componentDidMount() {
     this.props.initializeSession();
     this.props.initializeChannels();
+
+    // this.props.calculateWindowDimensions();
+    console.log("Orientation:", window.orientation === 0 ? "vertical" : "horizontal");
+    consoleLog("Viewport size:", mobileViewportHeightX, mobileViewportWidthX);
+
+    window.addEventListener('orientationchange', this.handleOrientationChange);
+    window.addEventListener('scroll', this.handleOrientationChange);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('orientationchange', this.handleOrientationChange);
+  }
+
+  handleOrientationChange = (e) => {
+    consoleLog("Orientation changed");
+
+    console.log("Orientation:", window.orientation === 0 ? "vertical" : "horizontal");
+    mobileViewportHeightX = (window.orientation === 0 ? window.innerHeight : window.innerWidth) + "px";
+    mobileViewportWidthX = (window.orientation === 0 ? window.innerWidth : window.innerHeight) + "px";
+
+    consoleLog("Viewport size:", mobileViewportHeightX, mobileViewportWidthX);
   }
 
   toggleTooltip() {
