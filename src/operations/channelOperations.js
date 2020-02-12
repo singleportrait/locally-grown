@@ -3,17 +3,17 @@ import client from '../services-contentful';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
-import { channelsData } from '../channelsDataAug2019';
+// import { channelsData } from '../channelsDataAug2019';
 
 import * as moment from 'moment';
 
 const fetchChannels = () => dispatch => {
   // Can use this when working offline
-  return new Promise(function(resolve, reject) {
-    // consoleLog(JSON.stringify(channelsData));
-    dispatch(setChannels(channelsData));
-    resolve(channelsData);
-  });
+  // return new Promise(function(resolve, reject) {
+  //   // consoleLog(JSON.stringify(channelsData));
+  //   dispatch(setChannels(channelsData));
+  //   resolve(channelsData);
+  // });
 
   return new Promise(function(resolve, reject) {
     client.getEntries({
