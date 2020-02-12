@@ -18,6 +18,7 @@ class Video extends Component {
 
     this.state = {
       playing: true,
+      error: false,
       // url: null,
     }
   }
@@ -133,13 +134,22 @@ class Video extends Component {
   }
 
   onError = (e) => {
-    consoleLog("- Video errored"); // Can pass `e` in if you like
+    consoleLog("- Video errored", e); // Can pass `e` in if you like
+
+    this.setState({ error: true });
 
     const error404Regex = /was not found/g;
+    const errorUnembeddableRegex = /150/g;
 
     if (error404Regex.test(e)) {
       // TODO: Show users a message that the video isn't working
       consoleLog("-- Because it wasn't found");
+      consoleLog(this.props.video.fields.title);
+    } else if (errorUnembeddableRegex.test(e)) {
+      consoleLog("-- Because it's not embeddable");
+      consoleLog(this.props.video.fields.title);
+    } else {
+      consoleLog("-- Because of something else");
     }
   }
 
@@ -165,7 +175,16 @@ class Video extends Component {
               className={this.props.className}
               isMobile={this.props.isMobile}
             >
-              <VideoOverlay />
+              <VideoOverlay
+                error={this.state.error}
+              >
+                { this.state.error &&
+                  <React.Fragment>
+                    <h1>Video Error</h1>
+                    <ErrorMessage>Err...something's not working with this video. Try again, or try another channel. We're working on it.</ErrorMessage>
+                  </React.Fragment>
+                }
+              </VideoOverlay>
               <ReactPlayer
                 ref={this.ref}
                 url={videoFields.url}
@@ -180,7 +199,10 @@ class Video extends Component {
                 onError={this.onError}
                 width="100%"
                 height="140%"
-                className={croppedReactPlayerStyle}
+                className={reactPlayerStyle}
+                style={{
+                  opacity: this.state.error ? "0" : "1"
+                }}
                 config={{
                   youtube: {
                     playerVars: {
@@ -234,12 +256,6 @@ const ReactPlayerWrapper = styled('div')`
   padding-top: ${props => props.isMobile ? '50%' : '75%'};
 `;
 
-const croppedReactPlayerStyle = css`
-  position: absolute;
-  left: 0;
-  top: -20%;
-`;
-
 const VideoOverlay = styled('div')`
   position: absolute;
   top: 0;
@@ -247,6 +263,39 @@ const VideoOverlay = styled('div')`
   width: 100%;
   height: 100%;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity .3s ease;
+  background-size: contain;
+
+  // For some reason, simply setting the z-index on this higher than the
+  // sibling element (containing the iframe) still showed the video on top.
+  // Maybe it has something to do with the CSS 'transform' on the parent element,
+  // but seems more likely to have something to do with the stack context of the
+  // iframe itself. For this reason, the cleanest way to stack this "over" the
+  // video is to set the video's opacity to zero in cases when the error overlay should be showing.
+  // This isn't ideal, and if we wanted to add any interactions within this overlay
+  // we'd have to find another approach (also considering, on mobile, this video
+  // element is already overlaid with other elements on the page.
+  // But, for the time being this works. Phew!
+  ${props => props.error && "background-image: url(./static_placeholder_simpler.gif);"};
+  opacity: ${props => props.error ? "1" : "0"};
+`;
+
+const ErrorMessage = styled('h3')`
+  max-width: 430px;
+
+  @media screen and (max-width: 600px) {
+    max-width: 320px;
+  }
+`;
+
+const reactPlayerStyle = css`
+  position: absolute;
+  left: 0;
+  top: -20%;
 `;
 
 const progressStyle = css`
