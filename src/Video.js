@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import consoleLog from './consoleLog';
+import ReactGA from 'react-ga';
 
 import { updateCurrentVideo } from './operations/programBlockOperations';
 import { addVideoPlayer, toggleMute } from './actions/videoActions';
@@ -134,23 +135,34 @@ class Video extends Component {
   }
 
   onError = (e) => {
-    consoleLog("- Video errored", e); // Can pass `e` in if you like
+    // consoleLog("- Video errored", e); // Can pass `e` in if you like
 
     this.setState({ error: true });
+
+    const category = "Video Error";
+    let action = undefined;
+    const label = this.props.video.fields.title + ": " + this.props.video.fields.url;
 
     const error404Regex = /was not found/g;
     const errorUnembeddableRegex = /150/g;
 
     if (error404Regex.test(e)) {
-      // TODO: Show users a message that the video isn't working
-      consoleLog("-- Because it wasn't found");
-      consoleLog(this.props.video.fields.title);
+      action = "404 Error: Not found";
     } else if (errorUnembeddableRegex.test(e)) {
-      consoleLog("-- Because it's not embeddable");
-      consoleLog(this.props.video.fields.title);
+      action = "150 Error: Not Embeddable";
     } else {
-      consoleLog("-- Because of something else");
+      action = "Reason Unknown";
     }
+
+    // consoleLog(category);
+    // consoleLog(action);
+    // consoleLog(label);
+    ReactGA.event({
+      category: category,
+      action: action,
+      label: label,
+      nonInteraction: true
+    });
   }
 
   toggleMute = () => {
