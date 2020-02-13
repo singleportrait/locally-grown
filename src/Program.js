@@ -199,7 +199,7 @@ class Program extends Component {
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
-        <NarrowProgramContainer>
+        <MediaQuery maxWidth={400}>
           <MobileProgram
             currentProgramBlock={currentProgramBlock}
             programBlocks={programBlocks}
@@ -211,7 +211,7 @@ class Program extends Component {
             channelUser={this.props.channelUser}
             currentHour={this.props.session.currentHour}
           ></MobileProgram>
-        </NarrowProgramContainer>
+        </MediaQuery>
       </React.Fragment>
     );
   }
@@ -227,15 +227,6 @@ const WideProgramContainer = styled('div')`
 
 const MediumProgramContainer = styled('div')`
   margin: 1.4rem;
-`;
-
-const NarrowProgramContainer = styled('div')`
-  display: none;
-
-// For some reason, the <MediaQuery> helper doesn't get properly triggered after a user rotates their phone sideways, and then rotates it back. We have to use native media queries for the phone design instead
-  @media screen and (max-width: 400px) {
-    display: block;
-  }
 `;
 
 // On horizontally-rotated phones and very short screens, scale the video to match
