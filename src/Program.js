@@ -28,7 +28,9 @@ class Program extends Component {
     this.state = {
       showInfoTooltip: false,
       showMobileProgramInfo: false,
-      maxMode: false
+      maxMode: false,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
@@ -40,6 +42,7 @@ class Program extends Component {
 
     // document.title = `${this.props.program.fields.title} | Locally Grown`
 
+    window.addEventListener('orientationchange', this.handleOrientationChange);
     document.addEventListener('mousemove', this.handleEvents);
   }
 
@@ -102,6 +105,36 @@ class Program extends Component {
 
   toggleInfo() {
     this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
+  }
+
+  /* This handles when mobile gets rotated twice. For some reason, <MediaQuery>
+   * stops detecting properly, even though the window's size appears correctly.
+   * So, we detect the rotation manually, wait for the resize to be complete,
+   * and then overwrite the initial window viewport size. Then, we use that below
+   * to handle whether to show the mobile program section or not.
+   *
+   * We only run the resize event once, so that we're not then constantly polling
+   * if the user scrolls, etc. The caveat here is that, when using Chrome
+   * and the inspector, we don't generally listen for resizes, so if you're
+   * switching between responsive mode and desktop mode, it's not going to
+   * behave correctly. Just refresh the browser, and you'll be fine. That's
+   * simpler than adding custom code just for test situations.
+   */
+  handleOrientationChange = () => {
+    const handleResize = () => {
+      this.setState({
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      });
+
+      window.removeEventListener('resize', handleResize);
+    }
+
+    window.addEventListener('resize', handleResize);
+  }
+
+  showMobileProgram = () => {
+    return this.state.viewportWidth <= 767 && this.state.viewportHeight >= 400;
   }
 
   render() {
@@ -200,7 +233,7 @@ class Program extends Component {
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
-        <MediaQuery maxWidth={400}>
+        { this.showMobileProgram() &&
           <MobileProgram
             currentProgramBlock={currentProgramBlock}
             programBlocks={programBlocks}
@@ -212,7 +245,7 @@ class Program extends Component {
             channelUser={this.props.channelUser}
             currentHour={this.props.session.currentHour}
           ></MobileProgram>
-        </MediaQuery>
+        }
       </React.Fragment>
     );
   }
