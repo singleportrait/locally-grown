@@ -3,15 +3,18 @@ import { connect } from 'react-redux';
 import consoleLog from './consoleLog';
 import ReactGA from 'react-ga';
 
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
+
 import { updateCurrentVideo } from './operations/programBlockOperations';
 import { addVideoPlayer, toggleMute } from './actions/videoActions';
+import { setLowBatteryMode } from './actions/sessionActions';
 
 import ReactPlayer from 'react-player';
 
-import { videoBackgroundColor } from './styles';
+import PlayButton from './PlayButton';
 
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { videoBackgroundColor } from './styles';
 
 class Video extends Component {
   constructor(props) {
@@ -20,8 +23,12 @@ class Video extends Component {
     this.state = {
       playing: true,
       error: false,
+      autoPlaying: undefined,
       // url: null,
+      setSuspended: undefined,
     }
+
+    this.togglePlaying = this.togglePlaying.bind(this);
   }
 
   componentDidMount = () => {
@@ -105,12 +112,30 @@ class Video extends Component {
     this.setState({ playing: !this.state.playing })
   }
 
+  testSuspended = (seconds) => {
+    consoleLog(`- Video: Player didn't start in ${seconds} seconds`);
+
+    if (this.props.session.lowBatteryMode === true) {
+      this.setState({ playing: false })
+    } else {
+      // this.props.setLowBatteryMode(true);
+    }
+  }
+
   onPlay = () => {
     // Video loading animation stops playing HERE
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
     // This doesn't reliably trigger for Vimeo videos
-    // consoleLog("- Video: Playing...");
+    consoleLog("- Video: onPlay");
+    const onPlayDate = new Date();
+    consoleLog(onPlayDate.getMinutes() + ":" + onPlayDate.getSeconds() + ":" + onPlayDate.getMilliseconds());
+
+    this.setState({
+      playing: true,
+      autoPlaying: true,
+    })
+    clearTimeout(this.state.setSuspended);
   }
 
   onReady = () => {
@@ -132,6 +157,16 @@ class Video extends Component {
       //   muted: true
       // })
     // }
+
+    consoleLog("- Video: onReady");
+    const onReadyDate = new Date();
+    consoleLog(onReadyDate.getMinutes() + ":" + onReadyDate.getSeconds() + ":" + onReadyDate.getMilliseconds());
+
+    // Low battery mode workaround:
+    // Set a timeout on the state, in order to clear it in case the video eventually loads
+    this.setState({
+      setSuspended: setTimeout(this.testSuspended, 6000, 6)
+    });
   }
 
   onError = (e) => {
@@ -171,6 +206,17 @@ class Video extends Component {
     this.props.toggleMute(this.props.videoStore.muted);
   }
 
+  togglePlaying = () => {
+      // Reset lowBatteryMode
+    consoleLog("- Video: Toggling playing via manual button");
+    this.setState({ playing: !this.state.playing });
+    this.props.setLowBatteryMode(false);
+    // if (!this.state.autoPlaying) {
+    //   consoleLog("Video hasn't auto-played yet");
+    //   this.setState({ playing: true });
+    // }
+  }
+
   // The react-player demo example
   ref = player => {
     this.player = player;
@@ -196,6 +242,13 @@ class Video extends Component {
                     <ErrorMessage>Err...something's not working with this video. Try again, or try another channel. We're working on it.</ErrorMessage>
                   </React.Fragment>
                 }
+                <h1>{this.state.playing ? "Playing" : "Paused"}</h1>
+                { this.props.session.lowBatteryMode === true && this.props.isMobile &&
+                  <PlayButton
+                    className={playButtonStyle}
+                    togglePlaying={this.togglePlaying}
+                  />
+                }
               </VideoOverlay>
               <ReactPlayer
                 ref={this.ref}
@@ -205,6 +258,7 @@ class Video extends Component {
                 muted={this.props.videoStore.muted}
                 onReady={this.onReady}
                 onPlay={this.onPlay}
+                onPause={this.onPause}
                 onEnded={this.onEnded}
                 onProgress={this.onProgress}
                 onDuration={this.onDuration}
@@ -263,6 +317,7 @@ class Video extends Component {
 
 const ReactPlayerWrapper = styled('div')`
   position: relative;
+  z-index: 1;
   background-color: ${videoBackgroundColor};
   overflow: hidden;
   padding-top: ${props => props.isMobile ? '50%' : '75%'};
@@ -310,6 +365,10 @@ const reactPlayerStyle = css`
   top: -20%;
 `;
 
+const playButtonStyle = css`
+  transform: rotate(-90deg);
+`;
+
 const progressStyle = css`
   background-color: white;
 `;
@@ -320,7 +379,8 @@ Video.defaultProps = {
 }
 
 const mapStateToProps = state => ({
-  videoStore: state.video
+  videoStore: state.video,
+  session: state.session
 });
 
-export default connect(mapStateToProps, { updateCurrentVideo, toggleMute, addVideoPlayer })(Video);
+export default connect(mapStateToProps, { updateCurrentVideo, toggleMute, addVideoPlayer, setLowBatteryMode })(Video);

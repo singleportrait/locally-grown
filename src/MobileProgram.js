@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
 
 import Video from './Video';
 import MuteButton from './MuteButton';
@@ -32,26 +32,24 @@ class MobileProgram extends Component {
             <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
           }
         </MobileProgramContainer>
-        <MobileProgramContainer>
-          { this.props.currentProgramBlock &&
-            <React.Fragment>
-              { !this.props.showMobileProgramInfo &&
-                <div className={mobileTopRightIcon}><MuteButton /></div>
-              }
-              { this.props.showMobileProgramInfo &&
-                <div className={mobileProgramInfoCloseIcon} onClick={this.props.toggleMobileProgramInfo}>
-                  <CloseIcon />
-                </div>
-              }
-              { this.props.previousChannelSlug && !this.props.showMobileProgramInfo &&
-                <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
-              }
-              { this.props.nextChannelSlug &&
-                <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
-              }
-            </React.Fragment>
-          }
-        </MobileProgramContainer>
+        { this.props.currentProgramBlock &&
+          <React.Fragment>
+            { !this.props.showMobileProgramInfo &&
+              <div className={mobileTopRightIcon}><MuteButton /></div>
+            }
+            { this.props.showMobileProgramInfo &&
+              <div className={mobileProgramInfoCloseIcon} onClick={this.props.toggleMobileProgramInfo}>
+                <CloseIcon />
+              </div>
+            }
+            { this.props.previousChannelSlug && !this.props.showMobileProgramInfo &&
+              <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
+            }
+            { this.props.nextChannelSlug &&
+              <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
+            }
+          </React.Fragment>
+        }
         <TopMobileText>
           <div>
             <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
@@ -116,7 +114,8 @@ const mobileVideo = css`
 const mobileTopRightIcon = css`
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
+  transform: rotate(90deg);
 `;
 
 const mobileProgramInfoCloseIcon = css`
@@ -126,14 +125,21 @@ const mobileProgramInfoCloseIcon = css`
 
 const mobilePreviousChannel = css`
   position: absolute;
-  bottom: 0;
-  left: 1rem;
+  // TODO: Fix positioning
+  // bottom: 0;
+  // left: 1rem;
+  top: 0;
+  left: 0;
+  transform: rotate(90deg);
 `;
 
 const mobileNextChannel = css`
   position: absolute;
+  // TODO: Fix positioning
   bottom: 0;
-  right: 1rem;
+  // right: 1rem;
+  left: 0;
+  transform: rotate(90deg);
 `;
 
 const baseMobileText = `
