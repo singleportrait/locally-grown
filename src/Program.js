@@ -120,17 +120,25 @@ class Program extends Component {
    * behave correctly. Just refresh the browser, and you'll be fine. That's
    * simpler than adding custom code just for test situations.
    */
-  handleOrientationChange = () => {
+  handleOrientationChange = (e) => {
+    // consoleLog("- Immediate sizes now:", window.innerWidth, window.innerHeight);
+
     const handleResize = () => {
       this.setState({
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
       });
 
-      window.removeEventListener('resize', handleResize);
+      // consoleLog("- Handling resize manually");
+      // consoleLog("- New screen size:", this.state.viewportWidth, this.state.viewportHeight);
     }
 
-    window.addEventListener('resize', handleResize);
+    // Different browsers trigger the resize differently (e.g. Safari
+    // triggers one instantly, but Chrome never does until scroll), so we'll
+    // depend on a timeout :'( and check the viewport size ourselves.
+    // Works just nicely in Safari, is a little flickery in Chrome, but at
+    // least it doesn't completely break.
+    setTimeout(handleResize, 100);
   }
 
   showMobileProgram = () => {
