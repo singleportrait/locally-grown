@@ -50,7 +50,7 @@ class Video extends Component {
       // It ALSO breaks when a video plays into the next one,
       // if you've previously played with mute
       // For now: Only reset the mute settings if the video is Vimeo
-      if (this.props.video.fields.url.indexOf("vimeo") !== -1 && !this.props.videoStore.muted) {
+      if (this.isVimeo() && !this.props.videoStore.muted) {
         this.props.toggleMute(false);
       }
       // Using this (in combination with setState when mounting, above) brought back the console error the above approach fixed
@@ -63,6 +63,19 @@ class Video extends Component {
       this.props.video.fields.url === prevProps.video.fields.url) {
       // consoleLog("- The new video is the same as the old one, but the index has changed. Let's restart the video");
       this.onDuration();
+
+      // Calling onDuration allows a Youtube video to play directly after itself,
+      // but it doesn't fix the same for Vimeo. To trigger that reliably,
+      // we wait 500ms with the video paused, then manually trigger a play.
+      // Not super-elegant, but it works and the logic is obvious, at least.
+      if (this.isVimeo()) {
+        this.setState({ playing: false });
+
+        setTimeout(() => {
+          this.setState({ playing: true });
+          consoleLog("- Setting to play again after Vimeo timeout");
+        }, 300);
+      }
     }
   }
 
@@ -74,13 +87,23 @@ class Video extends Component {
       // for Vimeo videos, and there's no other way to set the timestamp
       // But then, realized onDuration() only gets called once,
       // so we don't need to have this sanity check around it
+
+      // Note: Later commented this out to fix playing Vimeo videos when
+      // switching between channels
       // this.seekToTimestamp(duration);
+      // consoleLog("- We're missing a duration here, when we start");
     }
-    // consoleLog("- Video: Setting duration");
-    this.seekToTimestamp(duration);
-    this.setState({
-      duration: duration
-    });
+
+    // consoleLog("- Video: Setting duration...", duration);
+
+    // if (!duration) {
+    //   consoleLog("- Missing duration; fetching it...");
+    // }
+
+    const updatedDuration = duration ? duration : this.player.getDuration();
+
+    this.seekToTimestamp(updatedDuration);
+    this.setState({ duration: updatedDuration });
   }
 
   // This is only used for the progress bar
@@ -93,7 +116,7 @@ class Video extends Component {
       consoleLog("Video: This timestamp is longer than the video!");
     }
 
-    // consoleLog("- Seeking to timestamp...");
+    // consoleLog("- Seeking to timestamp...", this.props.timestamp);
     this.player.seekTo(this.props.timestamp);
   }
 
@@ -106,14 +129,15 @@ class Video extends Component {
   }
 
   onPlay = () => {
+    // consoleLog("- Video: onPlay");
     // Video loading animation stops playing HERE
     // Ideally: Clicking 'next' won't actually switch the video until this
     // player loads
     // This doesn't reliably trigger for Vimeo videos
-    // consoleLog("- Video: Playing...");
   }
 
   onReady = () => {
+    // consoleLog("- Video: onReady");
     // Was trying to get the videos to start playing by using a timeout
     // rather than user trigger, but didn't work
     // consoleLog("- Video: On ready");
@@ -122,7 +146,6 @@ class Video extends Component {
     //   setTimeout(this.playPause, 500);
     //   consoleLog("- Video: Toggled play/pause");
     // }, 500)
-    // consoleLog("- Video: onReady");
     // if (!this.state.previouslyMuted) {
       // consoleLog("- This shouldn't be muted anymore");
       // Vimeo videos still pause when changing channels with
@@ -169,6 +192,10 @@ class Video extends Component {
     // Vimeo videos break once you try to unmute the videos and change the channel
     // consoleLog("Video: Toggling mute");
     this.props.toggleMute(this.props.videoStore.muted);
+  }
+
+  isVimeo = () => {
+    return this.props.video.fields.url.indexOf("vimeo") !== -1;
   }
 
   // The react-player demo example
