@@ -19,7 +19,7 @@ class LowBatteryTest extends Component {
   }
 
   setSuspended = () => {
-    consoleLog("Is this really suspended?", this.state.suspended);
+    // consoleLog("- Is the test video really suspended?", this.state.suspended);
     this.props.setLowBatteryMode(this.state.suspended);
   }
 
@@ -28,9 +28,9 @@ class LowBatteryTest extends Component {
     // This gets called even when the phone is not on low battery,
     // which is why we need to set a timeout, wait to see if it got un-suspended
     // and if it didn't, show the user the low battery warning
-    const onSuspendDate = new Date();
-    const onSuspendTime = onSuspendDate.getMinutes() + ":" + onSuspendDate.getSeconds() + ":" + onSuspendDate.getMilliseconds();
-    consoleLog("- Video suspended by browser", onSuspendTime);
+    // const onSuspendDate = new Date();
+    // const onSuspendTime = onSuspendDate.getMinutes() + ":" + onSuspendDate.getSeconds() + ":" + onSuspendDate.getMilliseconds();
+    // consoleLog("- Video suspended by browser", onSuspendTime);
 
     this.setState({
       suspended: true
@@ -46,7 +46,7 @@ class LowBatteryTest extends Component {
   }
 
   handleTestVideoClick = (event) => {
-    consoleLog("- User chose to play");
+    consoleLog("- User chose to play the test video");
   }
 
   render() {
