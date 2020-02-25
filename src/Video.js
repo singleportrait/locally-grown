@@ -4,7 +4,7 @@ import consoleLog from './consoleLog';
 import ReactGA from 'react-ga';
 
 import { updateCurrentVideo } from './operations/programBlockOperations';
-import { addVideoPlayer, toggleMute } from './actions/videoActions';
+import { addVideoPlayer } from './actions/videoActions';
 
 import ReactPlayer from 'react-player';
 
@@ -41,23 +41,6 @@ class Video extends Component {
   componentDidUpdate = (prevProps, prevState) => {
     // consoleLog("- Timestamp to start:" + this.props.timestamp);
     // consoleLog("- Updating component");
-    if (this.props.video.sys.id !== prevProps.video.sys.id) {
-      // consoleLog("- New video will play");
-      // Resetting the state to be muted FIXES the Vimeo pause issue,
-      // but this doesn't fix turning muted back on once you switch
-      // HOWEVER, somehow when switching back to Youtube from Vimeo
-      // videos, the audio stays un-muted.
-      // It ALSO breaks when a video plays into the next one,
-      // if you've previously played with mute
-      // For now: Only reset the mute settings if the video is Vimeo
-      if (this.isVimeo() && !this.props.videoStore.muted) {
-        this.props.toggleMute(false);
-      }
-      // Using this (in combination with setState when mounting, above) brought back the console error the above approach fixed
-      // this.setState({
-      //   url: this.props.video.fields.url
-      // })
-    }
 
     if (this.props.video.index !== prevProps.video.index &&
       this.props.video.fields.url === prevProps.video.fields.url) {
@@ -77,6 +60,15 @@ class Video extends Component {
         }, 300);
       }
     }
+
+    // Not using this currently but might be useful eventually
+    // if (this.props.video.index !== prevProps.video.index) {
+      // consoleLog("- New video will play");
+      // Using this (in combination with setState when mounting, above) brought back the console error the above approach fixed
+      // this.setState({
+      //   url: this.props.video.fields.url
+      // })
+    // }
   }
 
   onEnded = () => this.props.updateCurrentVideo();
@@ -186,12 +178,6 @@ class Video extends Component {
       label: label,
       nonInteraction: true
     });
-  }
-
-  toggleMute = () => {
-    // Vimeo videos break once you try to unmute the videos and change the channel
-    // consoleLog("Video: Toggling mute");
-    this.props.toggleMute(this.props.videoStore.muted);
   }
 
   isVimeo = () => {
@@ -350,4 +336,4 @@ const mapStateToProps = state => ({
   videoStore: state.video
 });
 
-export default connect(mapStateToProps, { updateCurrentVideo, toggleMute, addVideoPlayer })(Video);
+export default connect(mapStateToProps, { updateCurrentVideo, addVideoPlayer })(Video);
