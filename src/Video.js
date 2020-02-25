@@ -225,6 +225,7 @@ class Video extends Component {
                 width="100%"
                 height="140%"
                 className={reactPlayerStyle}
+                playsinline={true}
                 style={{
                   opacity: this.state.error ? "0" : "1"
                 }}
