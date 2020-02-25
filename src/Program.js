@@ -13,6 +13,7 @@ import ChannelButton from './ChannelButton';
 import InfoTooltip from './InfoTooltip';
 import ProgramSidebar from './ProgramSidebar';
 import MobileProgram from './MobileProgram';
+import KeyboardNavigation from './KeyboardNavigation';
 
 import {
   VideoPlaceholderWrapper,
@@ -219,6 +220,10 @@ class Program extends Component {
 
     return (
       <React.Fragment>
+        <KeyboardNavigation
+          previousChannelSlug={this.props.previousChannelSlug}
+          nextChannelSlug={this.props.nextChannelSlug}
+        />
         <MediaQuery minWidth={800}>
           <WideProgramContainer>
             <VideoAndControlsColumn maxMode={this.state.maxMode}>
