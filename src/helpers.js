@@ -52,3 +52,21 @@ export const calculateSecondsUntilNextProgram = () => {
 
   return secondsUntilNextProgram;
 }
+
+/**
+ * Determine if the user is on iOS
+ * Inspired by: https://stackoverflow.com/questions/21741841/detecting-ios-android-operating-system
+ *
+ * @returns {boolean}
+ */
+export const isIOS = () => {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  consoleLog(userAgent);
+
+  // iOS detection from: http://stackoverflow.com/a/9039885/177710
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    return true;
+  }
+
+  return false;
+}

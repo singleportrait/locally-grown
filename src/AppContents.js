@@ -5,6 +5,7 @@ import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import MediaQuery from 'react-responsive';
 import Overlay from 'react-overlays/Overlay';
+import { isIOS } from './helpers';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -55,6 +56,7 @@ class AppContents extends Component {
     this.state = {
       showMobileOverlay: true,
       reloadingPage: false,
+      isIOS: isIOS(),
     }
   }
 
@@ -151,10 +153,10 @@ class AppContents extends Component {
       <Router>
         <div className="App">
           <MediaQuery maxDeviceWidth={600} maxWidth={400}>
-            { this.props.session.lowBatteryMode === undefined &&
+            { this.state.isIOS && this.props.session.lowBatteryMode === undefined &&
               <LowBatteryTest />
             }
-            { this.props.session.lowBatteryMode === true &&
+            { this.state.isIOS && this.props.session.lowBatteryMode === true &&
               <Overlay
                 show={this.state.showMobileOverlay}
               >
