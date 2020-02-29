@@ -41,3 +41,14 @@ export const currentSecondsPastTheHour = () => {
 
   return (currentMinutes * 60) + currentSeconds;
 }
+
+export const calculateSecondsUntilNextProgram = () => {
+  const oneHourInSeconds = 60 * 60;
+  let secondsUntilNextProgram = oneHourInSeconds - currentSecondsPastTheHour();
+
+  if (secondsUntilNextProgram < 0) {
+    secondsUntilNextProgram = 3600;
+  }
+
+  return secondsUntilNextProgram;
+}

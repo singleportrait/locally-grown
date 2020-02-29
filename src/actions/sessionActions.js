@@ -1,5 +1,5 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from './sessionTypes';
-import { currentSecondsPastTheHour } from '../helpers';
+import { calculateSecondsUntilNextProgram } from '../helpers';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
@@ -11,7 +11,12 @@ const resetPrograms = () => dispatch => {
   // For debugging issues with hour starts:
   // const newHour = 11;
 
-  dispatch(setTimeUntilNextProgram(3600, newHour));
+  // Over time, the switching over to a new program doesn't happen exactly on
+  // the hour anymore. So, we want to calculate the actual seconds until the
+  // next hour is going to happen, like we do when the site loads
+  const secondsUntilNextProgram = calculateSecondsUntilNextProgram();
+
+  dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, newHour));
 
   // This will currently allow for the hour to change to have nothing playing
   // in the new hour, but I'm fine with that.
@@ -34,13 +39,8 @@ const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {
 
 export const initializeSession = () => dispatch => {
   /* Set how many seconds until it's time to load the next program */
-  const secondsPastTheHour = currentSecondsPastTheHour();
-  const oneHourInSeconds = 60 * 60;
-  let secondsUntilNextProgram = oneHourInSeconds - secondsPastTheHour;
-
-  if (secondsUntilNextProgram < 0) {
-    secondsUntilNextProgram = 3600;
-  }
+  const secondsUntilNextProgram = calculateSecondsUntilNextProgram();
+  //consoleLog("- Seconds until the next program are: ", secondsUntilNextProgram);
 
   // For debugging issues with hour starts:
   // secondsUntilNextProgram = 30;
