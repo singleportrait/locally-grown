@@ -120,6 +120,12 @@ class Program extends Component {
    * switching between responsive mode and desktop mode, it's not going to
    * behave correctly. Just refresh the browser, and you'll be fine. That's
    * simpler than adding custom code just for test situations.
+   *
+   * Some phone sizes for reference:
+   * iPhone = 375 x 667
+   * iPhone XL = 414 x 736
+   * Pixel = 411 x 731
+   * Pixel XL = 411 x 823
    */
   handleOrientationChange = (e) => {
     // consoleLog("- Immediate sizes now:", window.innerWidth, window.innerHeight);
@@ -139,17 +145,7 @@ class Program extends Component {
     // depend on a timeout :'( and check the viewport size ourselves.
     // Works just nicely in Safari, is a little flickery in Chrome, but at
     // least it doesn't completely break.
-    setTimeout(handleResize, 100);
-  }
-
-  /* Some phone sizes for reference:
-   * iPhone = 375 x 667
-   * iPhone XL = 414 x 736
-   * Pixel = 411 x 731
-   * Pixel XL = 411 x 823
-   */
-  showMobileProgram = () => {
-    return this.state.viewportWidth <= 767 && this.state.viewportHeight >= 415;
+    setTimeout(handleResize, 150);
   }
 
   render() {
@@ -252,7 +248,7 @@ class Program extends Component {
             { renderSidebarProgramContent() }
           </MediumProgramContainer>
         </MediaQuery>
-        { this.showMobileProgram() &&
+        { this.state.viewportWidth <= 767 && this.state.viewportHeight >= 415 &&
           <MobileProgram
             currentProgramBlock={currentProgramBlock}
             programBlocks={programBlocks}

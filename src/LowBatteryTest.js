@@ -40,6 +40,7 @@ class LowBatteryTest extends Component {
   }
 
   handlePlay = (event) => {
+    // consoleLog("- The video is autoplaying");
     this.setState({
       suspended: false
     });
