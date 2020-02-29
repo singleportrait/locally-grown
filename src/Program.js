@@ -142,8 +142,14 @@ class Program extends Component {
     setTimeout(handleResize, 100);
   }
 
+  /* Some phone sizes for reference:
+   * iPhone = 375 x 667
+   * iPhone XL = 414 x 736
+   * Pixel = 411 x 731
+   * Pixel XL = 411 x 823
+   */
   showMobileProgram = () => {
-    return this.state.viewportWidth <= 767 && this.state.viewportHeight >= 400;
+    return this.state.viewportWidth <= 767 && this.state.viewportHeight >= 415;
   }
 
   render() {
@@ -237,7 +243,7 @@ class Program extends Component {
             </InfoColumnContainer>
           </WideProgramContainer>
         </MediaQuery>
-        <MediaQuery minWidth={400} maxWidth={800}>
+        <MediaQuery minWidth={415} maxWidth={800}>
           <MediumProgramContainer>
             { renderChannelInfo() }
             <MediumVideoContainer>
