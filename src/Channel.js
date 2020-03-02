@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import consoleLog from './consoleLog';
 
 import Program from './Program';
 
@@ -12,6 +13,10 @@ class Channel extends Component {
     const channelTitle = `${channelFields.title} | ${process.env.REACT_APP_NAME}`;
     const channelURL = process.env.REACT_APP_DOMAIN + channelFields.slug;
     const shareImageURL = (channelFields.programs[0].fields.previewImage ? channelFields.programs[0].fields.previewImage.fields.file.url : process.env.REACT_APP_DOMAIN + "share.png");
+
+    if (channelFields.programs.length > 1) {
+      consoleLog("- Warning: This channel has multiple available programs for this date");
+    }
     return (
       <div className="channel">
         <Helmet>
@@ -32,10 +37,6 @@ class Channel extends Component {
                 previousChannelSlug={this.props.channel.previousChannelSlug}
                 nextChannelSlug={this.props.channel.nextChannelSlug}
               />
-            }
-
-            { channelFields.programs.length > 1 &&
-              <h4>(This channel has multiple available programs, fyi)</h4>
             }
 
             { channelFields.programs.length === 0 &&
