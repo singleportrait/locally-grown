@@ -61,7 +61,6 @@ export const calculateSecondsUntilNextProgram = () => {
  */
 export const isIOS = () => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  consoleLog(userAgent);
 
   // iOS detection from: http://stackoverflow.com/a/9039885/177710
   if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {

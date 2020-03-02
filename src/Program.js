@@ -41,10 +41,9 @@ class Program extends Component {
   componentDidMount() {
     this.initializeProgram();
 
-    // document.title = `${this.props.program.fields.title} | Locally Grown`
+    document.addEventListener('mousemove', this.handleEvents);
 
     window.addEventListener('orientationchange', this.handleOrientationChange);
-    document.addEventListener('mousemove', this.handleEvents);
   }
 
   componentDidUpdate(prevProps) {
@@ -57,6 +56,8 @@ class Program extends Component {
   componentWillUnmount() {
     document.removeEventListener('mousemove', this.handleEvents);
     this.handleEventEnd.cancel(); // Lodash's debounce-removing tool
+
+    window.removeEventListener('orientationchange', this.handleOrientationChange);
   }
 
   handleEvents = () => {
@@ -111,8 +112,8 @@ class Program extends Component {
   /* This handles when mobile gets rotated twice. For some reason, <MediaQuery>
    * stops detecting properly, even though the window's size appears correctly.
    * So, we detect the rotation manually, wait for the resize to be complete,
-   * and then overwrite the initial window viewport size. Then, we use that below
-   * to handle whether to show the mobile program section or not.
+   * and then overwrite the initial window viewport size. Then, we use that new
+   * size to handle whether to show the mobile program section or not.
    *
    * We only run the resize event once, so that we're not then constantly polling
    * if the user scrolls, etc. The caveat here is that, when using Chrome
@@ -121,23 +122,39 @@ class Program extends Component {
    * behave correctly. Just refresh the browser, and you'll be fine. That's
    * simpler than adding custom code just for test situations.
    *
+   * This doesn't work entirely perfect on mobile Chrome. There are times
+   * (probably because of the timeout) that it doesn't trigger correctly.
+   * However, since the resize event doesn't trigger reliably when rotating
+   * horizontally, I'm choosing not to run on both events for the time being.
+   *
+   * We could choose to also use the `resize` window event similarly, if we
+   * want to add a backup for if this doesn't fire consistently enough, with
+   * the downside that it could cause a performance lag with running both of
+   * these all the time
+   *
    * Some phone sizes for reference:
    * iPhone = 375 x 667
    * iPhone XL = 414 x 736
    * Pixel = 411 x 731
    * Pixel XL = 411 x 823
    */
+  /* When orientationchange gets run:
+   * For all mobile browsers tested: immediately after rotation
+   *
+   * When resize gets run:
+   * Mobile iOS Safari: immediately after orientationchange but *only when rotating from horizontal to vertical*
+   * Mobile (Android) Chrome: immediately after orientation when rotating both directions
+   */
   handleOrientationChange = (e) => {
-    // consoleLog("- Immediate sizes now:", window.innerWidth, window.innerHeight);
+    // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
 
-    const handleResize = () => {
+    const handleResizeOnOrientation = () => {
       this.setState({
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
       });
 
-      // consoleLog("- Handling resize manually");
-      // consoleLog("- New screen size:", this.state.viewportWidth, this.state.viewportHeight);
+      // consoleLog("- After orientation timeout, window size now:", this.state.viewportWidth, this.state.viewportHeight);
     }
 
     // Different browsers trigger the resize differently (e.g. Safari
@@ -145,7 +162,7 @@ class Program extends Component {
     // depend on a timeout :'( and check the viewport size ourselves.
     // Works just nicely in Safari, is a little flickery in Chrome, but at
     // least it doesn't completely break.
-    setTimeout(handleResize, 150);
+    setTimeout(handleResizeOnOrientation, 150);
   }
 
   render() {
