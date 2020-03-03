@@ -18,7 +18,6 @@ class Navigation extends Component {
       <div className={navigation}>
         <div>
           <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
-          Beta!
         </div>
         <TVGuideLink />
       </div>
