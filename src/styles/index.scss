@@ -109,6 +109,8 @@ button {
   margin: 0;
   background: none;
   -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
 }
 
 // Overrides for react-tooltip library, if we use it

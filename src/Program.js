@@ -4,6 +4,9 @@ import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
 import consoleLog from './consoleLog';
 
+import styled from '@emotion/styled';
+import { css } from 'emotion';
+
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import Video from './Video';
@@ -18,9 +21,6 @@ import KeyboardNavigation from './KeyboardNavigation';
 import {
   VideoPlaceholderWrapper,
 } from './styles';
-
-import styled from '@emotion/styled';
-import { css } from 'emotion';
 
 class Program extends Component {
   constructor(props) {
@@ -341,6 +341,12 @@ const VideoAndControlsColumn = styled('div')`
   }
 `;
 
+const VideoControls = styled('div')`
+  padding-top: 1rem;
+  display: ${props => props.maxMode ? 'none' : 'flex'};
+  justify-content: ${props => props.hasMultipleChannels ? 'space-between' : 'center'}
+`;
+
 const InfoColumnContainer = styled('div')`
   position: absolute;
   width: 35%;
@@ -367,12 +373,6 @@ const infoColumn = css`
   margin-right: -16px;
   overflow-y: scroll;
   height: 100%;
-`;
-
-const VideoControls = styled('div')`
-  padding-top: 1rem;
-  display: ${props => props.maxMode ? 'none' : 'flex'};
-  justify-content: ${props => props.hasMultipleChannels ? 'space-between' : 'center'}
 `;
 
 const controlButtons = css`

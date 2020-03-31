@@ -184,6 +184,7 @@ class AppContents extends Component {
                   </React.Fragment>
                 )} />
               )}
+
               { this.props.channels.hiddenChannels.map((channel, i) => // Tracking for hidden channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
@@ -192,6 +193,7 @@ class AppContents extends Component {
                   </React.Fragment>
                 )} />
               )}
+
               { this.props.channels.currentChannel && // Tracking for root & then new current channel
                 <Route exact path="/" render={props => (
                   <React.Fragment>
@@ -207,6 +209,7 @@ class AppContents extends Component {
                   </React.Fragment>
                 )} />
               }
+
               <Route path="/tv-guide" render={props => ( // Tracking for TV Guide
                 <React.Fragment>
                   <Helmet>
@@ -220,6 +223,7 @@ class AppContents extends Component {
                   <TVGuide {...props} channels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
+
               <Route path="/channels" render={props => ( // Tracking for channels index
                 <React.Fragment>
                   <Helmet>
@@ -242,6 +246,7 @@ class AppContents extends Component {
                   </React.Fragment>
                 )} />
               }
+
               <Route component={NoMatch} />
             </Switch>
           }
