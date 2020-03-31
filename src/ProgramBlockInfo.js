@@ -12,6 +12,7 @@ import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
 
 const ProgramBlockInfoContainer = styled('div')`
   padding-top: 4rem;
+  padding-bottom: 4rem;
 `;
 
 const NextProgramBlock = styled('div')`
