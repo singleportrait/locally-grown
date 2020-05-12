@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -13,101 +13,95 @@ import TVGuideProgramBlock from './TVGuideProgramBlock';
 
 import { Header, programBlockBase } from './styles';
 
-class TVGuide extends Component {
-  componentDidMount() {
-    // document.title = "TV Guide | Locally Grown";
-  }
-
-  goBack = () => {
+function TVGuide(props) {
+  const goBack = () => {
     // TODO: What happens if I come directly to the TV Guide?
     // I need to check if the browser history is this domain,
     // and if it's not (or doesn't exist) go back to '/'
-    // Can probably use this.props.history.location.pathname
-    this.props.history.goBack();
+    // Can probably use props.history.location.pathname
+    props.history.goBack();
   }
 
-  render() {
-    let hours = [];
-    const currentHour = this.props.session.currentHour;
-    for (let i = currentHour; i < 24; i++) {
+  let hours = [];
+  const currentHour = props.session.currentHour;
+  for (let i = currentHour; i < 24; i++) {
+    hours.push(i);
+  }
+  if (currentHour !== 0) {
+    for (let i = 0; i < currentHour; i++) {
       hours.push(i);
     }
-    if (currentHour !== 0) {
-      for (let i = 0; i < currentHour; i++) {
-        hours.push(i);
-      }
-    }
+  }
 
     // TODO: Figure out a better way to know if NONE of
     // the program blocks match
 
-    return (
-      <TVGuideWrapper>
-        <Header>
-          <WhatIsThisTooltip />
-          <h2>TV Guide</h2>
-          <div onClick={this.goBack} className={closeButton}>
-            <CloseIcon />
-          </div>
-        </Header>
-        <hr/>
-        { this.props.channels.length === 0 &&
-          <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
-        }
+  return (
+    <TVGuideWrapper>
+      <Header>
+        <WhatIsThisTooltip />
+        <h2>TV Guide</h2>
+        <div onClick={goBack} className={closeButton}>
+          <CloseIcon />
+        </div>
+      </Header>
+      <hr/>
+      { props.channels.length === 0 &&
+        <h2>Uh oh! There aren&apos;t any featured programs with active programming right now. Come back later!</h2>
+      }
 
-        <TVGuideChart>
-          <Row>
-            <ProgramTitle></ProgramTitle>
+      <TVGuideChart>
+        <Row>
+          <ProgramTitle></ProgramTitle>
+          { hours.map((hour, i) =>
+            <ProgramBlockHeader key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHeader>
+          )}
+        </Row>
+        { props.channels.map((channel) => channel.fields.programs.map((program, i) =>
+          <Row key={i}>
+            <Link to={channel.fields.slug} className={channelTitleLink}>
+              <ProgramTitle>
+                <h3>{program.fields.title}</h3>
+                { channel.fields.user &&
+                  <p className={channelTitleName}>{channel.fields.user.fields.name}</p>
+                }
+              </ProgramTitle>
+            </Link>
             { hours.map((hour, i) =>
-              <ProgramBlockHeader key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHeader>
-            )}
-          </Row>
-          { this.props.channels.map((channel) => channel.fields.programs.map((program, i) =>
-            <Row key={i}>
-              <Link to={channel.fields.slug} className={channelTitleLink}>
-                <ProgramTitle>
-                  <h3>{program.fields.title}</h3>
-                  { channel.fields.user &&
-                    <p className={channelTitleName}>{channel.fields.user.fields.name}</p>
-                  }
-                </ProgramTitle>
-              </Link>
-              { hours.map((hour, i) =>
-                <React.Fragment key={i}>
-                  {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                    <React.Fragment>
-                      {hours[0] === hour &&
-                        <Link to={channel.fields.slug} className={programBlockLink}>
-                          <TVGuideProgramBlock
-                            firstHour={true}
-                            programBlock={program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour)}
-                            channelSlug={channel.fields.slug}
-                            channelTitle={channel.fields.title}
-                          />
-                        </Link>
-                      }
-                      {hours[0] !== hour &&
+              <React.Fragment key={i}>
+                {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                  <React.Fragment>
+                    {hours[0] === hour &&
+                      <Link to={channel.fields.slug} className={programBlockLink}>
                         <TVGuideProgramBlock
+                          firstHour={true}
                           programBlock={program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour)}
                           channelSlug={channel.fields.slug}
                           channelTitle={channel.fields.title}
                         />
-                      }
-                    </React.Fragment>
-                  }
-                  {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                    <EmptyProgramBlock title="No programming for this hour">
-                      <CloseIcon />
-                    </EmptyProgramBlock>
-                  }
-                </React.Fragment>
-              )}
-            </Row>
-          ))}
-        </TVGuideChart>
-      </TVGuideWrapper>
-    );
-  }
+                      </Link>
+                    }
+                    {hours[0] !== hour &&
+                      <TVGuideProgramBlock
+                        programBlock={program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour)}
+                        channelSlug={channel.fields.slug}
+                        channelTitle={channel.fields.title}
+                      />
+                    }
+                  </React.Fragment>
+                }
+                {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
+                  <EmptyProgramBlock title="No programming for this hour">
+                    <CloseIcon />
+                  </EmptyProgramBlock>
+                }
+              </React.Fragment>
+            )}
+          </Row>
+        ))}
+      </TVGuideChart>
+    </TVGuideWrapper>
+  );
 }
 
 const TVGuideWrapper = styled('div')`
@@ -131,6 +125,7 @@ const Row = styled('div')`
   display: flex;
   position: relative;
   align-items: center;
+
   &:after {
     position: absolute;
     border-bottom: 1px solid #4E475D;
