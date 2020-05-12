@@ -52,14 +52,24 @@ const firstHour = css`
 
     div {
       background-color: #d2d1d6;
-      background: linear-gradient(to right, rgba(210,209,214,0) 0%,rgba(210,209,214,1) 10%,rgba(210,209,214,1) 100%);
+      // Hex with alpha (00 = 0%, FF = 100%)
+      background: linear-gradient(to right, #d2d1d600 0%, #d2d1d6ff 10%, #d2d1d6ff 100%);
     }
   }
 `;
 
 const otherHours = css`
   ${programBlockBaseStyle}
-  background-color: #999;
+  background-color: #9b97a4;
+
+  &:hover {
+    background-color: #858090;
+
+    div {
+      background-color: #858090;
+      background: linear-gradient(to right, #85809000 0%, #858090ff 10%, #858090ff 100%);
+    }
+  }
 `;
 
 const programHoverBase = css`
