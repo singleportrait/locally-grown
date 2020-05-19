@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 export const padding = '1.25rem';
 
 export const backgroundColor = '#221935';
+export const lightBackgroundColor = '#271F39';
 export const videoBackgroundColor = '#000';
 
 export const borderColor = '#4E475D';
