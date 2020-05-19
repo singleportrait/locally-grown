@@ -11,7 +11,10 @@ import CloseIcon from './CloseIcon';
 import WhatIsThisTooltip from './WhatIsThisTooltip';
 import TVGuideProgramBlock from './TVGuideProgramBlock';
 
-import { Header, programBlockBase, backgroundColor } from './styles';
+import {
+  Header, programBlockBase,
+  backgroundColor, lightBackgroundColor, borderColor
+} from './styles';
 
 function TVGuide(props) {
   const goBack = () => {
@@ -56,7 +59,9 @@ function TVGuide(props) {
           <ChannelTitle></ChannelTitle>
         </div>
         { hours.map((hour, i) =>
-          <ProgramBlockHour key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHour>
+          <Column headerRow>
+            <ProgramBlockHour key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHour>
+          </Column>
         )}
       </HeaderRow>
 
@@ -73,7 +78,7 @@ function TVGuide(props) {
           { hours.map((hour, i) =>
             <React.Fragment key={i}>
               {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                <React.Fragment>
+                <Column>
                   {hours[0] === hour &&
                     <Link to={channel.fields.slug} className={programBlockLink}>
                       <TVGuideProgramBlock
@@ -91,12 +96,14 @@ function TVGuide(props) {
                       channelTitle={channel.fields.title}
                     />
                   }
-                </React.Fragment>
+                </Column>
               }
               {!program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
-                <EmptyProgramBlock title="No programming for this hour">
-                  <CloseIcon />
-                </EmptyProgramBlock>
+                <Column>
+                  <EmptyProgramBlock title="No programming for this hour">
+                    <CloseIcon />
+                  </EmptyProgramBlock>
+                </Column>
               }
             </React.Fragment>
           )}
@@ -132,12 +139,22 @@ const closeButton = css`
 `;
 
 const Row = styled('div')`
-  padding: 1.2rem 0;
   margin: 0 1rem;
   display: flex;
   position: relative;
+  align-items: stretch;
+  border-bottom: 1px solid ${borderColor};
+`;
+
+const Column = styled('div')`
+  ${props => !props.headerRow && "padding: 1.2rem 0;"}
+  display: flex;
+  justify-content: center;
   align-items: center;
-  border-bottom: 1px solid #4e475d;
+
+  &:nth-child(odd) {
+    background-color: ${lightBackgroundColor};
+  }
 `;
 
 const HeaderRow = styled(Row)`
@@ -149,6 +166,7 @@ const HeaderRow = styled(Row)`
 `;
 
 const channelTitleContainer = css`
+  display: flex;
   position: sticky;
   left: 1rem;
   z-index: 1;
@@ -164,7 +182,8 @@ const ChannelTitle = styled('div')`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: ${backgroundColor};
+  // Using Hex method to change opacity
+  background-color: ${backgroundColor}f0;
 
   @media screen and (max-width: ${mobileBreakpoint}) {
     width: 150px;
