@@ -40,10 +40,11 @@ const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {
 export const initializeSession = () => dispatch => {
   /* Set how many seconds until it's time to load the next program */
   const secondsUntilNextProgram = calculateSecondsUntilNextProgram();
-  //consoleLog("- Seconds until the next program are: ", secondsUntilNextProgram);
 
   // For debugging issues with hour starts:
-  // secondsUntilNextProgram = 30;
+  // const secondsUntilNextProgram = 30;
+
+  //consoleLog("- Seconds until the next program are: ", secondsUntilNextProgram);
 
   const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
