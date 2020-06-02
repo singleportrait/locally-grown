@@ -59,8 +59,8 @@ function TVGuide(props) {
           <ChannelTitle></ChannelTitle>
         </div>
         { hours.map((hour, i) =>
-          <Column headerRow>
-            <ProgramBlockHour key={i}><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHour>
+          <Column key={i} headerRow>
+            <ProgramBlockHour><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHour>
           </Column>
         )}
       </HeaderRow>
@@ -152,7 +152,7 @@ const Column = styled('div')`
   justify-content: center;
   align-items: center;
 
-  &:nth-child(odd) {
+  &:nth-of-type(odd) {
     background-color: ${lightBackgroundColor};
   }
 `;
