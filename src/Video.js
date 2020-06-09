@@ -108,7 +108,7 @@ class Video extends Component {
       consoleLog("Video: This timestamp is longer than the video!");
     }
 
-    // consoleLog("- Seeking to timestamp...", this.props.timestamp);
+    consoleLog("- Seeking to timestamp...", this.props.timestamp);
     this.player.seekTo(this.props.timestamp);
   }
 

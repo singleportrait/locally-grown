@@ -23,7 +23,7 @@ class WhatIsThisTooltip extends Component {
     }
 
     const renderTooltip = (
-      <Popover id="what-is-this-tooltip">
+      <Popover id="what-is-this-tooltip" className={popover}>
         <Tooltip
           title={"What is Locally Grown?"}
           descriptionHTML={renderDescription()}
@@ -44,6 +44,10 @@ class WhatIsThisTooltip extends Component {
 
   }
 }
+
+const popover = css`
+  z-index: 2; // Higher z-index to cover TV Guide sticky hour headers
+`;
 
 const tooltipTrigger = css`
   text-decoration: underline;
