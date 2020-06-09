@@ -17,6 +17,7 @@ import InfoTooltip from './InfoTooltip';
 import ProgramSidebar from './ProgramSidebar';
 import MobileProgram from './MobileProgram';
 import KeyboardNavigation from './KeyboardNavigation';
+import MailchimpSubscribeForm from './MailchimpSubscribeForm';
 
 import {
   VideoPlaceholderWrapper,
@@ -243,6 +244,7 @@ class Program extends Component {
           previousChannelSlug={this.props.previousChannelSlug}
           nextChannelSlug={this.props.nextChannelSlug}
         />
+        <MailchimpSubscribeForm />
         <MediaQuery minWidth={800}>
           <WideProgramContainer>
             <VideoAndControlsColumn maxMode={this.state.maxMode}>
