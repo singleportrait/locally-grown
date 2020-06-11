@@ -18,6 +18,7 @@ import ProgramSidebar from './ProgramSidebar';
 import MobileProgram from './MobileProgram';
 import KeyboardNavigation from './KeyboardNavigation';
 import MailchimpSubscribeForm from './MailchimpSubscribeForm';
+import BLMButton from './BLMButton';
 
 import {
   VideoPlaceholderWrapper,
@@ -223,6 +224,7 @@ class Program extends Component {
           <MailchimpSubscribeForm
             preventMaxMode={this.preventMaxMode}
             stopPreventingMaxMode={this.stopPreventingMaxMode} />
+          <BLMButton />
           <hr />
           <Navigation />
           <p className={channelTitle}>
