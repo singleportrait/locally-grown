@@ -55,9 +55,9 @@ function TVGuide(props) {
       }
 
       <HeaderRow>
-        <div className={channelTitleContainer}>
-          <ChannelTitle></ChannelTitle>
-        </div>
+        <ChannelTitleContainer>
+          <div className={channelTitle}></div>
+        </ChannelTitleContainer>
         { hours.map((hour, i) =>
           <Column key={i} headerRow>
             <ProgramBlockHour><h4>{moment(hour, "HH").format("ha")}</h4></ProgramBlockHour>
@@ -67,14 +67,14 @@ function TVGuide(props) {
 
       { props.channels.map((channel) => channel.fields.programs.map((program, i) =>
         <Row key={i}>
-          <Link to={channel.fields.slug} className={channelTitleContainer} style={{textDecoration: "none"}}>
-            <ChannelTitle>
+          <ChannelTitleContainer>
+            <Link to={channel.fields.slug} className={channelTitle} style={{textDecoration: "none"}}>
               <h3>{program.fields.title}</h3>
               { channel.fields.user &&
                 <p className={channelTitleName}>{channel.fields.user.fields.name}</p>
               }
-            </ChannelTitle>
-          </Link>
+            </Link>
+          </ChannelTitleContainer>
           { hours.map((hour, i) =>
             <React.Fragment key={i}>
               {program.fields.programBlocks.find(programBlock => programBlock.fields.startTime === hour) &&
@@ -165,14 +165,14 @@ const HeaderRow = styled(Row)`
   background-color: ${brandColor};
 `;
 
-const channelTitleContainer = css`
+const ChannelTitleContainer = styled('div')`
   display: flex;
   position: sticky;
   left: 1rem;
   z-index: 1;
 `;
 
-const ChannelTitle = styled('div')`
+const channelTitle = css`
   width: 220px;
   margin-right: 5px;
   padding: 0 1rem;
