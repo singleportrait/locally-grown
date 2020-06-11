@@ -6,10 +6,12 @@ function KeyboardNavigation(props) {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.keyCode === 37) { // Left arrow
-        history.push(props.previousChannelSlug);
-      } else if (e.keyCode === 39) { // Right arrow
-        history.push(props.nextChannelSlug);
+      if (!props.preventNavigation) {
+        if (e.keyCode === 37) { // Left arrow
+          history.push(props.previousChannelSlug);
+        } else if (e.keyCode === 39) { // Right arrow
+          history.push(props.nextChannelSlug);
+        }
       }
     }
 

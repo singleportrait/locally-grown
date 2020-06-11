@@ -33,6 +33,7 @@ class Program extends Component {
       maxMode: false,
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
+      inputIsFocused: false,
     }
 
     this.toggleInfo = this.toggleInfo.bind(this);
@@ -75,12 +76,26 @@ class Program extends Component {
   });
 
   handleEventEnd = debounce((e) => {
-    // consoleLog('Starting max mode after 4s debounce');
-    this.setState({ maxMode: true });
+    if (!this.state.inputIsFocused) {
+      // consoleLog('Starting max mode after 4s debounce');
+      this.setState({ maxMode: true });
+    } else {
+      // consoleLog('Not starting max mode because input is focused');
+    }
   }, 4000, {
     'leading': false,
     'trailing': true
   });
+
+  preventMaxMode = () => {
+    consoleLog("Input is focused");
+    this.setState({ inputIsFocused: true });
+  }
+
+  stopPreventingMaxMode = () => {
+    consoleLog("Input is blurred");
+    this.setState({ inputIsFocused: false });
+  }
 
   initializeProgram() {
     // Note: This will allow you to come to a direct URL and see that there are
@@ -205,6 +220,10 @@ class Program extends Component {
     const renderChannelInfo = () => {
       return (
         <React.Fragment>
+          <MailchimpSubscribeForm
+            preventMaxMode={this.preventMaxMode}
+            stopPreventingMaxMode={this.stopPreventingMaxMode} />
+          <hr />
           <Navigation />
           <p className={channelTitle}>
             You&apos;re watching {this.props.channelTitle}
@@ -221,7 +240,7 @@ class Program extends Component {
               user={this.props.channelUser}
             />
           </p>
-          <hr/>
+          <hr />
         </React.Fragment>
       );
     }
@@ -243,8 +262,8 @@ class Program extends Component {
         <KeyboardNavigation
           previousChannelSlug={this.props.previousChannelSlug}
           nextChannelSlug={this.props.nextChannelSlug}
+          preventNavigation={this.state.inputIsFocused}
         />
-        <MailchimpSubscribeForm />
         <MediaQuery minWidth={800}>
           <WideProgramContainer>
             <VideoAndControlsColumn maxMode={this.state.maxMode}>

@@ -13,7 +13,7 @@ import TVGuideProgramBlock from './TVGuideProgramBlock';
 
 import {
   Header, programBlockBase,
-  backgroundColor, lightBackgroundColor, borderColor
+  brandColor, alternatingBackgroundColor, borderColor
 } from './styles';
 
 function TVGuide(props) {
@@ -153,7 +153,7 @@ const Column = styled('div')`
   align-items: center;
 
   &:nth-of-type(odd) {
-    background-color: ${lightBackgroundColor};
+    background-color: ${alternatingBackgroundColor};
   }
 `;
 
@@ -162,7 +162,7 @@ const HeaderRow = styled(Row)`
   z-index: 2;
   position: sticky;
   top: 0px;
-  background-color: ${backgroundColor};
+  background-color: ${brandColor};
 `;
 
 const channelTitleContainer = css`
@@ -183,7 +183,7 @@ const ChannelTitle = styled('div')`
   flex-direction: column;
   justify-content: center;
   // Using Hex method to change opacity
-  background-color: ${backgroundColor}f0;
+  background-color: ${brandColor}f0;
 
   @media screen and (max-width: ${mobileBreakpoint}) {
     width: 150px;

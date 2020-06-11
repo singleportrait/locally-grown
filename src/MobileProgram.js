@@ -11,7 +11,7 @@ import ProgramSidebar from './ProgramSidebar';
 import TVGuideLink from './TVGuideLink';
 
 import {
-  Logo, backgroundColor, borderColor, VideoPlaceholderWrapper,
+  Logo, brandColor, borderColor, VideoPlaceholderWrapper,
   mobileViewportHeight,
 } from './styles';
 
@@ -173,7 +173,7 @@ const MobileProgramInfoContainer = styled('div')`
   width: 100%;
   height: ${mobileInfoContainerHeight};
   top: calc(${mobileTextHeight} + 1rem);
-  background-color: ${backgroundColor};
+  background-color: ${brandColor};
 `;
 
 const MobileProgramInfoContents = styled('div')`
