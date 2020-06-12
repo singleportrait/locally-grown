@@ -9,6 +9,7 @@ import CloseIcon from './CloseIcon';
 import ChannelButton from './ChannelButton';
 import ProgramSidebar from './ProgramSidebar';
 import TVGuideLink from './TVGuideLink';
+import BLMButton from './BLMButton';
 
 import {
   Logo, brandColor, borderColor, VideoPlaceholderWrapper,
@@ -63,7 +64,10 @@ class MobileProgram extends Component {
               }
             </p>
           </div>
-          <TVGuideLink />
+          <div>
+            <TVGuideLink />
+            <BLMButton small inline />
+          </div>
         </TopMobileText>
         { this.props.currentProgramBlock &&
           <BottomMobileText>
