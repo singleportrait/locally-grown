@@ -1,13 +1,23 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import ReactGA from 'react-ga';
 
 import { brandColor, lightBackgroundActiveColor } from './styles';
 
 function BLMButton(props) {
+  const onClick = () => {
+    ReactGA.event({
+      category: "BLM Button",
+      action: "Click",
+      label: "BLM Linktree",
+    });
+  }
+
   return (
     <Button
       href="https://linktr.ee/blacklivesmatter"
       target="_blank"
+      onClick={onClick}
       small={props.small}
       inline={props.inline}
     >
