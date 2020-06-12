@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useMediaQuery } from 'react-responsive';
 import styled from '@emotion/styled';
 import MailchimpSubscribe from "react-mailchimp-subscribe";
@@ -102,6 +103,11 @@ const Email = styled('input')`
   height: 100%;
   width: calc(100% - 2rem);
 
+  // Inputs have to be at least 16px on iOS or they'll "zoom in" the page
+  @media screen and (max-width: 415px) {
+    font-size: 16px;
+  }
+
   &:focus {
     outline: none;
   }
@@ -135,5 +141,15 @@ const Response = styled('div')`
 
   color: ${props => props.status === "success" ? successColor : props.status === "error" ? errorColor : "inherit"};
 `;
+
+MailchimpSubscribeForm.propTypes = {
+  preventMaxMode: PropTypes.func,
+  stopPreventingMaxMode: PropTypes.func,
+}
+
+MailchimpSubscribeForm.defaultProps = {
+  preventMaxMode: () => {},
+  stopPreventingMaxMode: () => {},
+}
 
 export default MailchimpSubscribeForm;

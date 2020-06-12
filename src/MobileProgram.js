@@ -9,6 +9,7 @@ import CloseIcon from './CloseIcon';
 import ChannelButton from './ChannelButton';
 import ProgramSidebar from './ProgramSidebar';
 import TVGuideLink from './TVGuideLink';
+import MailchimpSubscribeForm from './MailchimpSubscribeForm';
 import BLMButton from './BLMButton';
 
 import {
@@ -83,6 +84,8 @@ class MobileProgram extends Component {
         { this.props.showMobileProgramInfo &&
           <MobileProgramInfoContainer>
             <MobileProgramInfoContents>
+              <MailchimpSubscribeForm />
+              <hr />
               <ProgramSidebar
                 currentProgramBlock={this.props.currentProgramBlock}
                 programBlocks={this.props.programBlocks}

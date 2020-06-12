@@ -100,10 +100,13 @@ h4 {
   }
 }
 
-button {
+input, button {
   font-size: 100%;
   font-family: inherit;
   font-weight: 300;
+}
+
+button {
   text-decoration: underline;
   border: 0;
   padding: 0;
