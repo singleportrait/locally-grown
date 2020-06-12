@@ -40,8 +40,11 @@ const Button = styled('a')`
     margin-top: 0;
   `}
 
-  &, &:visited {
-    color: ${brandColor};
+  // This !important here is only because iOS isn't respecting the override,
+  // which is odd, because I can't reproduce it on the simulator or in
+  // Safari developer mode when connected to the phone
+  &, &:focus, &:active, &:visited {
+    color: ${brandColor} !important;
   }
 
   &:hover {
