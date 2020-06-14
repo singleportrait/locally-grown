@@ -15,7 +15,7 @@ function BLMButton(props) {
 
   return (
     <Button
-      href="https://linktr.ee/blacklivesmatter"
+      href="https://blacklivesmatters.carrd.co/"
       target="_blank"
       onClick={onClick}
       small={props.small}
