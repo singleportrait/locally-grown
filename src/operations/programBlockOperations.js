@@ -107,7 +107,14 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
         video.endTime = programmingLength + video.lengthInSeconds;
         video.index = i;
 
-        if ((programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) || secondsPastTheHour === 0) {
+        // IF:
+        // - the total length of programming so far is earlier than the current time past the hour
+        // - AND the end time of the video is later than the current time past the hour
+        // OR:
+        // - we're at the beginning of the hour
+        // - AND it's the first video in the list
+        // THEN: This is the video to play
+        if ((programmingLength < secondsPastTheHour && video.endTime > secondsPastTheHour) || (secondsPastTheHour === 0 && i === 0)) {
           videoToPlayIndex = i;
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
