@@ -4,6 +4,8 @@ import consoleLog from '../consoleLog';
 
 import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
 
+const debugMode = false && process.env.NODE_ENV === `development`;
+
 const findProgramBlock = (programBlockId) => {
   return new Promise(function(resolve, reject) {
     let matchingProgramBlock = null;
@@ -42,7 +44,7 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
 };
 
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
-  consoleLog("- Initializing program block", currentProgramBlock.fields.title);
+  consoleLog("- Initializing program block: ", currentProgramBlock.fields.title);
   return new Promise(function(resolve, reject) {
     // Doing this copy ish again, to prevent overwriting original info before we're ready,
     // and especially to prevent duplicate videos from not getting correct
@@ -55,10 +57,11 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     }
 
     let programmingLength = 0;
-    const secondsPastTheHour = currentSecondsPastTheHour();
-    // Testing for when the hour switches to a new one
-    // const secondsPastTheHour = 0;
-    // consoleLog("- Seconds past the hour: " + secondsPastTheHour);
+    // For debugging when the hour switches to a new one
+    const secondsPastTheHour = debugMode ? 0 : currentSecondsPastTheHour();
+
+    consoleLog("- Seconds past the hour in initializeCurrentProgramBlockVideos: " + secondsPastTheHour);
+
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
     let videosLength = videos.length;
@@ -77,15 +80,16 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
       if ('length' in video.fields) {
         const videoLengthInSeconds = convertTimeToSeconds(video.fields.length);
         video.lengthInSeconds = videoLengthInSeconds;
-        // consoleLog("- Setting up video", i, video.fields.title);
+        consoleLog("- Setting up video", i, video.fields.title);
 
         // Calculate the video info differently if it starts at a custom timestamp
         if (video.fields.customStartTimestamp) {
+          consoleLog("- The video has a custom start time");
           const manualTimestamp = convertTimeToSeconds(video.fields.customStartTimestamp);
           if (manualTimestamp === 0) {
             consoleLog(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
           } else {
-            // consoleLog("- - Converting and saving custom start time:", manualTimestamp);
+            consoleLog("- - Converting and saving custom start time:", manualTimestamp);
             video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
             video.manualTimestamp = manualTimestamp;
           }
@@ -99,9 +103,10 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           videoToPlayIndex = i;
 
           timestampToStartVideo = secondsPastTheHour - programmingLength;
+          consoleLog(`- - The chosen video "${video.fields.title}" will start at ${timestampToStartVideo} seconds past the hour`);
           if (video.manualTimestamp) {
-            // consoleLog("- - Using custom start time in initializeCurrentProgramBlockVideos");
             timestampToStartVideo = timestampToStartVideo + video.manualTimestamp;
+            consoleLog("- - Using custom start time in initializeCurrentProgramBlockVideos:", timestampToStartVideo);
           }
         }
 
@@ -179,7 +184,11 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
 const setupCurrentVideoAfterInitialLoad = () => dispatch => {
   consoleLog("Updating current video info after switching channels; setupCurrentVideoAfterInitialLoad()");
   const currentProgramBlock = store.getState().programBlocks.currentProgramBlock;
-  const secondsPastTheHour = currentSecondsPastTheHour();
+  // For debugging new videos playing
+  const secondsPastTheHour = debugMode ? 0 : currentSecondsPastTheHour();
+
+  consoleLog("- Seconds past the hour in setupCurrentVideoAfterInitialLoad:", secondsPastTheHour);
+
   const videos = currentProgramBlock.fields.videos;
 
   let videoToPlayIndex = 0;

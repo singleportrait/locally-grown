@@ -3,13 +3,13 @@ import { calculateSecondsUntilNextProgram } from '../helpers';
 import store from '../store';
 import consoleLog from '../consoleLog';
 
+const debugMode = false && process.env.NODE_ENV === `development`;
+
 const resetPrograms = () => dispatch => {
   consoleLog("It's time to reset the programs!");
 
-  const newHour = new Date().getHours();
-
   // For debugging issues with hour starts:
-  // const newHour = 11;
+  const newHour = debugMode ? 17 : new Date().getHours();
 
   // Over time, the switching over to a new program doesn't happen exactly on
   // the hour anymore. So, we want to calculate the actual seconds until the
@@ -37,16 +37,14 @@ const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {
   })
 }
 
+/* Set how many seconds until it's time to load the next program */
 export const initializeSession = () => dispatch => {
-  /* Set how many seconds until it's time to load the next program */
-  const secondsUntilNextProgram = calculateSecondsUntilNextProgram();
-
   // For debugging issues with hour starts:
-  // const secondsUntilNextProgram = 30;
+  const secondsUntilNextProgram = debugMode ? 20 : calculateSecondsUntilNextProgram();
+  const hour = debugMode ? 16 : new Date().getHours();
 
-  //consoleLog("- Seconds until the next program are: ", secondsUntilNextProgram);
+  // consoleLog("- Seconds until the next program are: ", secondsUntilNextProgram);
 
-  const hour = new Date().getHours();
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, hour));
 }
 
