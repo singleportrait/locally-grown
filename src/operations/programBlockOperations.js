@@ -1,6 +1,7 @@
 import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo, programBlockError } from '../actions/programBlockActions';
 import store from '../store';
 import consoleLog from '../consoleLog';
+import ReactGA from 'react-ga';
 
 import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
 
@@ -88,6 +89,13 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
           const manualTimestamp = convertTimeToSeconds(video.fields.customStartTimestamp);
           if (manualTimestamp === 0) {
             consoleLog(`- The video ${video.fields.title} has a custom timestamp, but it was in a weird format so we're not using it.`);
+            ReactGA.event({
+              category: "Custom Timestamp Error",
+              action: "Wrong Format",
+              label: `${video.fields.title}: ${video.fields.customStartTimestamp}`,
+              nonInteraction: true
+            });
+
           } else {
             consoleLog("- - Converting and saving custom start time:", manualTimestamp);
             video.lengthInSeconds = videoLengthInSeconds - manualTimestamp;
