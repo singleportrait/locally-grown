@@ -5,6 +5,7 @@ import ReactGA from 'react-ga';
 
 import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
 
+// Only enable debug mode in development
 const debugMode = false && process.env.NODE_ENV === `development`;
 
 const findProgramBlock = (programBlockId) => {
