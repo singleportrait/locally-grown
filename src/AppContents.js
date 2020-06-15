@@ -5,7 +5,7 @@ import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import MediaQuery from 'react-responsive';
 import Overlay from 'react-overlays/Overlay';
-import { isIOS } from './helpers';
+import { isIOS } from './helpers/utils';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
@@ -13,9 +13,9 @@ import { initializeChannels } from './operations/channelOperations';
 import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
-import WhatIsThisTooltip from './WhatIsThisTooltip';
-import Tooltip from './Tooltip';
-import LowBatteryTest from './LowBatteryTest';
+import WhatIsThisTooltip from './components/WhatIsThisTooltip';
+import Tooltip from './components/Tooltip';
+import LowBatteryTest from './components/LowBatteryTest';
 
 import styled from '@emotion/styled';
 

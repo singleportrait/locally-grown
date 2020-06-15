@@ -2,17 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import { Link } from 'react-router-dom';
+import * as moment from 'moment';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
+import { getRelativeSortedProgramBlocks } from './helpers/programBlockHelpers';
+
+import WhatIsThisTooltip from './components/WhatIsThisTooltip';
+import TVGuideLink from './components/TVGuideLink';
+
 import { padding, Header } from './styles';
-import WhatIsThisTooltip from './WhatIsThisTooltip';
-import TVGuideLink from './TVGuideLink';
-
-import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
-
-import * as moment from 'moment';
 
 class Channels extends Component {
   componentDidMount() {

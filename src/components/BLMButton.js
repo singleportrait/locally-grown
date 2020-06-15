@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import ReactGA from 'react-ga';
 
-import { brandColor, lightBackgroundActiveColor } from './styles';
+import { brandColor, lightBackgroundActiveColor } from '../styles';
 
 function BLMButton(props) {
   const onClick = () => {

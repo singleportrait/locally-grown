@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import consoleLog from './consoleLog';
+import consoleLog from '../helpers/consoleLog';
 
 function ChatangoChat(props) {
   const onScriptLoad = () => {

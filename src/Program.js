@@ -2,23 +2,24 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
-import consoleLog from './consoleLog';
+import consoleLog from './helpers/consoleLog';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
-import Video from './Video';
-import Navigation from './Navigation';
-import MuteButton from './MuteButton';
-import ChannelButton from './ChannelButton';
-import InfoTooltip from './InfoTooltip';
-import ProgramSidebar from './ProgramSidebar';
 import MobileProgram from './MobileProgram';
-import KeyboardNavigation from './KeyboardNavigation';
-import MailchimpSubscribeForm from './MailchimpSubscribeForm';
-import BLMButton from './BLMButton';
+
+import Video from './components/Video';
+import Navigation from './components/Navigation';
+import MuteButton from './components/MuteButton';
+import ChannelButton from './components/ChannelButton';
+import InfoTooltip from './components/InfoTooltip';
+import ProgramSidebar from './components/ProgramSidebar';
+import KeyboardNavigation from './components/KeyboardNavigation';
+import MailchimpSubscribeForm from './components/MailchimpSubscribeForm';
+import BLMButton from './components/BLMButton';
 
 import {
   VideoPlaceholderWrapper,

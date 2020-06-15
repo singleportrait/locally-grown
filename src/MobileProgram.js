@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
-import Video from './Video';
-import MuteButton from './MuteButton';
-import CloseIcon from './CloseIcon';
-import ChannelButton from './ChannelButton';
-import ProgramSidebar from './ProgramSidebar';
-import TVGuideLink from './TVGuideLink';
-import MailchimpSubscribeForm from './MailchimpSubscribeForm';
-import BLMButton from './BLMButton';
+import Video from './components/Video';
+import MuteButton from './components/MuteButton';
+import CloseIcon from './components/CloseIcon';
+import ChannelButton from './components/ChannelButton';
+import ProgramSidebar from './components/ProgramSidebar';
+import TVGuideLink from './components/TVGuideLink';
+import MailchimpSubscribeForm from './components/MailchimpSubscribeForm';
+import BLMButton from './components/BLMButton';
 
 import {
   Logo, brandColor, borderColor, VideoPlaceholderWrapper,

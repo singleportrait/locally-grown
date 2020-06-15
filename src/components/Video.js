@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import consoleLog from './consoleLog';
-import ReactGA from 'react-ga';
-
-import { updateCurrentVideo } from './operations/programBlockOperations';
-import { addVideoPlayer } from './actions/videoActions';
-
 import ReactPlayer from 'react-player';
-
-import { videoBackgroundColor } from './styles';
+import ReactGA from 'react-ga';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
+
+import consoleLog from '../helpers/consoleLog';
+
+import { updateCurrentVideo } from '../operations/programBlockOperations';
+import { addVideoPlayer } from '../actions/videoActions';
+
+
+import { videoBackgroundColor } from '../styles';
 
 class Video extends Component {
   constructor(props) {

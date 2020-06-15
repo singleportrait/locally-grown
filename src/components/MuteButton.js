@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { toggleMute } from './actions/videoActions';
+
+import { css } from 'emotion';
+
+import { toggleMute } from '../actions/videoActions';
 
 import MuteIcon from './MuteIcon';
 import UnmuteIcon from './UnmuteIcon';
-
-import { css } from 'emotion';
 
 const muteButton = css`
   padding: 1rem;

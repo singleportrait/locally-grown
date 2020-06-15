@@ -1,7 +1,7 @@
 import { setChannels, setupChannels, errorLoadingChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
-import consoleLog from '../consoleLog';
+import consoleLog from '../helpers/consoleLog';
 
 // import { channelsData } from '../data/channelsDataJune2020';
 

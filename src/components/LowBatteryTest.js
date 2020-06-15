@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from '@emotion/styled/macro';
-import consoleLog from './consoleLog';
+import consoleLog from '../helpers/consoleLog';
 
-import { setLowBatteryMode } from './actions/sessionActions';
+import { setLowBatteryMode } from '../actions/sessionActions';
 
-import lowBatteryTestVideo from './purpleBackground100px.mp4';
+import lowBatteryTestVideo from '../assets/purpleBackground100px.mp4';
 
-import { mobileViewportHeight } from './styles';
+import { mobileViewportHeight } from '../styles';
 
 class LowBatteryTest extends Component {
   constructor(props) {

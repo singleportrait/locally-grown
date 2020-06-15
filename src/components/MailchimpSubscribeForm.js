@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useMediaQuery } from 'react-responsive';
 import styled from '@emotion/styled';
 import MailchimpSubscribe from "react-mailchimp-subscribe";
-import consoleLog from './consoleLog';
+import consoleLog from '../helpers/consoleLog';
 
 import RightArrowIcon from './RightArrowIcon';
 
@@ -11,7 +11,7 @@ import {
   borderColor,
   inputBackgroundColor, inputActiveBackgroundColor,
   successColor, errorColor,
-} from './styles';
+} from '../styles';
 
 function MailchimpSubscribeForm(props) {
   const [focused, setFocused] = useState(false);

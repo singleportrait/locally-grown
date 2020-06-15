@@ -7,9 +7,9 @@ import { css } from 'emotion';
 
 import * as moment from 'moment';
 
-import CloseIcon from './CloseIcon';
-import WhatIsThisTooltip from './WhatIsThisTooltip';
-import TVGuideProgramBlock from './TVGuideProgramBlock';
+import CloseIcon from './components/CloseIcon';
+import WhatIsThisTooltip from './components/WhatIsThisTooltip';
+import TVGuideProgramBlock from './components/TVGuideProgramBlock';
 
 import {
   Header, programBlockBase,

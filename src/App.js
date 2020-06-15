@@ -4,7 +4,7 @@ import MediaQuery from 'react-responsive';
 
 import ReactGA from 'react-ga';
 import AppContents from './AppContents';
-import ChatangoChat from './ChatangoChat';
+import ChatangoChat from './components/ChatangoChat';
 
 import store from './store';
 

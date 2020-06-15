@@ -5,7 +5,7 @@ import { css } from 'emotion';
 
 import TVGuideLink from './TVGuideLink';
 
-import { Logo } from './styles';
+import { Logo } from '../styles';
 
 const navigation = css`
   display: flex;

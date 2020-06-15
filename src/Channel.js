@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import consoleLog from './consoleLog';
+import consoleLog from './helpers/consoleLog';
 
 import Program from './Program';
 

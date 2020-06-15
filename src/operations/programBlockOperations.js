@@ -1,9 +1,9 @@
 import { setCurrentProgramBlock, addProgramBlock, setCurrentVideo, programBlockError } from '../actions/programBlockActions';
 import store from '../store';
-import consoleLog from '../consoleLog';
+import consoleLog from '../helpers/consoleLog';
 import ReactGA from 'react-ga';
 
-import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers';
+import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers/utils';
 
 // Only enable debug mode in development
 const debugMode = false && process.env.NODE_ENV === `development`;

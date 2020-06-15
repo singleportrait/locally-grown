@@ -8,7 +8,7 @@ import { css } from 'emotion';
 
 import ProgramBlockInfoDescription from './ProgramBlockInfoDescription';
 
-import { getRelativeSortedProgramBlocks } from './programBlockHelpers';
+import { getRelativeSortedProgramBlocks } from '../helpers/programBlockHelpers';
 
 const ProgramBlockInfoContainer = styled('div')`
   padding-top: 4rem;

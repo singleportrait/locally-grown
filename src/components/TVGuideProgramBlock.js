@@ -4,7 +4,7 @@ import Popover from 'react-bootstrap/Popover';
 
 import { css } from 'emotion';
 
-import { programBlockBase } from './styles';
+import { programBlockBase } from '../styles';
 
 import Tooltip from './Tooltip';
 import RemindLink from './RemindLink';

@@ -1,7 +1,7 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from './sessionTypes';
-import { calculateSecondsUntilNextProgram } from '../helpers';
+import { calculateSecondsUntilNextProgram } from '../helpers/utils';
 import store from '../store';
-import consoleLog from '../consoleLog';
+import consoleLog from '../helpers/consoleLog';
 
 // Only enable debug mode in development
 const debugMode = false && process.env.NODE_ENV === `development`;
