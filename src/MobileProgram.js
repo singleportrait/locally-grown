@@ -116,7 +116,7 @@ const MobileProgramContainer = styled('div')`
 // Newer smartphones (e.g. Pixel, iPhone X) have a taller ratio than older ones.
 // Therefore they can have wider videos than the squatter phones.
 // Sample viewports, for reference, in Safari: iPhone 11 = 414x719, iPhone 8 = 375x553
-const mobileVideoWidth = '90vw * 1.33';
+const mobileVideoWidth = '90vw * 1.36';
 const mobileShortVideoWidth = '90vw * 1.1';
 
 // Because these overlaying containers go over the video anyway,
