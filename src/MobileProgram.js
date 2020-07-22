@@ -110,12 +110,24 @@ const MobileProgramContainer = styled('div')`
   justify-content: center;
 `;
 
+// Newer smartphones (e.g. Pixel, iPhone X) have a taller ratio than older ones.
+// Therefore they can have wider videos than the squatter phones.
+// Sample viewports, for reference, in Safari: iPhone 11 = 414x719, iPhone 8 = 375x553
 const mobileVideoWidth = '90vw * 1.33';
+const mobileShortVideoWidth = '90vw * 1.1';
+
+// Because these overlaying containers go over the video anyway,
+// we won't worry about updating their calculations for the shorter phones.
 const mobileTextHeight = `calc((${mobileViewportHeight} - (${mobileVideoWidth})) / 2 - 1rem)`;
 const mobileInfoContainerHeight = `calc((${mobileVideoWidth}) + ${mobileTextHeight} + 1rem)`;
 
 const mobileVideo = css`
   width: calc(${mobileVideoWidth});
+
+  // Target short phones
+  @media (min-aspect-ratio: 3/5) {
+    width: calc(${mobileShortVideoWidth});
+  }
 `;
 
 const mobileTopRightIcon = css`
@@ -155,6 +167,10 @@ const TopMobileText = styled('div')`
   flex-direction: column;
   justify-content: space-between;
   padding-bottom: 1rem;
+`;
+
+const TopMobileLinks = styled('div')`
+  margin-top: 0.5rem;
 `;
 
 const BottomMobileText = styled('div')`
