@@ -72,12 +72,15 @@ function MobileProgram(props) {
       { props.currentProgramBlock &&
         <BottomMobileText>
           <p>Now playing:</p>
-          <h1 onClick={this.props.toggleMobileProgramInfo}>{this.props.currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
+          <ProgramBlockTitle onClick={props.toggleMobileProgramInfo}>
+            {props.currentProgramBlock.fields.title}
+            <span className={mobileInfo}>Info</span>
+          </ProgramBlockTitle>
         </BottomMobileText>
       }
       { !props.currentProgramBlock &&
         <BottomMobileText>
-          <h1>There&apos;s nothing playing on this channel right now.</h1>
+          <ProgramBlockTitle>There&apos;s nothing playing on this channel right now.</ProgramBlockTitle>
         </BottomMobileText>
       }
       { props.showMobileProgramInfo &&
@@ -179,6 +182,10 @@ const BottomMobileText = styled('div')`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+`;
+
+const ProgramBlockTitle = styled('h1')`
+  font-size: 21px;
 `;
 
 const mobileInfo = css`
