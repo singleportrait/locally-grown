@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { css } from 'emotion';
@@ -17,88 +17,86 @@ import {
   mobileViewportHeight,
 } from './styles';
 
-class MobileProgram extends Component {
-  render() {
-    return (
-      <React.Fragment>
-        <MobileProgramContainer>
-          { this.props.currentProgramBlock &&
-            <Video
-              video={this.props.currentProgramBlock.currentVideo}
-              timestamp={this.props.currentProgramBlock.timestampToStartVideo}
-              className={mobileVideo}
-              isMobile={true}
-            />
-          }
-          { (!this.props.currentProgramBlock || !this.props.currentProgramBlock.fields.videos) &&
-            <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
-          }
-        </MobileProgramContainer>
-        <MobileProgramContainer>
-          { this.props.currentProgramBlock &&
-            <React.Fragment>
-              { !this.props.showMobileProgramInfo &&
-                <div className={mobileTopRightIcon}><MuteButton /></div>
-              }
-              { this.props.showMobileProgramInfo &&
-                <div className={mobileProgramInfoCloseIcon} onClick={this.props.toggleMobileProgramInfo}>
-                  <CloseIcon />
-                </div>
-              }
-              { this.props.previousChannelSlug && !this.props.showMobileProgramInfo &&
-                <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={this.props.previousChannelSlug} /></div>
-              }
-              { this.props.nextChannelSlug &&
-                <div className={mobileNextChannel}><ChannelButton direction="next" to={this.props.nextChannelSlug} /></div>
-              }
-            </React.Fragment>
-          }
-        </MobileProgramContainer>
-        <TopMobileText>
-          <div>
-            <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
-            <p>
-              You&apos;re watching {this.props.channelTitle}
+function MobileProgram(props) {
+  return (
+    <React.Fragment>
+      <MobileProgramContainer>
+        { props.currentProgramBlock &&
+          <Video
+            video={props.currentProgramBlock.currentVideo}
+            timestamp={props.currentProgramBlock.timestampToStartVideo}
+            className={mobileVideo}
+            isMobile={true}
+          />
+        }
+        { (!props.currentProgramBlock || !props.currentProgramBlock.fields.videos) &&
+          <VideoPlaceholderWrapper className={mobileVideo} isMobile={true} />
+        }
+      </MobileProgramContainer>
+      <MobileProgramContainer>
+        { props.currentProgramBlock &&
+          <React.Fragment>
+            { !props.showMobileProgramInfo &&
+              <div className={mobileTopRightIcon}><MuteButton /></div>
+            }
+            { props.showMobileProgramInfo &&
+              <div className={mobileProgramInfoCloseIcon} onClick={props.toggleMobileProgramInfo}>
+                <CloseIcon />
+              </div>
+            }
+            { props.previousChannelSlug && !props.showMobileProgramInfo &&
+              <div className={mobilePreviousChannel}><ChannelButton direction="previous" to={props.previousChannelSlug} /></div>
+            }
+            { props.nextChannelSlug &&
+              <div className={mobileNextChannel}><ChannelButton direction="next" to={props.nextChannelSlug} /></div>
+            }
+          </React.Fragment>
+        }
+      </MobileProgramContainer>
+      <TopMobileText>
+        <div>
+          <Link to="/channels" className={css`text-decoration: none;`}><Logo>Locally Grown</Logo></Link>
+          <p>
+            You&apos;re watching {props.channelTitle}
 
-              { this.props.channelUser &&
-                <span> by {this.props.channelUser.fields.name}</span>
-              }
-            </p>
-          </div>
-          <div>
-            <TVGuideLink />
-            <BLMButton small inline />
-          </div>
-        </TopMobileText>
-        { this.props.currentProgramBlock &&
-          <BottomMobileText>
-            <p>Now playing:</p>
-            <h1 onClick={this.props.toggleMobileProgramInfo}>{this.props.currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
-          </BottomMobileText>
-        }
-        { !this.props.currentProgramBlock &&
-          <BottomMobileText>
-            <h1>There&apos;s nothing playing on this channel right now.</h1>
-          </BottomMobileText>
-        }
-        { this.props.showMobileProgramInfo &&
-          <MobileProgramInfoContainer>
-            <MobileProgramInfoContents>
-              <MailchimpSubscribeForm />
-              <hr />
-              <ProgramSidebar
-                currentProgramBlock={this.props.currentProgramBlock}
-                programBlocks={this.props.programBlocks}
-                currentHour={this.props.currentHour}
-                channelTitle={this.props.channelTitle}
-                channelSlug={this.props.channelSlug}
-              ></ProgramSidebar>
-            </MobileProgramInfoContents>
-          </MobileProgramInfoContainer>
-        }
-      </React.Fragment>
-    );
-  }
+            { props.channelUser &&
+              <span> by {props.channelUser.fields.name}</span>
+            }
+          </p>
+        </div>
+        <TopMobileLinks>
+          <TVGuideLink />
+          <BLMButton small inline />
+        </TopMobileLinks>
+      </TopMobileText>
+      { props.currentProgramBlock &&
+        <BottomMobileText>
+          <p>Now playing:</p>
+          <h1 onClick={this.props.toggleMobileProgramInfo}>{this.props.currentProgramBlock.fields.title}<span className={mobileInfo}>Info</span></h1>
+        </BottomMobileText>
+      }
+      { !props.currentProgramBlock &&
+        <BottomMobileText>
+          <h1>There&apos;s nothing playing on this channel right now.</h1>
+        </BottomMobileText>
+      }
+      { props.showMobileProgramInfo &&
+        <MobileProgramInfoContainer>
+          <MobileProgramInfoContents>
+            <MailchimpSubscribeForm />
+            <hr />
+            <ProgramSidebar
+              currentProgramBlock={props.currentProgramBlock}
+              programBlocks={props.programBlocks}
+              currentHour={props.currentHour}
+              channelTitle={props.channelTitle}
+              channelSlug={props.channelSlug}
+            ></ProgramSidebar>
+          </MobileProgramInfoContents>
+        </MobileProgramInfoContainer>
+      }
+    </React.Fragment>
+  );
 }
 
 const MobileProgramContainer = styled('div')`
