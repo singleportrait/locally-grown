@@ -84,7 +84,7 @@ class Program extends Component {
     } else {
       // consoleLog('Not starting max mode because input is focused');
     }
-  }, 4000, {
+  }, 7000, {
     'leading': false,
     'trailing': true
   });
