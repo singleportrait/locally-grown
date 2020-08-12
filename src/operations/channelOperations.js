@@ -43,6 +43,7 @@ const findFeaturedLiveChannels = (channels) => {
 
   const featuredLiveChannels = copiedChannels.filter(channel => {
 
+    // Include test channels if we're in development
     if (process.env.NODE_ENV !== `development`) {
       if (channel.fields.testChannel) {
         return false;
@@ -62,6 +63,53 @@ const findFeaturedLiveChannels = (channels) => {
         return false;
       }
 
+      // If today's programming ends today, check other programs in this channel
+      // to see if there's one tomorrow that should pull in different program blocks after midnight
+      // And if there isn't one, end the programming at midnight
+      //
+      // Note: This is going to update all channels we iterate through,
+      // regardless of whether they're featured or not. This is a good thing,
+      // though this probably isn't the correct place for it.
+      if (moment(program.fields.endDate, "YYYY-MM-DD").isSame(today)) {
+        consoleLog(`This program "${program.fields.title}" ends today`);
+        // See if there's a program for tomorrow
+        const tomorrow = moment().add(1, "day").format("YYYY-MM-DD");
+
+        const tomorrowsPrograms = channel.fields.programs.filter(program => {
+          return moment(program.fields.startDate, "YYYY-MM-DD").isSame(tomorrow);
+        });
+
+        // TODO: Cheating by only using the first one, in case there is more than one match
+        const tomorrowsProgram = tomorrowsPrograms[0];
+
+        let tomorrowsProgramBlocks = [];
+
+        // If there's a program tomorrow, and it has program blocks
+        if (tomorrowsPrograms.length && tomorrowsProgram.fields.programBlocks?.length) {
+          consoleLog("- Tomorrow's program for this channel", tomorrowsProgram);
+
+          // Get tomorrow's program blocks until this time tomorrow
+          tomorrowsProgramBlocks = tomorrowsProgram.fields.programBlocks.filter(programBlock => {
+            return programBlock.fields.startTime < store.getState().session.currentHour;
+          });
+          consoleLog("- Tomorrow's program blocks ", tomorrowsProgramBlocks);
+        }
+
+        if (!tomorrowsPrograms.length) {
+          consoleLog("- There's no programming tomorrow");
+        }
+
+        // Get the rest of today's program blocks
+        const todaysProgramBlocks = program.fields.programBlocks.filter(programBlock => {
+          return programBlock.fields.startTime >= store.getState().session.currentHour;
+        });
+        consoleLog("- Today's program blocks ", todaysProgramBlocks);
+
+        // Write over the initial program blocks with the correct ones post-midnight
+        program.fields.programBlocks = todaysProgramBlocks.concat(tomorrowsProgramBlocks);
+      }
+
+      // If program is featured, starts today or earlier, and ends today or later
       return program.fields.featured === true &&
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
         moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
@@ -146,6 +194,7 @@ const findHiddenChannels = (allChannels, availableChannels) => {
   return hiddenChannels;
 }
 
+// Pick a random channel of all featured and active channels, to show on landing
 const getCurrentChannel = channels => {
   const channelsTotal = channels.length;
   const randomChannelIndex = Math.floor(Math.random()*channelsTotal);
@@ -155,7 +204,8 @@ const getCurrentChannel = channels => {
   return currentChannel;
 }
 
-const findAndSetFeaturedChannels = (allChannels, dispatch) => {
+// Set up the channels objects
+export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
   // Go through each program and see if it's featured & is active on today's date
   const featuredLiveChannels = findFeaturedLiveChannels(allChannels);
 

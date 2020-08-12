@@ -1,8 +1,10 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from './sessionTypes';
 import { calculateSecondsUntilNextProgram } from '../helpers/utils';
+import { findAndSetFeaturedChannels } from '../operations/channelOperations';
 import store from '../store';
 import consoleLog from '../helpers/consoleLog';
 
+// This enables testing switching over to a new hour
 // Only enable debug mode in development
 const debugMode = false && process.env.NODE_ENV === `development`;
 
@@ -10,7 +12,7 @@ const resetPrograms = () => dispatch => {
   consoleLog("It's time to reset the programs!");
 
   // For debugging issues with hour starts:
-  const newHour = debugMode ? 19 : new Date().getHours();
+  const newHour = debugMode ? store.getState().session.currentHour + 1 : new Date().getHours();
 
   // Over time, the switching over to a new program doesn't happen exactly on
   // the hour anymore. So, we want to calculate the actual seconds until the
@@ -19,10 +21,11 @@ const resetPrograms = () => dispatch => {
 
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, newHour));
 
-  // This will currently allow for the hour to change to have nothing playing
-  // in the new hour, but I'm fine with that.
-  // TODO: Reload availablePrograms() somehow to properly
-  // set previous & next buttons
+
+  // This updates all the featured channels and program blocks when it's a new hour
+  // This ensures the program blocks going forward are correct, and also
+  // ensures that if a program ends at midnight it'll get removed from the TV guide
+  findAndSetFeaturedChannels(store.getState().channels.allChannels, dispatch);
 }
 
 const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {
