@@ -1,5 +1,6 @@
 import { SET_SECONDS_UNTIL_NEXT_PROGRAM, SET_LOW_BATTERY_MODE } from './sessionTypes';
 import { calculateSecondsUntilNextProgram } from '../helpers/utils';
+import { findAndSetFeaturedChannels } from '../operations/channelOperations';
 import store from '../store';
 import consoleLog from '../helpers/consoleLog';
 
@@ -19,10 +20,11 @@ const resetPrograms = () => dispatch => {
 
   dispatch(setTimeUntilNextProgram(secondsUntilNextProgram, newHour));
 
-  // This will currently allow for the hour to change to have nothing playing
-  // in the new hour, but I'm fine with that.
-  // TODO: Reload availablePrograms() somehow to properly
-  // set previous & next buttons
+
+  // This updates all the featured channels and program blocks when it's a new hour
+  // This ensures the program blocks going forward are correct, and also
+  // ensures that if a program ends at midnight it'll get removed from the TV guide
+  findAndSetFeaturedChannels(store.getState().channels.allChannels, dispatch);
 }
 
 const setTimeUntilNextProgram = (seconds, currentHour) => dispatch => {

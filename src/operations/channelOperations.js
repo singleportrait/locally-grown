@@ -204,7 +204,7 @@ const getCurrentChannel = channels => {
 }
 
 // Set up the channels objects
-const findAndSetFeaturedChannels = (allChannels, dispatch) => {
+export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
   // Go through each program and see if it's featured & is active on today's date
   const featuredLiveChannels = findFeaturedLiveChannels(allChannels);
 
