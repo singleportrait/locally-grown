@@ -5,7 +5,9 @@ import ReactGA from 'react-ga';
 
 import { shuffleArray, convertTimeToSeconds, currentSecondsPastTheHour } from '../helpers/utils';
 
+// This enables testing switching over to a new hour
 // Only enable debug mode in development
+// Set this to `true` when testing
 const debugMode = false && process.env.NODE_ENV === `development`;
 
 const findProgramBlock = (programBlockId) => {

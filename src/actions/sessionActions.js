@@ -4,6 +4,7 @@ import { findAndSetFeaturedChannels } from '../operations/channelOperations';
 import store from '../store';
 import consoleLog from '../helpers/consoleLog';
 
+// This enables testing switching over to a new hour
 // Only enable debug mode in development
 const debugMode = false && process.env.NODE_ENV === `development`;
 
@@ -11,7 +12,7 @@ const resetPrograms = () => dispatch => {
   consoleLog("It's time to reset the programs!");
 
   // For debugging issues with hour starts:
-  const newHour = debugMode ? 19 : new Date().getHours();
+  const newHour = debugMode ? store.getState().session.currentHour + 1 : new Date().getHours();
 
   // Over time, the switching over to a new program doesn't happen exactly on
   // the hour anymore. So, we want to calculate the actual seconds until the
