@@ -67,8 +67,9 @@ const findFeaturedLiveChannels = (channels) => {
       // to see if there's one tomorrow that should pull in different program blocks after midnight
       // And if there isn't one, end the programming at midnight
       //
-      // TODO: We shouldn't worry about running this block unless the program is featured
-      // and we know it is active today
+      // Note: This is going to update all channels we iterate through,
+      // regardless of whether they're featured or not. This is a good thing,
+      // though this probably isn't the correct place for it.
       if (moment(program.fields.endDate, "YYYY-MM-DD").isSame(today)) {
         consoleLog(`This program "${program.fields.title}" ends today`);
         // See if there's a program for tomorrow
@@ -78,7 +79,7 @@ const findFeaturedLiveChannels = (channels) => {
           return moment(program.fields.startDate, "YYYY-MM-DD").isSame(tomorrow);
         });
 
-        // Cheating by only using the first one, in case there is more than one match
+        // TODO: Cheating by only using the first one, in case there is more than one match
         const tomorrowsProgram = tomorrowsPrograms[0];
 
         let tomorrowsProgramBlocks = [];
