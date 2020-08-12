@@ -19,6 +19,10 @@ const NextProgramBlock = styled('div')`
   padding-bottom: 2rem;
 `;
 
+const nextUpHeader = css`
+  opacity: .6;
+`;
+
 const ProgramBlock = styled('div')`
   display: flex;
   margin-bottom: .5rem;
@@ -40,9 +44,15 @@ class ProgramBlockInfo extends Component {
         { nextProgramBlock &&
           <NextProgramBlock>
             <h4>
-              Next up at {moment(nextProgramBlock.fields.startTime, "HH").format("ha")}:
+              <span className={nextUpHeader}>
+                Next up at {moment(nextProgramBlock.fields.startTime, "HH").format("ha")}:
+              </span>
               <br />
-              {nextProgramBlock.fields.title}
+              <ProgramBlockInfoDescription
+                programBlock={nextProgramBlock}
+                channelSlug={this.props.channelSlug}
+                channelTitle={nextProgramBlock.fields.title}
+              />
             </h4>
           </NextProgramBlock>
         }
