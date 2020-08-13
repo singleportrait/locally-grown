@@ -63,6 +63,38 @@ const findFeaturedActiveChannels = (channels) => {
         return false;
       }
 
+      // If a program wants to repeat its blocks, we repeat them (regardless
+      // of their original start time) until they fill 24 hours of programming
+      if (program.fields.repeatProgramBlocks) {
+        consoleLog("- We're repeating this program's blocks: ", program.fields.title);
+
+        // Get existing program blocks
+        const programBlocks = program.fields.programBlocks;
+        const programBlocksTotal = programBlocks.length - 1;
+
+        // Create a new array that we can manipulate
+        let repeatedProgramBlocks = [];
+
+        // Loop through existing program blocks to add to array
+        // Set their hours to be 0, 1, 2, ... until there are no more
+        // Loop through the programs, increasing hours until we get to 23
+        let i = 0;
+        let hour = 0;
+        while (hour < 24) {
+          // consoleLog("i: ", i, "hour: ", hour);
+          // TODO: Still always have to deep copy in order not to manipulate the original object
+          const repeatedProgramBlock = JSON.parse(JSON.stringify(programBlocks[i]));
+          repeatedProgramBlock.fields.startTime = hour;
+          repeatedProgramBlocks.push(repeatedProgramBlock);
+
+          i < programBlocksTotal ? i++ : i = 0;
+
+          hour++;
+        }
+        // consoleLog(repeatedProgramBlocks);
+        program.fields.programBlocks = repeatedProgramBlocks;
+      }
+
       // If today's programming ends today, check other programs in this channel
       // to see if there's one tomorrow that should pull in different program blocks after midnight
       // And if there isn't one, end the programming at midnight
