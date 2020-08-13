@@ -34,14 +34,14 @@ const fetchChannels = () => dispatch => {
 
 // This looks at all channels and finds the programs that are featured and
 // "on" for today's current date
-const findFeaturedLiveChannels = (channels) => {
+const findFeaturedActiveChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
 
   // This is all because this code was ALSO updating the original variable's objects
   // because cloning objects is a no-no...but I need help with my store shape
   const copiedChannels = JSON.parse(JSON.stringify(channels));
 
-  const featuredLiveChannels = copiedChannels.filter(channel => {
+  const featuredActiveChannels = copiedChannels.filter(channel => {
 
     // Include test channels if we're in development
     if (process.env.NODE_ENV !== `development`) {
@@ -129,15 +129,16 @@ const findFeaturedLiveChannels = (channels) => {
 
     return featuredPrograms.length !== 0;
   });
-  return featuredLiveChannels;
+  return featuredActiveChannels;
 }
 
-// This looks at all channels and finds the ones that have program blocks
-// for this current hour, regardless of whether they are featured or active.
-const findAvailableChannels = (channels) => {
+// This goes through all featured & active channels, and finds the ones
+// that have program blocks for this current hour, for the previous/next
+// channel functionality
+const findCarouselChannels = (featuredActiveChannels) => {
 
-  // Same reasoning as above for findFeaturedLiveChannels
-  const copiedChannels = JSON.parse(JSON.stringify(channels));
+  // Same reasoning as above for findFeaturedActiveChannels
+  const copiedChannels = JSON.parse(JSON.stringify(featuredActiveChannels));
 
   const availableChannels = copiedChannels.filter(channel => {
 
@@ -181,17 +182,22 @@ const findAvailableChannels = (channels) => {
   return availableChannels;
 }
 
-const findHiddenChannels = (allChannels, availableChannels) => {
+// Quite literally:
+// This looks at all channels and filters out the carousel ones
+// in order to make all the routes for the site
+// TODO: I don't know if this is *exactly* the logic we want, but it serves
+// its purpose for now
+const findNoncarouselChannels = (allChannels, availableChannels) => {
   // TODO: These probably shouldn't populate programs that aren't happening currently, either.
-  // Should use the date checks from above in findFeaturedLiveChannels() to filter these out too.
+  // Should use the date checks from above in findFeaturedActiveChannels() to filter these out too.
   const availableIds = availableChannels.map(channel => channel.sys.id);
   const copiedAllChannels = JSON.parse(JSON.stringify(allChannels));
 
-  const hiddenChannels = copiedAllChannels.filter(channel => {
+  const noncarouselChannels = copiedAllChannels.filter(channel => {
     return !availableIds.includes(channel.sys.id);
   });
 
-  return hiddenChannels;
+  return noncarouselChannels;
 }
 
 // Pick a random channel of all featured and active channels, to show on landing
@@ -207,20 +213,19 @@ const getCurrentChannel = channels => {
 // Set up the channels objects
 export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
   // Go through each program and see if it's featured & is active on today's date
-  const featuredLiveChannels = findFeaturedLiveChannels(allChannels);
+  const featuredActiveChannels = findFeaturedActiveChannels(allChannels);
 
   // Go through each program and see if there's a block for this hour
-  // TODO: This finds the right programs, but doesn't put them into the store
-  const availableChannels = findAvailableChannels(featuredLiveChannels);
+  const carouselChannels = findCarouselChannels(featuredActiveChannels);
 
   // Then, get the channels that AREN'T available
   // (so we can render them as their own route but not worry about next/previous)
-  const hiddenChannels = findHiddenChannels(allChannels, availableChannels);
+  const noncarouselChannels = findNoncarouselChannels(allChannels, carouselChannels);
 
   // Then, set the current channel and its info
-  const currentChannel = getCurrentChannel(availableChannels, dispatch);
+  const currentChannel = getCurrentChannel(carouselChannels, dispatch);
 
-  dispatch(setupChannels(featuredLiveChannels, availableChannels, hiddenChannels, currentChannel));
+  dispatch(setupChannels(featuredActiveChannels, carouselChannels, noncarouselChannels, currentChannel));
 }
 
 export const initializeChannels = () => dispatch => {

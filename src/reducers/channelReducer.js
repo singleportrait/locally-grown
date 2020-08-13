@@ -2,7 +2,7 @@ import { SET_CHANNELS, SETUP_CHANNELS, CHANNELS_LOAD_ERROR } from '../actions/ch
 
 // HOW BEST TO ORGANIZE THE STORE???
 // currentChannelId = 27
-// channel = this.props.availableChannels.find(channel => channel.sys.id === this.props.currentChannelId)
+// channel = this.props.carouselChannels.find(channel => channel.sys.id === this.props.currentChannelId)
 // (^^ this could also be)
 // channel = this.props.currentChannel()
 // vs
@@ -14,8 +14,8 @@ const initialState = {
   isLoaded: false,
   allChannels: [],
   featuredChannels: [], // Active, featured channels
-  availableChannels: [], // Channels with programs w program blocks for this hour
-  hiddenChannels: [],
+  carouselChannels: [], // Channels with programs w program blocks for this hour
+  noncarouselChannels: [],
   currentChannel: null,
   error: null
 }
@@ -32,8 +32,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         featuredChannels: action.featured,
-        availableChannels: action.available,
-        hiddenChannels: action.hidden,
+        carouselChannels: action.carousel,
+        noncarouselChannels: action.noncarousel,
         currentChannel: action.current
       }
     case CHANNELS_LOAD_ERROR:
