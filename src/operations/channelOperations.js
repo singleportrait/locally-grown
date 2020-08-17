@@ -2,6 +2,7 @@ import { setChannels, setupChannels, errorLoadingChannels } from '../actions/cha
 import client from '../services-contentful';
 import store from '../store';
 import consoleLog from '../helpers/consoleLog';
+import { repeatProgramBlocks } from '../helpers/channelHelpers';
 
 // import { channelsData } from '../data/channelsDataJune2020';
 
@@ -32,6 +33,85 @@ const fetchChannels = () => dispatch => {
   });
 }
 
+const configureChannels = (channels) => {
+  const today = moment().format("YYYY-MM-DD");
+
+  const copiedChannels = JSON.parse(JSON.stringify(channels));
+
+  const configuredChannels = copiedChannels.map(channel => {
+
+    // Filter out programs with no fields or program blocks
+    const validPrograms = channel.fields.programs.filter(program => program.fields && program.fields.programBlocks);
+    // consoleLog("Valid programs", validPrograms);
+
+    // If a program wants to repeat its blocks, we repeat them (regardless
+    // of their original start time) until they fill 24 hours of programming
+    // We have to run this separately than the today/tomorrow program blocks
+    // code so that it has the updated repeated blocks first
+    const configuredRepeatedPrograms = validPrograms.map(program => {
+
+      if (program.fields.repeatProgramBlocks) {
+        // consoleLog("- This program has repeated program blocks: ", program.fields.title);
+
+        const repeatedProgramBlocks = repeatProgramBlocks(program.fields.programBlocks);
+
+        // consoleLog(repeatedProgramBlocks);
+        program.fields.programBlocks = repeatedProgramBlocks;
+      }
+
+      return program;
+    });
+
+    // If today's programming ends today, check other programs in this channel
+    // to see if there's one tomorrow that pulls in different program blocks after midnight
+    // And if there isn't one, end the programming at midnight
+    configuredRepeatedPrograms.forEach(program => {
+      if (moment(program.fields.endDate, "YYYY-MM-DD").isSame(today)) {
+        consoleLog(`- This program "${program.fields.title}" ends today`);
+        // See if there's a program for tomorrow
+        const tomorrow = moment().add(1, "day").format("YYYY-MM-DD");
+
+        const tomorrowsPrograms = channel.fields.programs.filter(program => {
+          return moment(program.fields.startDate, "YYYY-MM-DD").isSame(tomorrow);
+        });
+
+        // TODO: Cheating by only using the first program, in case there is more than one match
+        const tomorrowsProgram = tomorrowsPrograms[0];
+
+        let tomorrowsProgramBlocks = [];
+
+        // If there's a program tomorrow, and it has program blocks
+        if (tomorrowsPrograms.length && tomorrowsProgram.fields.programBlocks?.length) {
+
+          // Get tomorrow's program blocks until this time tomorrow
+          tomorrowsProgramBlocks = tomorrowsProgram.fields.programBlocks.filter(programBlock => {
+            return programBlock.fields.startTime < store.getState().session.currentHour;
+          });
+        }
+
+        if (!tomorrowsPrograms.length) {
+          consoleLog("- There's no programming tomorrow");
+        }
+
+        // Get the rest of today's program blocks
+        const todaysProgramBlocks = program.fields.programBlocks.filter(programBlock => {
+          return programBlock.fields.startTime >= store.getState().session.currentHour;
+        });
+
+        // Write over the initial program blocks with the correct ones post-midnight
+        const combinedBlocks = todaysProgramBlocks.concat(tomorrowsProgramBlocks);
+        // consoleLog("- Combined today + tomorrow's programming", combinedBlocks);
+        program.fields.programBlocks = combinedBlocks;
+      }
+    });
+
+    return channel;
+  });
+
+  // consoleLog("Configured channels:", configuredChannels);
+  return configuredChannels;
+}
+
 // This looks at all channels and finds the programs that are featured and
 // "on" for today's current date
 const findFeaturedActiveChannels = (channels) => {
@@ -54,93 +134,6 @@ const findFeaturedActiveChannels = (channels) => {
     // consoleLog("- These programs:", channel.fields.programs);
 
     const featuredPrograms = channel.fields.programs.filter(program => {
-      if (!program.fields) {
-        return false;
-      }
-
-      if (!program.fields.programBlocks) {
-        consoleLog("Didn't find any program blocks in", program.fields.title, ", not including in featuredPrograms");
-        return false;
-      }
-
-      // If a program wants to repeat its blocks, we repeat them (regardless
-      // of their original start time) until they fill 24 hours of programming
-      if (program.fields.repeatProgramBlocks) {
-        consoleLog("- We're repeating this program's blocks: ", program.fields.title);
-
-        // Get existing program blocks
-        const programBlocks = program.fields.programBlocks;
-        const programBlocksTotal = programBlocks.length - 1;
-
-        // Create a new array that we can manipulate
-        let repeatedProgramBlocks = [];
-
-        // Loop through existing program blocks to add to array
-        // Set their hours to be 0, 1, 2, ... until there are no more
-        // Loop through the programs, increasing hours until we get to 23
-        let i = 0;
-        let hour = 0;
-        while (hour < 24) {
-          // consoleLog("i: ", i, "hour: ", hour);
-          // TODO: Still always have to deep copy in order not to manipulate the original object
-          const repeatedProgramBlock = JSON.parse(JSON.stringify(programBlocks[i]));
-          repeatedProgramBlock.fields.startTime = hour;
-          repeatedProgramBlocks.push(repeatedProgramBlock);
-
-          i < programBlocksTotal ? i++ : i = 0;
-
-          hour++;
-        }
-        // consoleLog(repeatedProgramBlocks);
-        program.fields.programBlocks = repeatedProgramBlocks;
-      }
-
-      // If today's programming ends today, check other programs in this channel
-      // to see if there's one tomorrow that should pull in different program blocks after midnight
-      // And if there isn't one, end the programming at midnight
-      //
-      // Note: This is going to update all channels we iterate through,
-      // regardless of whether they're featured or not. This is a good thing,
-      // though this probably isn't the correct place for it.
-      if (moment(program.fields.endDate, "YYYY-MM-DD").isSame(today)) {
-        consoleLog(`This program "${program.fields.title}" ends today`);
-        // See if there's a program for tomorrow
-        const tomorrow = moment().add(1, "day").format("YYYY-MM-DD");
-
-        const tomorrowsPrograms = channel.fields.programs.filter(program => {
-          return moment(program.fields.startDate, "YYYY-MM-DD").isSame(tomorrow);
-        });
-
-        // TODO: Cheating by only using the first one, in case there is more than one match
-        const tomorrowsProgram = tomorrowsPrograms[0];
-
-        let tomorrowsProgramBlocks = [];
-
-        // If there's a program tomorrow, and it has program blocks
-        if (tomorrowsPrograms.length && tomorrowsProgram.fields.programBlocks?.length) {
-          consoleLog("- Tomorrow's program for this channel", tomorrowsProgram);
-
-          // Get tomorrow's program blocks until this time tomorrow
-          tomorrowsProgramBlocks = tomorrowsProgram.fields.programBlocks.filter(programBlock => {
-            return programBlock.fields.startTime < store.getState().session.currentHour;
-          });
-          consoleLog("- Tomorrow's program blocks ", tomorrowsProgramBlocks);
-        }
-
-        if (!tomorrowsPrograms.length) {
-          consoleLog("- There's no programming tomorrow");
-        }
-
-        // Get the rest of today's program blocks
-        const todaysProgramBlocks = program.fields.programBlocks.filter(programBlock => {
-          return programBlock.fields.startTime >= store.getState().session.currentHour;
-        });
-        consoleLog("- Today's program blocks ", todaysProgramBlocks);
-
-        // Write over the initial program blocks with the correct ones post-midnight
-        program.fields.programBlocks = todaysProgramBlocks.concat(tomorrowsProgramBlocks);
-      }
-
       // If program is featured, starts today or earlier, and ends today or later
       return program.fields.featured === true &&
         moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
@@ -244,15 +237,20 @@ const getCurrentChannel = channels => {
 
 // Set up the channels objects
 export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
-  // Go through each program and see if it's featured & is active on today's date
-  const featuredActiveChannels = findFeaturedActiveChannels(allChannels);
 
-  // Go through each program and see if there's a block for this hour
+  // Filter out empty programs, repeat program blocks, and
+  // ensure program blocks are correct if programming switches at midnight
+  const configuredChannels = configureChannels(allChannels);
+
+  // Go through each program and see if it's featured & is active on today's date
+  const featuredActiveChannels = findFeaturedActiveChannels(configuredChannels);
+
+  // Go through each featured active program and see if there's a block for this hour
   const carouselChannels = findCarouselChannels(featuredActiveChannels);
 
   // Then, get the channels that AREN'T available
   // (so we can render them as their own route but not worry about next/previous)
-  const noncarouselChannels = findNoncarouselChannels(allChannels, carouselChannels);
+  const noncarouselChannels = findNoncarouselChannels(configuredChannels, carouselChannels);
 
   // Then, set the current channel and its info
   const currentChannel = getCurrentChannel(carouselChannels, dispatch);
