@@ -1,3 +1,5 @@
+import clone from 'rfdc';
+
 import { setChannels, setupChannels, errorLoadingChannels } from '../actions/channelActions';
 import client from '../services-contentful';
 import store from '../store';
@@ -36,9 +38,8 @@ const fetchChannels = () => dispatch => {
 const configureChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
 
-  const copiedChannels = JSON.parse(JSON.stringify(channels));
-
-  const configuredChannels = copiedChannels.map(channel => {
+  // Configure copied channels
+  const configuredChannels = clone()(channels).map(channel => {
 
     // Filter out programs with no fields or program blocks
     const validPrograms = channel.fields.programs.filter(program => program.fields && program.fields.programBlocks);
@@ -117,11 +118,10 @@ const configureChannels = (channels) => {
 const findFeaturedActiveChannels = (channels) => {
   const today = moment().format("YYYY-MM-DD");
 
-  // This is all because this code was ALSO updating the original variable's objects
-  // because cloning objects is a no-no...but I need help with my store shape
-  const copiedChannels = JSON.parse(JSON.stringify(channels));
-
-  const featuredActiveChannels = copiedChannels.filter(channel => {
+  // All these arrays need to be deep cloned (by rfdc) so that it doesn't keep
+  // a reference to the original object.
+  // TODO: Use normalized data and build brand spanking new objects!
+  const featuredActiveChannels = clone()(channels).filter(channel => {
 
     // Include test channels if we're in development
     if (process.env.NODE_ENV !== `development`) {
@@ -162,10 +162,8 @@ const findFeaturedActiveChannels = (channels) => {
 // channel functionality
 const findCarouselChannels = (featuredActiveChannels) => {
 
-  // Same reasoning as above for findFeaturedActiveChannels
-  const copiedChannels = JSON.parse(JSON.stringify(featuredActiveChannels));
-
-  const availableChannels = copiedChannels.filter(channel => {
+  // Note: Deep-copied array
+  const availableChannels = clone()(featuredActiveChannels).filter(channel => {
 
     // Return programs that have program blocks for this hour.
     const availablePrograms = channel.fields.programs.filter(program => {
@@ -216,9 +214,9 @@ const findNoncarouselChannels = (allChannels, availableChannels) => {
   // TODO: These probably shouldn't populate programs that aren't happening currently, either.
   // Should use the date checks from above in findFeaturedActiveChannels() to filter these out too.
   const availableIds = availableChannels.map(channel => channel.sys.id);
-  const copiedAllChannels = JSON.parse(JSON.stringify(allChannels));
 
-  const noncarouselChannels = copiedAllChannels.filter(channel => {
+  // Note: Deep-copied array
+  const noncarouselChannels = clone()(allChannels).filter(channel => {
     return !availableIds.includes(channel.sys.id);
   });
 

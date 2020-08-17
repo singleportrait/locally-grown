@@ -1,3 +1,5 @@
+import clone from 'rfdc';
+
 export const repeatProgramBlocks = (programBlocks) => {
   const programBlocksTotal = programBlocks.length - 1;
 
@@ -10,8 +12,8 @@ export const repeatProgramBlocks = (programBlocks) => {
   let hour = 0;
   while (hour < 24) {
     // consoleLog("i: ", i, "hour: ", hour);
-    // TODO: Still always have to deep copy in order not to manipulate the original object
-    const repeatedProgramBlock = JSON.parse(JSON.stringify(programBlocks[i]));
+    // Note: Deep-copying object
+    const repeatedProgramBlock = clone()(programBlocks[i]);
     repeatedProgramBlock.fields.startTime = hour;
     repeatedProgramBlocks.push(repeatedProgramBlock);
 

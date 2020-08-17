@@ -53,6 +53,7 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     // Doing this copy ish again, to prevent overwriting original info before we're ready,
     // and especially to prevent duplicate videos from not getting correct
     // indexes and start & end times
+    // I'm not using rfdc clone() in this file because it seemed to slow down performance, somehow
     let videos = JSON.parse(JSON.stringify(currentProgramBlock.fields.videos));
 
     if (currentProgramBlock.fields.isRandom) {
