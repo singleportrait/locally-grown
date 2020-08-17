@@ -216,11 +216,11 @@ const findNoncarouselChannels = (allChannels, availableChannels) => {
   const availableIds = availableChannels.map(channel => channel.sys.id);
 
   // Note: Deep-copied array
-  const noncarouselChannels = clone()(allChannels).filter(channel => {
+  const nonCarouselChannels = clone()(allChannels).filter(channel => {
     return !availableIds.includes(channel.sys.id);
   });
 
-  return noncarouselChannels;
+  return nonCarouselChannels;
 }
 
 // Pick a random channel of all featured and active channels, to show on landing
@@ -248,12 +248,12 @@ export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
 
   // Then, get the channels that AREN'T available
   // (so we can render them as their own route but not worry about next/previous)
-  const noncarouselChannels = findNoncarouselChannels(configuredChannels, carouselChannels);
+  const nonCarouselChannels = findNoncarouselChannels(configuredChannels, carouselChannels);
 
   // Then, set the current channel and its info
   const currentChannel = getCurrentChannel(carouselChannels, dispatch);
 
-  dispatch(setupChannels(featuredActiveChannels, carouselChannels, noncarouselChannels, currentChannel));
+  dispatch(setupChannels(featuredActiveChannels, carouselChannels, nonCarouselChannels, currentChannel));
 }
 
 export const initializeChannels = () => dispatch => {

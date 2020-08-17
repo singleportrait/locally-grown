@@ -15,7 +15,7 @@ const initialState = {
   allChannels: [],
   featuredChannels: [], // Active, featured channels
   carouselChannels: [], // Channels with programs w program blocks for this hour
-  noncarouselChannels: [],
+  nonCarouselChannels: [],
   currentChannel: null,
   error: null
 }
@@ -33,7 +33,7 @@ export default function(state = initialState, action) {
         ...state,
         featuredChannels: action.featured,
         carouselChannels: action.carousel,
-        noncarouselChannels: action.noncarousel,
+        nonCarouselChannels: action.nonCarousel,
         currentChannel: action.current
       }
     case CHANNELS_LOAD_ERROR:

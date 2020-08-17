@@ -185,7 +185,7 @@ class AppContents extends Component {
                 )} />
               )}
 
-              { this.props.channels.noncarouselChannels.map((channel, i) => // Tracking for noncarousel channels
+              { this.props.channels.nonCarouselChannels.map((channel, i) => // Tracking for nonCarousel channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
                     {this.trackPageview()}
