@@ -10,6 +10,8 @@ import { repeatProgramBlocks } from '../helpers/channelHelpers';
 
 import * as moment from 'moment';
 
+const dateFormat = "YYYY-MM-DD";
+
 const fetchChannels = () => dispatch => {
   // Can use this when working offline
   // return new Promise(function(resolve, reject) {
@@ -36,7 +38,7 @@ const fetchChannels = () => dispatch => {
 }
 
 const configureChannels = (channels) => {
-  const today = moment().format("YYYY-MM-DD");
+  const today = moment().format(dateFormat);
 
   // Configure copied channels
   const configuredChannels = clone()(channels).map(channel => {
@@ -67,13 +69,13 @@ const configureChannels = (channels) => {
     // to see if there's one tomorrow that pulls in different program blocks after midnight
     // And if there isn't one, end the programming at midnight
     configuredRepeatedPrograms.forEach(program => {
-      if (moment(program.fields.endDate, "YYYY-MM-DD").isSame(today)) {
+      if (moment(program.fields.endDate, dateFormat).isSame(today)) {
         consoleLog(`- This program "${program.fields.title}" ends today`);
         // See if there's a program for tomorrow
-        const tomorrow = moment().add(1, "day").format("YYYY-MM-DD");
+        const tomorrow = moment().add(1, "day").format(dateFormat);
 
         const tomorrowsPrograms = channel.fields.programs.filter(program => {
-          return moment(program.fields.startDate, "YYYY-MM-DD").isSame(tomorrow);
+          return moment(program.fields.startDate, dateFormat).isSame(tomorrow);
         });
 
         // TODO: Cheating by only using the first program, in case there is more than one match
@@ -116,7 +118,7 @@ const configureChannels = (channels) => {
 // This looks at all channels and finds the programs that are featured and
 // "on" for today's current date
 const findFeaturedActiveChannels = (channels) => {
-  const today = moment().format("YYYY-MM-DD");
+  const today = moment().format(dateFormat);
 
   // All these arrays need to be deep cloned (by rfdc) so that it doesn't keep
   // a reference to the original object.
@@ -136,8 +138,8 @@ const findFeaturedActiveChannels = (channels) => {
     const featuredPrograms = channel.fields.programs.filter(program => {
       // If program is featured, starts today or earlier, and ends today or later
       return program.fields.featured === true &&
-        moment(program.fields.startDate, "YYYY-MM-DD").isSameOrBefore(today) &&
-        moment(program.fields.endDate, "YYYY-MM-DD").isSameOrAfter(today);
+        moment(program.fields.startDate, dateFormat).isSameOrBefore(today) &&
+        moment(program.fields.endDate, dateFormat).isSameOrAfter(today);
     });
 
     // consoleLog("Featured available programs:", featuredPrograms);
