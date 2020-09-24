@@ -192,28 +192,31 @@ class Program extends Component {
       return (
         <React.Fragment>
           { currentProgramBlock && currentProgramBlock.fields.videos &&
-            <React.Fragment>
-              <Video
-                video={currentProgramBlock.currentVideo}
-                timestamp={currentProgramBlock.timestampToStartVideo}
-              />
-              <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={allowMaxMode && this.state.maxMode}>
-                { this.props.previousChannelSlug &&
-                    <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
-                }
-
-                <div className={controlButtons}>
-                  <MuteButton />
-                </div>
-
-                { this.props.nextChannelSlug &&
-                    <ChannelButton direction="next" to={this.props.nextChannelSlug} />
-                }
-              </VideoControls>
-            </React.Fragment>
+            <Video
+              video={currentProgramBlock.currentVideo}
+              timestamp={currentProgramBlock.timestampToStartVideo}
+            />
           }
           { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
               <VideoPlaceholderWrapper />
+          }
+
+          { currentProgramBlock &&
+            <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={allowMaxMode && this.state.maxMode}>
+              { this.props.previousChannelSlug &&
+                  <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
+              }
+
+              { currentProgramBlock.fields.videos &&
+                <div className={controlButtons}>
+                  <MuteButton />
+                </div>
+              }
+
+              { this.props.nextChannelSlug &&
+                  <ChannelButton direction="next" to={this.props.nextChannelSlug} />
+              }
+            </VideoControls>
           }
         </React.Fragment>
       );

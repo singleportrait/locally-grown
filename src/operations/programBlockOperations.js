@@ -50,6 +50,15 @@ const fetchProgramBlock = (programBlockId) => dispatch => {
 const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch => {
   consoleLog("- Initializing program block: ", currentProgramBlock.fields.title);
   return new Promise(function(resolve, reject) {
+    if (!currentProgramBlock.fields.videos) {
+      consoleLog("No videos in this program block!");
+      const loadedProgramBlock = {
+        sys: currentProgramBlock.sys,
+        fields: currentProgramBlock.fields
+      }
+      return dispatch(programBlockError(loadedProgramBlock, "Warning: This program block doesn't have any videos!"));
+    }
+
     // Doing this copy ish again, to prevent overwriting original info before we're ready,
     // and especially to prevent duplicate videos from not getting correct
     // indexes and start & end times
@@ -70,15 +79,6 @@ const initializeCurrentProgramBlockVideos = (currentProgramBlock) => dispatch =>
     let videoToPlayIndex = 0;
     let timestampToStartVideo = 0;
     let videosLength = videos.length;
-
-    if (!videos) {
-      consoleLog("No videos!");
-      const loadedProgramBlock = {
-        sys: currentProgramBlock.sys,
-        fields: currentProgramBlock.fields
-      }
-      return dispatch(programBlockError(loadedProgramBlock, "Warning: This program doesn't have any videos!"));
-    }
 
     // Set individual video lengths & full programming length
     videos.forEach((video, i) => {
