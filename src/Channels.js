@@ -63,8 +63,8 @@ class Channels extends Component {
             }
             <h4>
               {channel.fields.title}
-              {channel.fields.user &&
-                <div>by {channel.fields.user.fields.name}</div>
+              {channel.fields.contributor &&
+                <div>by {channel.fields.contributor.fields.name}</div>
               }
             </h4>
             { !currentProgramBlock &&

@@ -15,7 +15,7 @@ class InfoTooltip extends Component {
 
   render() {
     const description = this.props.description;
-    const user = this.props.user;
+    const contributor = this.props.contributor;
 
     const renderDescription = () => {
       return (
@@ -28,13 +28,13 @@ class InfoTooltip extends Component {
           {!description &&
             <p><em>This program doesn&apos;t have a description!</em></p>
           }
-          {user &&
+          {contributor &&
             <React.Fragment>
               <br />
-              <p><strong>{user.fields.name}</strong></p>
-              {user.fields.description &&
+              <p><strong>{contributor.fields.name}</strong></p>
+              {contributor.fields.description &&
                 <div>
-                  <Markdown source={user.fields.description} />
+                  <Markdown source={contributor.fields.description} />
                 </div>
               }
             </React.Fragment>

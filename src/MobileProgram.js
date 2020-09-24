@@ -59,8 +59,8 @@ function MobileProgram(props) {
           <p>
             You&apos;re watching {props.channelTitle}
 
-            { props.channelUser &&
-              <span> by {props.channelUser.fields.name}</span>
+            { props.channelContributor &&
+              <span> by {props.channelContributor.fields.name}</span>
             }
           </p>
         </div>
