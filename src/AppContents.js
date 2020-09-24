@@ -176,7 +176,7 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
-              { this.props.channels.availableChannels.map((channel, i) => // Tracking for avail channels
+              { this.props.channels.carouselChannels.map((channel, i) => // Tracking for carousel channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
                     {this.trackPageview()}
@@ -185,7 +185,7 @@ class AppContents extends Component {
                 )} />
               )}
 
-              { this.props.channels.hiddenChannels.map((channel, i) => // Tracking for hidden channels
+              { this.props.channels.nonCarouselChannels.map((channel, i) => // Tracking for nonCarousel channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
                     {this.trackPageview()}

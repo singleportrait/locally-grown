@@ -7,12 +7,12 @@ export const setChannels = channels => dispatch => {
   })
 };
 
-export const setupChannels = (featured, available, hidden, current) => dispatch => {
+export const setupChannels = (featured, carousel, nonCarousel, current) => dispatch => {
   dispatch({
     type: SETUP_CHANNELS,
     featured: featured,
-    available: available,
-    hidden: hidden,
+    carousel: carousel,
+    nonCarousel: nonCarousel,
     current: current
   })
 };
