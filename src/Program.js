@@ -234,8 +234,8 @@ class Program extends Component {
           <p className={channelTitle}>
             You&apos;re watching {this.props.channelTitle}
 
-            { this.props.channelUser &&
-                <span> by {this.props.channelUser.fields.name}</span>
+            { this.props.channelContributor &&
+                <span> by {this.props.channelContributor.fields.name}</span>
             }
             .
             <InfoTooltip
@@ -243,7 +243,7 @@ class Program extends Component {
               show={this.state.showInfoTooltip}
               title={program.fields.title}
               description={program.fields.description}
-              user={this.props.channelUser}
+              contributor={this.props.channelContributor}
             />
           </p>
           <hr />
@@ -301,7 +301,7 @@ class Program extends Component {
             previousChannelSlug={this.props.previousChannelSlug}
             nextChannelSlug={this.props.nextChannelSlug}
             channelTitle={this.props.channelTitle}
-            channelUser={this.props.channelUser}
+            channelContributor={this.props.channelContributor}
             currentHour={this.props.session.currentHour}
           ></MobileProgram>
         }
