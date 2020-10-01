@@ -1,0 +1,10 @@
+node_modules/
+
+# Build-generated index page
+web/index.html
+
+# Private environment variables
+.env
+
+# In order to access Firebase functions locally
+.runtimeconfig.json
