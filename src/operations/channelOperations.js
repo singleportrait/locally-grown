@@ -1,7 +1,7 @@
 import clone from 'rfdc';
 
 import { setChannels, setupChannels, errorLoadingChannels } from '../actions/channelActions';
-import client from '../services-contentful';
+import client from '../servicesContentful';
 import store from '../store';
 import consoleLog from '../helpers/consoleLog';
 import { repeatProgramBlocks } from '../helpers/channelHelpers';
