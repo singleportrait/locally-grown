@@ -9,6 +9,7 @@ import { isIOS } from './helpers/utils';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
+import { initializeEvents } from './operations/eventOperations';
 
 import LoadingScreen from './components/LoadingScreen';
 import Channel from './Channel';
@@ -16,6 +17,7 @@ import TVGuide from './TVGuide';
 import Channels from './Channels';
 import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
+import Screenings from './Screenings';
 
 import styled from '@emotion/styled';
 
@@ -53,6 +55,7 @@ class AppContents extends Component {
   componentDidMount() {
     this.props.initializeSession();
     this.props.initializeChannels();
+    this.props.initializeEvents();
   }
 
   toggleTooltip() {
@@ -146,6 +149,10 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
+              <Route path="/screenings">
+                <Screenings screenings={this.props.events.events} />
+              </Route>
+
               { this.props.channels.carouselChannels.map((channel, i) => // Tracking for carousel channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
@@ -230,6 +237,7 @@ class AppContents extends Component {
 const mapStateToProps = state => ({
   channels: state.channels,
   session: state.session,
+  events: state.events,
 });
 
-export default connect(mapStateToProps, { initializeSession, initializeChannels })(AppContents);
+export default connect(mapStateToProps, { initializeSession, initializeChannels, initializeEvents })(AppContents);
