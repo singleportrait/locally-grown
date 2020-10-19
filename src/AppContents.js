@@ -19,6 +19,8 @@ import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
 import Screenings from './Screenings';
 
+import Event from './Event';
+
 import styled from '@emotion/styled';
 
 import { mobileViewportHeight } from './styles';
@@ -149,6 +151,10 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
+              <Route key={"registration"} path={"/registration"} render={props => (
+                <Event {...props} />
+              )} />
+
               <Route path="/screenings">
                 <Screenings screenings={this.props.events.events} />
               </Route>
