@@ -7,6 +7,7 @@ const removeMarkdown = require('remove-markdown');
 const app = express();
 
 const channels = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedChannels.json')));
+const events = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedEvents.json')));
 
 const appName = "Locally Grown TV";
 const appDescription = "Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.";
@@ -31,6 +32,19 @@ setMetadata("/channels", "Channels | Locally Grown TV", "See what's playing now 
 // This was showing as a 404 in Firebase logs, originally
 setMetadata("/index.html", appName, appDescription);
 
+const setDynamicMetadata = (response, slug, title, description) => {
+  functions.logger.info(`${title} visited!`);
+
+  let data = fs.readFileSync('./web/index.html').toString();
+
+  // Slightly different treatment than setMetadata() above
+  data = data.replace(/(https:\/\/locallygrown\.tv\/)/g, '$&'+slug);
+  data = data.replace(/__TITLE__/g, `${title} | Locally Grown TV` || appName);
+  data = data.replace(/__DESCRIPTION__/g, removeMarkdown(description) || appDescription);
+
+  return response.send(data);
+}
+
 // Dynamic (channel) routes
 app.get("/:slug", (request, response) => {
   const slug = request.params.slug;
@@ -41,16 +55,21 @@ app.get("/:slug", (request, response) => {
     return response.redirect(404, "/");
   }
 
-  functions.logger.info(`${channel.title} visited!`, {structuredData: true});
+  setDynamicMetadata(response, slug, channel.title, channel.description);
 
-  let data = fs.readFileSync('./web/index.html').toString();
+});
 
-  // Slightly different treatment than setMetadata() above
-  data = data.replace(/(https:\/\/locallygrown\.tv\/)/g, '$&'+slug);
-  data = data.replace(/__TITLE__/g, `${channel.title} | Locally Grown TV` || appName);
-  data = data.replace(/__DESCRIPTION__/g, removeMarkdown(channel.description) || appDescription);
+// Dynamic (event) routes
+app.get("/screenings/:slug", (request, response) => {
+  const slug = request.params.slug;
+  const event = events.find(event => event.slug === slug);
 
-  return response.send(data);
+  if (!event) {
+    functions.logger.info(`Didn't find screening '${slug}', redirecting to home`);
+    return response.redirect(404, '/');
+  }
+
+  setDynamicMetadata(response, slug, event.title, event.description);
 });
 
 // This line doesn't seem to be necessary
