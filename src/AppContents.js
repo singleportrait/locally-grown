@@ -19,6 +19,7 @@ import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
 import Screenings from './Screenings';
 
+import AuthTest from './AuthTest';
 import Event from './Event';
 
 import styled from '@emotion/styled';
@@ -151,6 +152,9 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
+              <Route key={"authTest"} path={"/auth-test"} render={props => (
+                <AuthTest {...props} />
+              )} />
               <Route key={"registration"} path={"/registration"} render={props => (
                 <Event {...props} />
               )} />
