@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
 import { generateUserDocument, registerForEvent, unregisterForEvent, getEventRegistration } from './firebaseFirestoreFunctions';
@@ -68,33 +69,38 @@ function Event(props) {
   }
 
   return (
-    <div style={{padding: '1rem'}}>
-      <h1>Auth with Context & Firestore</h1>
-      { !user &&
-        <>
-          <h4>Not signed in :)</h4>
-          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}/>
-        </>
-      }
-      { user &&
-        <>
-          <h4>Loaded! Hello { user.displayName }</h4>
-          <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
-          <br />
-          <hr />
-          { isRegistered &&
-            <>
-              <h2>Registered</h2>
-              <h4>Registered at: { isRegistered.created.toDate().toLocaleString() }</h4>
-              <p style={linkStyle} onClick={() => unregister()}>Deregister for Hot Irons</p>
-            </>
-          }
-          { !isRegistered &&
-            <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
-          }
-        </>
-      }
-    </div>
+    <>
+      <Helmet>
+        <title>Event Auth & Registration</title>
+      </Helmet>
+      <div style={{padding: '1rem'}}>
+        <h1>Auth with Context & Firestore</h1>
+        { !user &&
+          <>
+            <h4>Not signed in :)</h4>
+            <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}/>
+          </>
+        }
+        { user &&
+          <>
+            <h4>Loaded! Hello { user.displayName }</h4>
+            <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
+            <br />
+            <hr />
+            { isRegistered &&
+              <>
+                <h2>Registered</h2>
+                <h4>Registered at: { isRegistered.created.toDate().toLocaleString() }</h4>
+                <p style={linkStyle} onClick={() => unregister()}>Deregister for Hot Irons</p>
+              </>
+            }
+            { !isRegistered &&
+              <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
+            }
+          </>
+        }
+      </div>
+    </>
   );
 }
 
