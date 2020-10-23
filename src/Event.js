@@ -90,7 +90,12 @@ function Event(props) {
             { isRegistered &&
               <>
                 <h2>Registered</h2>
-                <h4>Registered at: { isRegistered.created.toDate().toLocaleString() }</h4>
+                { isRegistered.created &&
+                  <h4>Registered at: { isRegistered.created.toDate().toLocaleString() }</h4>
+                }
+                { !isRegistered.created &&
+                  <h4>We don't have the time you registered saved</h4>
+                }
                 <p style={linkStyle} onClick={() => unregister()}>Deregister for Hot Irons</p>
               </>
             }
