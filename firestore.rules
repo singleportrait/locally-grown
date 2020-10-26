@@ -5,11 +5,19 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /users/{userId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
+      allow read, update, delete: if (request.auth != null && request.auth.uid == userId);
+      allow create: if (request.auth != null && request.auth.uid == userId);
     }
     match /events/{event}/members/{userId} {
-    	allow read, update, delete, create: if request.auth != null && request.auth.uid == userId;
+    	allow read, update, delete, create: if (request.auth != null && request.auth.uid == userId);
+    }
+    match /readonly/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /posts/{postId} {
+      allow read: if (resource.data.visibility == "public") ||
+        (resource.data.authorId == request.auth.uid);
     }
   }
 }

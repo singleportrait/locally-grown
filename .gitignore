@@ -4,6 +4,7 @@
 /node_modules
 package-lock.json
 /test/node_modules
+/test/package-lock.json
 
 # testing
 /coverage
@@ -27,7 +28,8 @@ src/**/*.css
 
 # firebase
 .firebase/*
-# logs from firebase functions
+# logs from firebase
 firebase-debug.log
+firestore-debug.log
 # logs from the firebase emulator
 ui-debug.log
