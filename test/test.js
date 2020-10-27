@@ -22,6 +22,9 @@ function getAdminFirestore() {
   return firebase.initializeAdminApp({projectId: MY_PROJECT_ID}).firestore();
 }
 
+const noAuthDB = getFirestore(null);
+const myAuthDB = getFirestore(myAuth);
+
 /* Clear Firestore before running each test */
 beforeEach(async() => {
   await firebase.clearFirestoreData({projectId: MY_PROJECT_ID});
@@ -34,29 +37,25 @@ describe("Tutorial tests", () => {
 
   /* Read-only collection */
   it("Can read items in the read-only collection", async() => {
-    const db = getFirestore(null);
-    const testDoc = db.collection("readonly").doc("testDoc");
+    const testDoc = noAuthDB.collection("readonly").doc("testDoc");
     await firebase.assertSucceeds(testDoc.get());
   });
 
   it("Can't write items in the read-only collection", async() => {
-    const db = getFirestore(null);
-    const testDoc = db.collection("readonly").doc("testDoc");
+    const testDoc = noAuthDB.collection("readonly").doc("testDoc");
     await firebase.assertFails(testDoc.set({food: "bart"}));
   });
 
   /* User collection */
   it("Can write to a user document with the same ID as our user", async() => {
-    const db = getFirestore(myAuth);
-    const userDoc = db.collection("users").doc(myId);
+    const userDoc = myAuthDB.collection("users").doc(myId);
     await firebase.assertSucceeds(userDoc.set({
       cat: "Ed"
     }));
   });
 
   it("Can't write to a user document with a different ID as our user", async() => {
-    const db = getFirestore(myAuth);
-    const userDoc = db.collection("users").doc(theirId);
+    const userDoc = myAuthDB.collection("users").doc(theirId);
     await firebase.assertFails(userDoc.set({
       cat: "Ed"
     }));
@@ -64,8 +63,7 @@ describe("Tutorial tests", () => {
 
   /* Posts tutorial collection */
   it("Can read posts if they are marked public", async() => {
-    const db = getFirestore(null);
-    const testQuery = db.collection("posts").where("visibility", "==", "public");
+    const testQuery = noAuthDB.collection("posts").where("visibility", "==", "public");
     await firebase.assertSucceeds(testQuery.get());
   });
 
@@ -75,8 +73,7 @@ describe("Tutorial tests", () => {
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: theirId, visibility: "public"});
 
-    const db = getFirestore(null);
-    const testRead = db.collection("posts").doc(postId);
+    const testRead = noAuthDB.collection("posts").doc(postId);
     await firebase.assertSucceeds(testRead.get());
   });
 
@@ -86,8 +83,7 @@ describe("Tutorial tests", () => {
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: myId, visibility: "private"});
 
-    const db = getFirestore(myAuth);
-    const testRead = db.collection("posts").doc(postId);
+    const testRead = myAuthDB.collection("posts").doc(postId);
     await firebase.assertSucceeds(testRead.get());
   });
 
@@ -97,8 +93,7 @@ describe("Tutorial tests", () => {
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: theirId, visibility: "private"});
 
-    const db = getFirestore(myAuth);
-    const testRead = db.collection("posts").doc(postId);
+    const testRead = myAuthDB.collection("posts").doc(postId);
     await firebase.assertFails(testRead.get());
   });
 });
@@ -114,9 +109,8 @@ describe("User security", () => {
       content: "before"
     });
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.collection("users").doc(myId);
-    await firebase.assertSucceeds(testDoc.update({content: "after"}));
+    const testUser = myAuthDB.collection("users").doc(myId);
+    await firebase.assertSucceeds(testUser.update({content: "after"}));
   });
 
   it("Doesn't allow a user to edit any other users' info", async() => {
@@ -125,9 +119,8 @@ describe("User security", () => {
       content: "before"
     });
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.collection("users").doc(theirId);
-    await firebase.assertFails(testDoc.update({content: "after"}));
+    const testUser = myAuthDB.collection("users").doc(theirId);
+    await firebase.assertFails(testUser.update({content: "after"}));
   });
 })
 
@@ -135,8 +128,7 @@ describe("User security", () => {
 /* --------------------------------------------------------------------------*/
 describe("Event security", () => {
   it("Allows anyone to view an event", async() => {
-    const db = getFirestore();
-    const testEvent = db.doc(eventPath);
+    const testEvent = noAuthDB.doc(eventPath);
     await firebase.assertSucceeds(testEvent.get());
   });
 
@@ -144,8 +136,7 @@ describe("Event security", () => {
     const memberPath = `${eventPath}/members/${theirId}`;
     const admin = getAdminFirestore();
 
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
     await firebase.assertSucceeds(testEvent.get());
   });
 
@@ -157,8 +148,7 @@ describe("Event security", () => {
       adminIds: [myId, "dummy_mod_123"]
     });
 
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
     await firebase.assertSucceeds(testEvent.update({
       totalAllowed: 110
     }));
@@ -171,8 +161,7 @@ describe("Event security", () => {
       totalRegistered: 0,
     });
 
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
     await firebase.assertFails(testEvent.update({
       totalAllowed: 110
     }));
@@ -186,8 +175,7 @@ describe("Event security", () => {
       adminIds: [myId, "dummy_mod_123"]
     });
 
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
     // const data = await testEvent.get();
     // console.log(`Test event total allowed: \n ${data.data().totalAllowed}`);
     await firebase.assertFails(testEvent.update({
@@ -207,11 +195,10 @@ describe("Event registration security", () => {
       totalRegistered: 0,
     });
 
-    const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
-    const testEvent = db.doc(eventPath);
+    const testMember = myAuthDB.doc(memberPath);
+    const testEvent = myAuthDB.doc(eventPath);
 
-    const batch = db.batch();
+    const batch = myAuthDB.batch();
     batch.set(testMember, {
       registeredAt: timestamp
     });
@@ -236,10 +223,10 @@ describe("Event registration security", () => {
       registeredAt: timestamp
     });
 
-    const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
-    const testEvent = db.doc(eventPath);
-    const batch = db.batch();
+    const testMember = myAuthDB.doc(memberPath);
+    const testEvent = myAuthDB.doc(eventPath);
+
+    const batch = myAuthDB.batch();
     batch.delete(testMember);
     batch.update(testEvent, {
       totalRegistered: firebase.firestore.FieldValue.increment(-1),
@@ -257,11 +244,10 @@ describe("Event registration security", () => {
       totalRegistered: 100,
     });
 
-    const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
-    const testEvent = db.doc(eventPath);
+    const testMember = myAuthDB.doc(memberPath);
+    const testEvent = myAuthDB.doc(eventPath);
 
-    const batch = db.batch();
+    const batch = myAuthDB.batch();
     batch.set(testMember, {
       registeredAt: timestamp
     });
@@ -287,10 +273,10 @@ describe("Event registration security", () => {
       registeredAt: timestamp
     });
 
-    const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
-    const testEvent = db.doc(eventPath);
-    const batch = db.batch();
+    const testMember = myAuthDB.doc(memberPath);
+    const testEvent = myAuthDB.doc(eventPath);
+
+    const batch = myAuthDB.batch();
     batch.delete(testMember);
     batch.update(testEvent, {
       totalRegistered: firebase.firestore.FieldValue.increment(-1),
@@ -307,10 +293,9 @@ describe("Event registration security", () => {
       totalRegistered: 0,
     });
 
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
-    const testMember = db.doc(memberPath);
-    const batch = db.batch();
+    const testMember = myAuthDB.doc(memberPath);
+
+    const batch = myAuthDB.batch();
     batch.set(testMember, {
       registeredAt: timestamp
     });
@@ -320,9 +305,8 @@ describe("Event registration security", () => {
   it("Doesn't allow a user to register for an event with missing fields", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.doc(memberPath);
-    await firebase.assertFails(testDoc.set({
+    const testMember = myAuthDB.doc(memberPath);
+    await firebase.assertFails(testMember.set({
       content: "after",
     }));
   });
@@ -335,8 +319,7 @@ describe("Event registration security", () => {
       registeredAt: Date.now()
     });
 
-    const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
+    const testMember = myAuthDB.doc(memberPath);
     await firebase.assertSucceeds(testMember.update({content: "after"}));
   });
 
@@ -348,9 +331,8 @@ describe("Event registration security", () => {
       registeredAt: Date.now()
     });
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.doc(memberPath);
-    await firebase.assertFails(testDoc.update({content: "after"}));
+    const testMember = myAuthDB.doc(memberPath);
+    await firebase.assertFails(testMember.update({content: "after"}));
   });
 
   it("Doesn't allow a user to view somebody else's event registration", async() => {
@@ -361,9 +343,8 @@ describe("Event registration security", () => {
       registeredAt: Date.now()
     });
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.doc(memberPath);
-    await firebase.assertFails(testDoc.get());
+    const testMember = myAuthDB.doc(memberPath);
+    await firebase.assertFails(testMember.get());
   });
 
   it("Allows a moderator to edit somebody else's event registration", async() => {
@@ -378,9 +359,8 @@ describe("Event registration security", () => {
       registeredAt: timestamp
     });
 
-    const db = getFirestore(myAuth);
-    const testDoc = db.doc(memberPath);
-    await firebase.assertSucceeds(testDoc.update({content: "after"}));
+    const testMember = myAuthDB.doc(memberPath);
+    await firebase.assertSucceeds(testMember.update({content: "after"}));
   });
 
   it("Allows a moderator to get the list of users on an event", async() => {
@@ -390,14 +370,12 @@ describe("Event registration security", () => {
       registrationUpdatedAt: timestamp
     });
 
-    const db = getFirestore(myAuth);
-    const testEventMembers = db.doc(eventPath).collection("members");
+    const testEventMembers = myAuthDB.doc(eventPath).collection("members");
     await firebase.assertSucceeds(testEventMembers.get());
   });
 
   it("Doesn't allow a non-moderator to get the list of users on an event", async() => {
-    const db = getFirestore(myAuth);
-    const testEventMembers = db.doc(eventPath).collection("members");
+    const testEventMembers = myAuthDB.doc(eventPath).collection("members");
     await firebase.assertFails(testEventMembers.get());
   });
 });

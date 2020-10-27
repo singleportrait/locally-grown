@@ -11,7 +11,7 @@
   "hot-irons": {
     allowedViewers: 100,
     registeredViewers: 0,
-    updatedAt: Date.lastUpdated() // For tracking when users update the registeredViewers
+    registrationUpdatedAt: Date.lastUpdated() // For tracking when users update the registeredViewers
     adminIds: ["mod_user_123", "mod_user_456"],
     "registeredInfo": { // Sub-collection; you have to be registered to view this
       videoId: "20958k23n5kj125"
