@@ -10,7 +10,8 @@ const myAuth = {
   email: "user_12345@gmail.com"
 };
 
-const eventPath = "events/event_123";
+const eventId = "event_123";
+const eventPath = `events/${eventId}`;
 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
 function getFirestore(auth) {
@@ -377,6 +378,63 @@ describe("Event registration security", () => {
   it("Doesn't allow a non-moderator to get the list of users on an event", async() => {
     const testEventMembers = myAuthDB.doc(eventPath).collection("members");
     await firebase.assertFails(testEventMembers.get());
+  });
+});
+
+/* Event registered-only info */
+/* --------------------------------------------------------------------------*/
+describe("Event registered-only info", () => {
+  it("Allows registered viewers to see registered-only info", async() => {
+    const memberPath = `${eventPath}/members/${myId}`;
+    const admin = getAdminFirestore();
+    await admin.doc(memberPath).set({
+      registeredAt: timestamp
+    });
+
+    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    await firebase.assertSucceeds(testRegisteredInfo.get());
+  });
+
+  it("Allows moderators to see registered-only info", async() => {
+    const memberPath = `${eventPath}/members/${theirId}`;
+    const admin = getAdminFirestore();
+    await admin.doc(eventPath).set({
+      adminIds: [myId, "dummy_mod_123"],
+      registrationUpdatedAt: timestamp
+    });
+    await admin.doc(memberPath).set({
+      registeredAt: timestamp
+    });
+
+    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    await firebase.assertSucceeds(testRegisteredInfo.get());
+  });
+
+  it("Doesn't allow non-registered non-moderator users to see registered-only info", async() => {
+    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    await firebase.assertFails(testRegisteredInfo.get());
+  });
+
+  it("Allows moderators to update registered-only info", async() => {
+    const admin = getAdminFirestore();
+    await admin.doc(eventPath).set({
+      adminIds: [myId, "dummy_mod_123"],
+      registrationUpdatedAt: timestamp
+    });
+
+    const registeredInfoPath = `${eventPath}/registeredInfo/${eventId}`;
+    const testRegisteredInfoDoc = myAuthDB.doc(registeredInfoPath);
+    await firebase.assertSucceeds(testRegisteredInfoDoc.set({
+      videoId: "12345"
+    }));
+  });
+
+  it("Doesn't allow non-moderators to update registered-only info", async() => {
+    const registeredInfoPath = `${eventPath}/registeredInfo/${eventId}`;
+    const testRegisteredInfoDoc = myAuthDB.doc(registeredInfoPath);
+    await firebase.assertFails(testRegisteredInfoDoc.set({
+      videoId: "12345"
+    }));
   });
 });
 

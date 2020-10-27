@@ -71,7 +71,12 @@ service cloud.firestore {
 
       // Something like this; pseudocode at this point !
       match /registeredInfo/{document=**} {
-        allow read: if exists(/databases/$(database)/documents/events/$(eventId)/users/$(request.auth.uid));
+        function isRegisteredMember() {
+          return exists(/databases/$(database)/documents/events/$(eventId)/members/$(request.auth.uid));
+        }
+
+        allow read: if (isRegisteredMember() || userIsEventMod());
+        allow update, create: if userIsEventMod();
       }
     }
 
