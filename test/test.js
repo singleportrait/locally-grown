@@ -104,6 +104,7 @@ describe("Tutorial tests", () => {
 });
 
 /* Begin real app tests! */
+/* --------------------------------------------------------------------------*/
 
 /* User security */
 describe("User security", () => {
@@ -131,6 +132,7 @@ describe("User security", () => {
 })
 
 /* Events security */
+/* --------------------------------------------------------------------------*/
 describe("Event security", () => {
   it("Allows anyone to view an event", async() => {
     const db = getFirestore();
@@ -157,7 +159,21 @@ describe("Event security", () => {
 
     const db = getFirestore(myAuth);
     const testEvent = db.doc(eventPath);
-    await firebase.assertSucceeds(testEvent.set({
+    await firebase.assertSucceeds(testEvent.update({
+      totalAllowed: 110
+    }));
+  });
+
+  it("Doesn't allow a user to update unallowed field on an event", async() => {
+    const admin = getAdminFirestore();
+    await admin.doc(eventPath).set({
+      totalAllowed: 100,
+      totalRegistered: 0,
+    });
+
+    const db = getFirestore(myAuth);
+    const testEvent = db.doc(eventPath);
+    await firebase.assertFails(testEvent.update({
       totalAllowed: 110
     }));
   });
@@ -172,27 +188,16 @@ describe("Event security", () => {
 
     const db = getFirestore(myAuth);
     const testEvent = db.doc(eventPath);
-    await firebase.assertFails(testEvent.set({
+    // const data = await testEvent.get();
+    // console.log(`Test event total allowed: \n ${data.data().totalAllowed}`);
+    await firebase.assertFails(testEvent.update({
       totalAllowed: 90
-    }));
-  });
-
-  it("Doesn't allow a user to update unallowed field on an event", async() => {
-    const admin = getAdminFirestore();
-    await admin.doc(eventPath).set({
-      totalAllowed: 100,
-      totalRegistered: 0,
-    });
-
-    const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
-    await firebase.assertFails(testEvent.set({
-      totalAllowed: 110
     }));
   });
 });
 
   /* Events registration & viewing security */
+/* --------------------------------------------------------------------------*/
 describe("Event registration security", () => {
   it("Allows a user to register for an event only if updating registration count", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
@@ -203,15 +208,93 @@ describe("Event registration security", () => {
     });
 
     const db = getFirestore(myAuth);
-    const testEvent = db.doc(eventPath);
     const testMember = db.doc(memberPath);
+    const testEvent = db.doc(eventPath);
+
     const batch = db.batch();
     batch.set(testMember, {
       registeredAt: timestamp
     });
     batch.update(testEvent, {
       totalRegistered: firebase.firestore.FieldValue.increment(1),
-      updatedAt: timestamp
+      registrationUpdatedAt: timestamp
+    });
+    await firebase.assertSucceeds(batch.commit());
+  });
+
+  it("Allows a user to *un*register for an event only if updating registration count", async() => {
+    const memberPath = `${eventPath}/members/${myId}`;
+    const admin = getAdminFirestore();
+    let date = new Date(timestamp);
+    await admin.doc(eventPath).set({
+      totalAllowed: 100,
+      totalRegistered: 2,
+      adminIds: [theirId, "mod_123"],
+      registrationUpdatedAt: date.setDate(date.getDate() - 1)
+    });
+    await admin.doc(memberPath).set({
+      registeredAt: timestamp
+    });
+
+    const db = getFirestore(myAuth);
+    const testMember = db.doc(memberPath);
+    const testEvent = db.doc(eventPath);
+    const batch = db.batch();
+    batch.delete(testMember);
+    batch.update(testEvent, {
+      totalRegistered: firebase.firestore.FieldValue.increment(-1),
+      registrationUpdatedAt: timestamp
+    });
+    await firebase.assertSucceeds(batch.commit());
+  });
+
+  it("Doesn't allow a user to register if the registration is full", async() => {
+    const memberPath = `${eventPath}/members/${myId}`;
+    const admin = getAdminFirestore();
+    let date = new Date(timestamp);
+    await admin.doc(eventPath).set({
+      totalAllowed: 100,
+      totalRegistered: 100,
+    });
+
+    const db = getFirestore(myAuth);
+    const testMember = db.doc(memberPath);
+    const testEvent = db.doc(eventPath);
+
+    const batch = db.batch();
+    batch.set(testMember, {
+      registeredAt: timestamp
+    });
+    batch.update(testEvent, {
+      totalRegistered: firebase.firestore.FieldValue.increment(1),
+      registrationUpdatedAt: timestamp
+    });
+
+    await firebase.assertFails(batch.commit());
+  });
+
+  it("Allows a moderator to remove a member from an event", async() => {
+    const memberPath = `${eventPath}/members/${theirId}`;
+    const admin = getAdminFirestore();
+    let date = new Date(timestamp);
+    await admin.doc(eventPath).set({
+      adminIds: [myId, "dummy_mod_123"],
+      totalAllowed: 100,
+      totalRegistered: 2,
+      registrationUpdatedAt: date.setDate(date.getDate() - 1)
+    });
+    await admin.doc(memberPath).set({
+      registeredAt: timestamp
+    });
+
+    const db = getFirestore(myAuth);
+    const testMember = db.doc(memberPath);
+    const testEvent = db.doc(eventPath);
+    const batch = db.batch();
+    batch.delete(testMember);
+    batch.update(testEvent, {
+      totalRegistered: firebase.firestore.FieldValue.increment(-1),
+      registrationUpdatedAt: timestamp
     });
     await firebase.assertSucceeds(batch.commit());
   });
@@ -244,33 +327,6 @@ describe("Event registration security", () => {
     }));
   });
 
-  /* This isn't working! Whyyyy */
-  // it.only("Allows a user to unregister for an event only if updating registration count", async() => {
-  //   const memberPath = `${eventPath}/members/${myId}`;
-  //   const admin = getAdminFirestore();
-  //   let date = new Date(timestamp);
-  //   await admin.doc(eventPath).set({
-  //     totalAllowed: 100,
-  //     totalRegistered: 2,
-  //     adminIds: [theirId, "mod_123"],
-  //     updatedAt: date.setDate(date.getDate() - 1)
-  //   });
-  //   await admin.doc(memberPath).set({
-  //     registeredAt: timestamp
-  //   });
-
-  //   const db = getFirestore(myAuth);
-  //   const testMember = db.doc(memberPath);
-  //   const testEvent = db.doc(eventPath);
-  //   const batch = db.batch();
-  //   batch.delete(testMember);
-  //   batch.set(testEvent, {
-  //     totalRegistered: firebase.firestore.FieldValue.increment(-1),
-  //     updatedAt: timestamp
-  //   });
-  //   await firebase.assertSucceeds(batch.commit());
-  // });
-
   it("Allows a user to edit their own event registration", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
     const admin = getAdminFirestore();
@@ -280,8 +336,8 @@ describe("Event registration security", () => {
     });
 
     const db = getFirestore(myAuth);
-    const testDoc = db.doc(memberPath);
-    await firebase.assertSucceeds(testDoc.update({content: "after"}));
+    const testMember = db.doc(memberPath);
+    await firebase.assertSucceeds(testMember.update({content: "after"}));
   });
 
   it("Doesn't allow a user to edit somebody else's event registration", async() => {
@@ -314,9 +370,8 @@ describe("Event registration security", () => {
     const memberPath = `${eventPath}/members/${theirId}`;
     const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
-      content: "before",
       adminIds: [myId, "dummy_mod_123"],
-      updatedAt: timestamp
+      registrationUpdatedAt: timestamp
     });
     await admin.doc(memberPath).set({
       content: "before",
@@ -328,30 +383,22 @@ describe("Event registration security", () => {
     await firebase.assertSucceeds(testDoc.update({content: "after"}));
   });
 
-  it("Allows a moderator to remove a member from an event", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
+  it("Allows a moderator to get the list of users on an event", async() => {
     const admin = getAdminFirestore();
-    let date = new Date(timestamp);
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
-      totalAllowed: 100,
-      totalRegistered: 2,
-      updatedAt: date.setDate(date.getDate() - 1)
-    });
-    await admin.doc(memberPath).set({
-      registeredAt: timestamp
+      registrationUpdatedAt: timestamp
     });
 
     const db = getFirestore(myAuth);
-    const testMember = db.doc(memberPath);
-    const testEvent = db.doc(eventPath);
-    const batch = db.batch();
-    batch.delete(testMember);
-    batch.update(testEvent, {
-      totalRegistered: firebase.firestore.FieldValue.increment(-1),
-      updatedAt: timestamp
-    });
-    await firebase.assertSucceeds(batch.commit());
+    const testEventMembers = db.doc(eventPath).collection("members");
+    await firebase.assertSucceeds(testEventMembers.get());
+  });
+
+  it("Doesn't allow a non-moderator to get the list of users on an event", async() => {
+    const db = getFirestore(myAuth);
+    const testEventMembers = db.doc(eventPath).collection("members");
+    await firebase.assertFails(testEventMembers.get());
   });
 });
 

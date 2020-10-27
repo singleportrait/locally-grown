@@ -23,44 +23,50 @@ service cloud.firestore {
       }
 
       function registrationIncrementsTotalRegistered() {
-        let newCount = request.resource.data.totalRegistered;
-        let oldCount = resource.data.totalRegistered;
-        return ((newCount > oldCount) || (newCount < oldCount)) && newCount >= 0;
+        let title = debug("** Check that registration increments total registered if non-mod is updating **");
+        let debugNewCount = debug("** newCount: **");
+        let newCount = debug(request.resource.data.totalRegistered);
+
+        let debugOldCount = debug("** oldCount: **");
+        let oldCount = debug(resource.data.totalRegistered);
+
+        let debugIsAboveZero = debug("** newCount >= 0 ? **");
+        let isAboveZero = debug(newCount >=0);
+
+        return ((newCount > oldCount) || (newCount < oldCount)) && isAboveZero;
       }
 
-      function newAllowedTotalIsGreaterThanCurrentTotalRegistered() {
-        let consoleMessage = debug("** Here is the request events info when updating database **");
-        let unused = debug(request);
-        return (request.resource.data.totalAllowed >= resource.data.totalRegistered);
+      function newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered() {
+        let result = debug("** newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered? **");
+        return debug(request.resource.data.totalAllowed >= resource.data.totalRegistered);
+      }
+
+      function newTotalRegisteredIsLessOrEqualToTotalAllowed() {
+        return request.resource.data.totalRegistered <= resource.data.totalAllowed;
       }
 
       allow read: if true;
       allow update: if ((userIsEventMod() ||
-        (editOnlyChangesFields(["totalRegistered", "updatedAt"]) && registrationIncrementsTotalRegistered())) &&
-        newAllowedTotalIsGreaterThanCurrentTotalRegistered());
+        (editOnlyChangesFields(["totalRegistered", "registrationUpdatedAt"]) && registrationIncrementsTotalRegistered()) && newTotalRegisteredIsLessOrEqualToTotalAllowed()) &&
+        newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered());
 
       match /members/{userId} {
-        function memberHasAllRequiredFields() {
-          let consoleMessage = debug("** Here is the request members info when updating database **");
-          let unused = debug(request);
+        function memberHasRegisteredAt() {
           return (request.resource.data.keys()
             .hasAll(["registeredAt"]));
         }
 
-        function updateEventUpdateTimestamp() {
-          let consoleMessage = debug("** Here is the request members info when updating database **");
-          let unused = debug(request);
+        function updatedRegistrationUpdatedAtTimestamp() {
           return getAfter(/databases/$(database)/documents/events/$(eventId))
-           .data.updatedAt == request.time;
+           .data.registrationUpdatedAt == request.time;
         }
 
-        allow read, update: if (request.auth != null && request.auth.uid == userId) ||
-          userIsEventMod();
+        allow read, update: if isAuthed(userId) || userIsEventMod();
         allow create: if (isAuthed(userId) || userIsEventMod()) &&
-          memberHasAllRequiredFields() &&
-          updateEventUpdateTimestamp();
+          memberHasRegisteredAt() &&
+          updatedRegistrationUpdatedAtTimestamp();
         allow delete: if (isAuthed(userId) || userIsEventMod()) &&
-          updateEventUpdateTimestamp();
+          updatedRegistrationUpdatedAtTimestamp();
       }
 
       // Something like this; pseudocode at this point !
