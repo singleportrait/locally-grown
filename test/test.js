@@ -26,6 +26,8 @@ function getAdminFirestore() {
   return firebase.initializeAdminApp({projectId: MY_PROJECT_ID}).firestore();
 }
 
+const admin = getAdminFirestore();
+
 const noAuthDB = getFirestore(null);
 const myAuthDB = getFirestore(myAuth);
 
@@ -72,7 +74,6 @@ describe("Tutorial tests", () => {
   });
 
   it("Can read a single public post", async() => {
-    const admin = getAdminFirestore();
     const postId = "public_post";
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: theirId, visibility: "public"});
@@ -82,7 +83,6 @@ describe("Tutorial tests", () => {
   });
 
   it("Can read a private post belonging to the user", async() => {
-    const admin = getAdminFirestore();
     const postId = "private_post";
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: myId, visibility: "private"});
@@ -92,7 +92,6 @@ describe("Tutorial tests", () => {
   });
 
   it("Can't read a private post belonging to another user", async() => {
-    const admin = getAdminFirestore();
     const postId = "private_post";
     const setupDoc = admin.collection("posts").doc(postId);
     await setupDoc.set({authorId: theirId, visibility: "private"});
@@ -108,7 +107,6 @@ describe("Tutorial tests", () => {
 /* User security */
 describe("User security", () => {
   it("Allows a user to edit their own user info", async() => {
-    const admin = getAdminFirestore();
     await admin.collection("users").doc(myId).set({
       content: "before"
     });
@@ -118,7 +116,6 @@ describe("User security", () => {
   });
 
   it("Doesn't allow a user to edit any other users' info", async() => {
-    const admin = getAdminFirestore();
     await admin.collection("users").doc(theirId).set({
       content: "before"
     });
@@ -138,14 +135,12 @@ describe("Event security", () => {
 
   it("Allows a user to view an event", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
-    const admin = getAdminFirestore();
 
     const testEvent = myAuthDB.doc(eventPath);
     await firebase.assertSucceeds(testEvent.get());
   });
 
   it("Allows a moderator to update any field on an event", async() => {
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -159,7 +154,6 @@ describe("Event security", () => {
   });
 
   it("Doesn't allow a user to update unallowed field on an event", async() => {
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -172,7 +166,6 @@ describe("Event security", () => {
   });
 
   it("Doesn't allow a moderator to change the total viewers to less than the currently registered viewers", async() => {
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 99,
@@ -193,7 +186,6 @@ describe("Event security", () => {
 describe("Event registration security", () => {
   it("Allows a user to register for an event only if updating registration count", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -289,7 +281,6 @@ describe("Event registration security", () => {
 
   it("Doesn't allow a user to register for an event without updating registration count & timestamp", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -315,7 +306,6 @@ describe("Event registration security", () => {
 
   it("Allows a user to edit their own event registration", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
-    const admin = getAdminFirestore();
     await admin.doc(memberPath).set({
       content: "before",
     });
@@ -348,7 +338,6 @@ describe("Event registration security", () => {
 
   it("Allows a moderator to edit somebody else's event registration", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
@@ -363,7 +352,6 @@ describe("Event registration security", () => {
   });
 
   it("Allows a moderator to get the list of users on an event", async() => {
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
@@ -384,7 +372,6 @@ describe("Event registration security", () => {
 describe("Event registered-only info", () => {
   it("Allows registered viewers to see registered-only info", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
-    const admin = getAdminFirestore();
     await admin.doc(memberPath).set({
       registeredAt: timestamp
     });
@@ -395,7 +382,6 @@ describe("Event registered-only info", () => {
 
   it("Allows moderators to see registered-only info", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
@@ -414,7 +400,6 @@ describe("Event registered-only info", () => {
   });
 
   it("Allows moderators to update registered-only info", async() => {
-    const admin = getAdminFirestore();
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
