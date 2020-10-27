@@ -12,7 +12,10 @@ const myAuth = {
 
 const eventId = "event_123";
 const eventPath = `events/${eventId}`;
+
 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+let date = new Date(timestamp);
+const yesterday = date.setDate(date.getDate() - 1);
 
 function getFirestore(auth) {
   return firebase.initializeTestApp({projectId: MY_PROJECT_ID, auth: auth}).firestore();
@@ -194,6 +197,7 @@ describe("Event registration security", () => {
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
+      registrationUpdatedAt: yesterday
     });
 
     const testMember = myAuthDB.doc(memberPath);
@@ -213,12 +217,11 @@ describe("Event registration security", () => {
   it("Allows a user to *un*register for an event only if updating registration count", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
     const admin = getAdminFirestore();
-    let date = new Date(timestamp);
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 2,
       adminIds: [theirId, "mod_123"],
-      registrationUpdatedAt: date.setDate(date.getDate() - 1)
+      registrationUpdatedAt: yesterday
     });
     await admin.doc(memberPath).set({
       registeredAt: timestamp
@@ -239,7 +242,6 @@ describe("Event registration security", () => {
   it("Doesn't allow a user to register if the registration is full", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
     const admin = getAdminFirestore();
-    let date = new Date(timestamp);
     await admin.doc(eventPath).set({
       totalAllowed: 100,
       totalRegistered: 100,
@@ -263,12 +265,11 @@ describe("Event registration security", () => {
   it("Allows a moderator to remove a member from an event", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
     const admin = getAdminFirestore();
-    let date = new Date(timestamp);
     await admin.doc(eventPath).set({
       adminIds: [myId, "dummy_mod_123"],
       totalAllowed: 100,
       totalRegistered: 2,
-      registrationUpdatedAt: date.setDate(date.getDate() - 1)
+      registrationUpdatedAt: yesterday
     });
     await admin.doc(memberPath).set({
       registeredAt: timestamp
@@ -317,7 +318,6 @@ describe("Event registration security", () => {
     const admin = getAdminFirestore();
     await admin.doc(memberPath).set({
       content: "before",
-      registeredAt: Date.now()
     });
 
     const testMember = myAuthDB.doc(memberPath);
@@ -326,10 +326,9 @@ describe("Event registration security", () => {
 
   it("Doesn't allow a user to edit somebody else's event registration", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
-    const admin = getAdminFirestore();
     await admin.doc(memberPath).set({
       content: "before",
-      registeredAt: Date.now()
+      registeredAt: timestamp
     });
 
     const testMember = myAuthDB.doc(memberPath);
@@ -338,10 +337,9 @@ describe("Event registration security", () => {
 
   it("Doesn't allow a user to view somebody else's event registration", async() => {
     const memberPath = `${eventPath}/members/${theirId}`;
-    const admin = getAdminFirestore();
     await admin.doc(memberPath).set({
       content: "before",
-      registeredAt: Date.now()
+      registeredAt: timestamp
     });
 
     const testMember = myAuthDB.doc(memberPath);

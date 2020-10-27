@@ -57,8 +57,11 @@ service cloud.firestore {
         }
 
         function updatedRegistrationUpdatedAtTimestamp() {
-          return getAfter(/databases/$(database)/documents/events/$(eventId))
+          let oldUpdatedTimeIsDifferent = get(/databases/$(database)/documents/events/$(eventId))
+            .data.registrationUpdatedAt != request.time;
+          let newUpdatedTimeIsSame = getAfter(/databases/$(database)/documents/events/$(eventId))
            .data.registrationUpdatedAt == request.time;
+          return oldUpdatedTimeIsDifferent && newUpdatedTimeIsSame;
         }
 
         allow read, update: if isAuthed(userId) || userIsEventMod();
