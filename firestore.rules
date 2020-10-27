@@ -62,6 +62,11 @@ service cloud.firestore {
         allow delete: if (isAuthed(userId) || userIsEventMod()) &&
           updateEventUpdateTimestamp();
       }
+
+      // Something like this; pseudocode at this point !
+      match /registeredInfo/{document=**} {
+        allow read: if exists(/databases/$(database)/documents/events/$(eventId)/users/$(request.auth.uid));
+      }
     }
 
     match /readonly/{docId} {
