@@ -44,9 +44,11 @@ function AuthTest(props) {
   // Steps for Firestore:
   // - Save or update user on login
   // - Check if event is sold out
+  //
   // - Check if user is registered to event
   // - - If find userId in event.members
   // - - Security rule that only allows user to get `videoUrl` if their userId is in event.members
+  //
   // - Register for event
   // - - Add userId to event.members
   // - - Add event to user.events
@@ -54,13 +56,16 @@ function AuthTest(props) {
   // - - Security rule that only allows user to view or modify their own userId in users and event.members
   // - - - They should also be able to modify event.total (if needed?)
   // - - Security rule that only allows user to read their own userId in users and event.members
+  //
   // - Unregister for event
   // - - Remove userId to event.members
   // - - Remove event from user.events
   // - - Same security rules as for register
+  //
   // - Admin view
   // - - Security rules that allow users with `role: admin` to read all event.members
   // - - Security rules that allow users with `role: admin` to modify event.members
+  //
   // - On logout
   // - - Be sure to reset all data saved to the state
 

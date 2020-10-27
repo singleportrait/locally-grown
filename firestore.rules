@@ -1,16 +1,69 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAuthed(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
     match /users/{userId} {
-      allow read, update, delete: if (request.auth != null && request.auth.uid == userId);
-      allow create: if (request.auth != null && request.auth.uid == userId);
+      allow read, update, delete, create: if (request.auth != null && request.auth.uid == userId);
     }
-    match /events/{event}/members/{userId} {
-    	allow read, update, delete, create: if (request.auth != null && request.auth.uid == userId);
+    match /events/{eventId} {
+      function userIsEventMod() {
+        let adminIds = get(/databases/$(database)/documents/events/$(eventId)).data.adminIds;
+        return (request.auth.uid in(adminIds));
+      }
+
+      function editOnlyChangesFields(allowedFields) {
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        return affectedKeys.hasOnly(allowedFields);
+      }
+
+      function registrationIncrementsTotalRegistered() {
+        let newCount = request.resource.data.totalRegistered;
+        let oldCount = resource.data.totalRegistered;
+        return ((newCount > oldCount) || (newCount < oldCount)) && newCount >= 0;
+      }
+
+      function newAllowedTotalIsGreaterThanCurrentTotalRegistered() {
+        let consoleMessage = debug("** Here is the request events info when updating database **");
+        let unused = debug(request);
+        return (request.resource.data.totalAllowed >= resource.data.totalRegistered);
+      }
+
+      allow read: if true;
+      allow update: if ((userIsEventMod() ||
+        (editOnlyChangesFields(["totalRegistered", "updatedAt"]) && registrationIncrementsTotalRegistered())) &&
+        newAllowedTotalIsGreaterThanCurrentTotalRegistered());
+
+      match /members/{userId} {
+        function memberHasAllRequiredFields() {
+          let consoleMessage = debug("** Here is the request members info when updating database **");
+          let unused = debug(request);
+          return (request.resource.data.keys()
+            .hasAll(["registeredAt"]));
+        }
+
+        function updateEventUpdateTimestamp() {
+          let consoleMessage = debug("** Here is the request members info when updating database **");
+          let unused = debug(request);
+          return getAfter(/databases/$(database)/documents/events/$(eventId))
+           .data.updatedAt == request.time;
+        }
+
+        allow read, update: if (request.auth != null && request.auth.uid == userId) ||
+          userIsEventMod();
+        allow create: if (isAuthed(userId) || userIsEventMod()) &&
+          memberHasAllRequiredFields() &&
+          updateEventUpdateTimestamp();
+        allow delete: if (isAuthed(userId) || userIsEventMod()) &&
+          updateEventUpdateTimestamp();
+      }
     }
+
     match /readonly/{docId} {
       allow read: if true;
       allow write: if false;
@@ -18,6 +71,7 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if (resource.data.visibility == "public") ||
         (resource.data.authorId == request.auth.uid);
+      allow update: if (resource.data.authorId == request.auth.uid);
     }
   }
 }

@@ -75,7 +75,7 @@ export const registerForEvent = async (event, uid) => {
       try {
         await memberRef.set({
           registered: true,
-          created: firebase.firestore.FieldValue.serverTimestamp(),
+          registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
       } catch (error) {
         console.log("Error creating member in event: \n", error);
