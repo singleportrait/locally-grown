@@ -23,3 +23,11 @@ if (process.env.NODE_ENV === 'development') {
 export default firebase;
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+
+if (window.location.hostname === "localhost") {
+  console.log("Setting local emulator");
+  firestore.settings({
+    host: "localhost:8080",
+    ssl: false
+  });
+}
