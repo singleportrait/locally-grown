@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
-import { generateUserDocument, registerForEvent, unregisterForEvent, getEventRegistration } from './firebaseFirestoreFunctions';
+import { generateUserDocument } from './firestore/users';
+import { registerForEvent, unregisterForEvent, getEventRegistration } from './firestore/events';
 
 import { UserContext } from "./providers/UserProvider";
 
