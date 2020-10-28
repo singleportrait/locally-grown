@@ -105,7 +105,7 @@ function Registration(props) {
     if (!screening || !user) return;
     console.log("Registering in component...");
     const registration = await registerForScreening(screening.id, user.uid)
-      .catch(e => setError(`Error registering because: ${e.code}`));
+      .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
     setScreening(await getScreening(screening.id));
   }
@@ -114,7 +114,7 @@ function Registration(props) {
     if (!screening || !user) return;
     console.log("Unregistering in component...");
     const registration = await unregisterForScreening(screening.id, user.uid)
-      .catch(e => setError(`Error unregistering because: ${e.code}`));
+      .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
     setScreening(await getScreening(screening.id));
   }

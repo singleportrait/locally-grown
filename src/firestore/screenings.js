@@ -14,7 +14,7 @@ export const makeTestHotIronsScreening = async (screeningId) => {
         registrationUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     } catch (error) {
-      throw new Error("Error creating screening", error);
+      throw new Error(`Error creating screening: ${error}`);
     }
   }
 
@@ -37,7 +37,7 @@ export const getScreening = async (screeningId) => {
       return null;
     }
   } catch (error) {
-    throw new Error("Error fetching screening", error);
+    throw new Error(`Error fetching screening: ${error}`);
   }
 }
 
@@ -57,7 +57,7 @@ export const getScreeningRegistration = async (screeningId, uid) => {
       return null;
     }
   } catch (error) {
-    throw new Error("Error fetching registration", error);
+    throw new Error(`Error fetching registration: ${error}`);
   }
 }
 
@@ -97,7 +97,15 @@ export const registerForScreening = async (screeningId, uid) => {
       }
     });
   } catch (error) {
-    throw new Error("Transaction failed", error);
+    // TODO: More structured checks depending on error type, especially for
+    // handling Firebase errors
+    // `error.code` comes from Firestore's response if it fails server-side
+    // `error.message` comes if we set it ourselves in the `try` block
+    if (error.name === "FirebaseError") {
+      throw new Error(`Transaction failed because ${error.code}`);
+    } else {
+      throw new Error(`Transaction failed because ${error.message}`);
+    }
   }
 
   return getScreeningRegistration(screeningId, uid);
@@ -133,7 +141,11 @@ export const unregisterForScreening = async (screeningId, uid) => {
       }
     });
   } catch (error) {
-    throw new Error("Transaction failed", error);
+    if (error.name === "FirebaseError") {
+      throw new Error(`Transaction failed because ${error.code}`);
+    } else {
+      throw new Error(`Transaction failed because ${error.message}`);
+    }
   }
   return getScreeningRegistration(screeningId, uid);
 }
