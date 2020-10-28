@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
 import { generateUserDocument } from './firestore/users';
-import { makeTestHotIronsEvent, getEvent, getEventRegistration, registerForEvent, unregisterForEvent } from './firestore/events';
+import { makeTestHotIronsScreening, getScreening, getScreeningRegistration, registerForScreening, unregisterForScreening } from './firestore/screenings';
 
 import { UserContext } from "./providers/UserProvider";
 
@@ -45,7 +45,7 @@ const handleSignin = (authResult) => {
 function Event(props) {
   const { user } = useContext(UserContext);
   const [error, setError] = useState();
-  const eventId = "hot-irons";
+  const screeningId = "hot-irons";
 
   /* Check to see if user exists in Firestore (not Auth) */
   useEffect(() => {
@@ -58,71 +58,71 @@ function Event(props) {
     generateUserDocument(user);
   }, [user]);
 
-  /* Check to see if event exists */
-  const [event, setEvent] = useState(null);
+  /* Check to see if screening exists */
+  const [screening, setScreening] = useState(null);
   useEffect(() => {
-    if (event) return;
+    if (screening) return;
 
-    async function checkEvent() {
+    async function checkScreening() {
       try {
-        console.log("Checking event...");
-        setEvent(await getEvent(eventId));
+        console.log("Checking screening...");
+        setScreening(await getScreening(screeningId));
       } catch (error) {
-        setError("Couldn't get event");
+        setError("Couldn't get screening");
       }
     }
 
-    checkEvent();
-  }, [event]);
+    checkScreening();
+  }, [screening]);
 
-  /* Check to see if user is registered, on load and if event changes */
+  /* Check to see if user is registered, on load and if screening changes */
   const [registration, setRegistration] = useState(null);
   useEffect(() => {
-    if (!event || !user) return;
+    if (!screening || !user) return;
 
     async function checkRegistration() {
       try {
         console.log("Checking registration...");
-        setRegistration(await getEventRegistration(event.id, user.uid));
+        setRegistration(await getScreeningRegistration(screening.id, user.uid));
       } catch (error) {
         console.log("Error checking registration", error);
         setError("Error checking registration");
       }
     }
     checkRegistration();
-  }, [user, event]);
+  }, [user, screening]);
 
   /* User interactions */
-  const makeEvent = async () => {
-    setEvent(await makeTestHotIronsEvent(eventId));
+  const makeScreening = async () => {
+    setScreening(await makeTestHotIronsScreening(screeningId));
   }
 
-  /* Issue: Because the below necessarily updates the event to get the latest
-   * registered event total, it causes the registration useEffect block to
+  /* Issue: Because the below necessarily updates the screening to get the latest
+   * registered screening total, it causes the registration useEffect block to
    * be run twice, once in here and then above. However, if we don't setRegistration
    * here, it's a bit confusing—though, not necessarily incorrect. */
   const register = async () => {
-    if (!event || !user) return;
+    if (!screening || !user) return;
     console.log("Registering in component...");
-    const registration = await registerForEvent(event.id, user.uid)
+    const registration = await registerForScreening(screening.id, user.uid)
       .catch(e => setError(`Error registering because: ${e.code}`));
     setRegistration(registration);
-    setEvent(await getEvent(event.id));
+    setScreening(await getScreening(screening.id));
   }
 
   const unregister = async () => {
-    if (!event || !user) return;
+    if (!screening || !user) return;
     console.log("Unregistering in component...");
-    const registration = await unregisterForEvent(event.id, user.uid)
+    const registration = await unregisterForScreening(screening.id, user.uid)
       .catch(e => setError(`Error unregistering because: ${e.code}`));
     setRegistration(registration);
-    setEvent(await getEvent(event.id));
+    setScreening(await getScreening(screening.id));
   }
 
   return (
     <>
       <Helmet>
-        <title>Event Auth & Registration</title>
+        <title>Screening Auth & Registration</title>
       </Helmet>
       <div style={{padding: '1rem'}}>
         <h1>Auth with Context & Firestore</h1>
@@ -139,15 +139,15 @@ function Event(props) {
             <br />
           </>
         }
-        { !event &&
-          <p style={linkStyle} onClick={() => makeEvent()}>Make test event</p>
+        { !screening &&
+          <p style={linkStyle} onClick={() => makeScreening()}>Make test screening</p>
         }
-        { event &&
+        { screening &&
           <>
-            <h4>Got the event</h4>
-            <p>Event name: {event.id}</p>
-            <p>Total allowed: {event.totalAllowed}</p>
-            <p>Total registered: {event.totalRegistered}</p>
+            <h4>Got the screening</h4>
+            <p>Screening name: {screening.id}</p>
+            <p>Total allowed: {screening.totalAllowed}</p>
+            <p>Total registered: {screening.totalRegistered}</p>
             { user &&
               <>
                 <hr />
