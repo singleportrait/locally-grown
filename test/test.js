@@ -10,6 +10,12 @@ const myAuth = {
   email: "user_12345@gmail.com"
 };
 
+const godAuth = {
+  uid: modId,
+  email: "mod_user_123@gmail.com",
+  roles: ["godMod"]
+};
+
 const eventId = "event_123";
 const eventPath = `events/${eventId}`;
 
@@ -30,6 +36,7 @@ const admin = getAdminFirestore();
 
 const noAuthDB = getFirestore(null);
 const myAuthDB = getFirestore(myAuth);
+const godAuthDB = getFirestore(godAuth);
 
 /* Clear Firestore before running each test */
 beforeEach(async() => {
@@ -114,12 +121,36 @@ describe("Event security", () => {
       totalAllowed: 90
     }));
   });
+
+  it("Allows a ~~god mod~~ (user for now) to create an event with all required fields", async() => {
+    // const testEvent = godAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
+    await firebase.assertSucceeds(testEvent.set({
+      totalAllowed: 100,
+      totalRegistered: 0,
+      registrationUpdatedAt: timestamp,
+      adminIds: []
+    }));
+  });
+
+  // it("Doesn't allow a user to create an event", async() => {
+  // });
+
+  it("Doesn't allow a ~~god mod~~ (user for now) with missing fields to create an event", async() => {
+    // const testEvent = godAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(eventPath);
+    await firebase.assertFails(testEvent.set({
+      totalAllowed: 100,
+      totalRegistered: 0,
+      registrationUpdatedAt: timestamp
+    }));
+  });
 });
 
   /* Events registration & viewing security */
 /* --------------------------------------------------------------------------*/
 describe("Event registration security", () => {
-  it("Allows a user to register for an event only if updating registration count", async() => {
+  it("Allows a user to register for an event only if updating registration info", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
     await admin.doc(eventPath).set({
       totalAllowed: 100,
@@ -131,17 +162,17 @@ describe("Event registration security", () => {
     const testEvent = myAuthDB.doc(eventPath);
 
     const batch = myAuthDB.batch();
-    batch.set(testMember, {
-      registeredAt: timestamp
-    });
     batch.update(testEvent, {
       totalRegistered: firebase.firestore.FieldValue.increment(1),
       registrationUpdatedAt: timestamp
     });
+    batch.set(testMember, {
+      registeredAt: timestamp
+    });
     await firebase.assertSucceeds(batch.commit());
   });
 
-  it("Allows a user to *un*register for an event only if updating registration count", async() => {
+  it("Allows a user to unregister for an event only if updating registration info", async() => {
     const memberPath = `${eventPath}/members/${myId}`;
     const admin = getAdminFirestore();
     await admin.doc(eventPath).set({

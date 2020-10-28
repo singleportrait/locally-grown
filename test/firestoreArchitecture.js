@@ -9,8 +9,8 @@
 
 "events" { // Collection
   "hot-irons": {
-    allowedViewers: 100,
-    registeredViewers: 0,
+    totalAllowed: 100,
+    totalRegistered: 0,
     registrationUpdatedAt: Date.lastUpdated() // For tracking when users update the registeredViewers
     adminIds: ["mod_user_123", "mod_user_456"],
     "registeredInfo": { // Sub-collection; you have to be registered to view this
