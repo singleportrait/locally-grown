@@ -164,7 +164,14 @@ function Registration(props) {
                 </>
                 }
                 { !registration &&
-                  <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
+                  <>
+                    { screening.totalAllowed > screening.totalRegistered &&
+                      <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
+                    }
+                    { screening.totalAllowed === screening.totalRegistered &&
+                      <h4>Sorry, this event is sold out!</h4>
+                    }
+                  </>
                 }
               </>
             }
