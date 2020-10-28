@@ -42,7 +42,7 @@ const handleSignin = (authResult) => {
   }
 };
 
-function Event(props) {
+function Registration(props) {
   const { user } = useContext(UserContext);
   const [error, setError] = useState();
   const screeningId = "hot-irons";
@@ -182,4 +182,4 @@ function Event(props) {
   );
 }
 
-export default Event;
+export default Registration;

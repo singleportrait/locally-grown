@@ -20,7 +20,7 @@ import LowBatteryTest from './components/LowBatteryTest';
 import Screenings from './Screenings';
 
 import AuthTest from './AuthTest';
-import Event from './Event';
+import Registration from './Registration';
 
 import styled from '@emotion/styled';
 
@@ -156,7 +156,7 @@ class AppContents extends Component {
                 <AuthTest {...props} />
               )} />
               <Route key={"registration"} path={"/registration"} render={props => (
-                <Event {...props} />
+                <Registration {...props} />
               )} />
 
               <Route path="/screenings">
