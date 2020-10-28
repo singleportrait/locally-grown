@@ -82,6 +82,10 @@ export const registerForScreening = async (screeningId, uid) => {
       if (!screeningDoc.exists) { throw new Error("Screening doesn't exist!"); }
 
       // TODO: Add logic to check that current totalAllowed is greater than totalRegistered
+      const screeningData = screeningDoc.data();
+      if (screeningData.totalRegistered + 1 >= screeningData.totalAllowed) {
+        throw new Error("this event is already full!");
+      }
 
       if (!memberDoc.exists) {
         console.log("Craeting memeber");
