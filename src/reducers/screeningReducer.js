@@ -1,18 +1,18 @@
-import { SET_EVENTS, SET_EVENTS_ERROR } from '../actions/eventTypes';
+import { SET_SCREENINGS, SET_SCREENINGS_ERROR } from '../actions/screeningTypes';
 
 const initialState = {
-  events: [],
+  screenings: [],
   error: null
 }
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case SET_EVENTS:
+    case SET_SCREENINGS:
       return {
         ...state,
-        events: action.events
+        screenings: action.screenings
       }
-    case SET_EVENTS_ERROR:
+    case SET_SCREENINGS_ERROR:
       return {
         ...state,
         error: action.error

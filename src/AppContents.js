@@ -9,7 +9,7 @@ import { isIOS } from './helpers/utils';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
-import { initializeEvents } from './operations/eventOperations';
+import { initializeScreenings } from './operations/screeningOperations';
 
 import LoadingScreen from './components/LoadingScreen';
 import Channel from './Channel';
@@ -58,7 +58,7 @@ class AppContents extends Component {
   componentDidMount() {
     this.props.initializeSession();
     this.props.initializeChannels();
-    this.props.initializeEvents();
+    this.props.initializeScreenings();
   }
 
   toggleTooltip() {
@@ -160,7 +160,7 @@ class AppContents extends Component {
               )} />
 
               <Route path="/screenings">
-                <Screenings screenings={this.props.events.events} />
+                <Screenings screenings={this.props.screenings.screenings} />
               </Route>
 
               { this.props.channels.carouselChannels.map((channel, i) => // Tracking for carousel channels
@@ -247,7 +247,7 @@ class AppContents extends Component {
 const mapStateToProps = state => ({
   channels: state.channels,
   session: state.session,
-  events: state.events,
+  screenings: state.screenings,
 });
 
-export default connect(mapStateToProps, { initializeSession, initializeChannels, initializeEvents })(AppContents);
+export default connect(mapStateToProps, { initializeSession, initializeChannels, initializeScreenings })(AppContents);
