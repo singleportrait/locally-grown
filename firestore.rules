@@ -16,9 +16,9 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, update, delete, create: if (request.auth != null && request.auth.uid == userId);
     }
-    match /events/{eventId} {
+    match /screenings/{screeningId} {
       function userIsEventMod() {
-        let adminIds = get(/databases/$(database)/documents/events/$(eventId)).data.adminIds;
+        let adminIds = get(/databases/$(database)/documents/screenings/$(screeningId)).data.adminIds;
         return (request.auth.uid in(adminIds));
       }
 
@@ -51,7 +51,7 @@ service cloud.firestore {
         return debug(request.resource.data.totalRegistered <= resource.data.totalAllowed);
       }
 
-      function eventHasAllRequiredFields() {
+      function screeningHasAllRequiredFields() {
         return (request.resource.data.keys()
           .hasAll([
             "totalAllowed",
@@ -66,8 +66,8 @@ service cloud.firestore {
       allow update: if ((userIsEventMod() ||
         (editOnlyChangesFields(["totalRegistered", "registrationUpdatedAt"]) && registrationIncrementsTotalRegistered()) && newTotalRegisteredIsLessOrEqualToTotalAllowed()) &&
         newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered());
-      allow create: if eventHasAllRequiredFields();
-      // allow create: if (isGodMod() && eventHasAllRequiredFields());
+      allow create: if screeningHasAllRequiredFields();
+      // allow create: if (isGodMod() && screeningHasAllRequiredFields());
 
       match /members/{userId} {
         function memberHasRegisteredAt() {
@@ -79,9 +79,9 @@ service cloud.firestore {
         }
 
         function updatedRegistrationUpdatedAtTimestamp() {
-          let oldUpdatedTimeIsDifferent = get(/databases/$(database)/documents/events/$(eventId))
+          let oldUpdatedTimeIsDifferent = get(/databases/$(database)/documents/screenings/$(screeningId))
             .data.registrationUpdatedAt != request.time;
-          let newUpdatedTimeIsSame = getAfter(/databases/$(database)/documents/events/$(eventId))
+          let newUpdatedTimeIsSame = getAfter(/databases/$(database)/documents/screenings/$(screeningId))
            .data.registrationUpdatedAt == request.time;
           let debugMessage = debug("** Comparing old and new timestamps **");
           return debug(oldUpdatedTimeIsDifferent) && debug(newUpdatedTimeIsSame);
@@ -98,7 +98,7 @@ service cloud.firestore {
       // Something like this; pseudocode at this point !
       match /registeredInfo/{document=**} {
         function isRegisteredMember() {
-          return exists(/databases/$(database)/documents/events/$(eventId)/members/$(request.auth.uid));
+          return exists(/databases/$(database)/documents/screenings/$(screeningId)/members/$(request.auth.uid));
         }
 
         allow read: if (isRegisteredMember() || userIsEventMod());

@@ -16,8 +16,8 @@ const godAuth = {
   roles: ["godMod"]
 };
 
-const eventId = "event_123";
-const eventPath = `events/${eventId}`;
+const screeningId = "screening_123";
+const screeningPath = `screenings/${screeningId}`;
 
 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 let date = new Date(timestamp);
@@ -70,61 +70,61 @@ describe("User security", () => {
 /* Events security */
 /* --------------------------------------------------------------------------*/
 describe("Event security", () => {
-  it("Allows anyone to view an event", async() => {
-    const testEvent = noAuthDB.doc(eventPath);
+  it("Allows anyone to view a screening", async() => {
+    const testEvent = noAuthDB.doc(screeningPath);
     await firebase.assertSucceeds(testEvent.get());
   });
 
-  it("Allows a user to view an event", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
+  it("Allows a user to view a screening", async() => {
+    const memberPath = `${screeningPath}/members/${theirId}`;
 
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     await firebase.assertSucceeds(testEvent.get());
   });
 
-  it("Allows a moderator to update any field on an event", async() => {
-    await admin.doc(eventPath).set({
+  it("Allows a moderator to update any field on a screening", async() => {
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
       adminIds: [myId, "dummy_mod_123"]
     });
 
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     await firebase.assertSucceeds(testEvent.update({
       totalAllowed: 110
     }));
   });
 
-  it("Doesn't allow a user to update unallowed field on an event", async() => {
-    await admin.doc(eventPath).set({
+  it("Doesn't allow a user to update unallowed field on a screening", async() => {
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
     });
 
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     await firebase.assertFails(testEvent.update({
       totalAllowed: 110
     }));
   });
 
   it("Doesn't allow a moderator to change the total viewers to less than the currently registered viewers", async() => {
-    await admin.doc(eventPath).set({
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 99,
       adminIds: [myId, "dummy_mod_123"]
     });
 
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     // const data = await testEvent.get();
-    // console.log(`Test event total allowed: \n ${data.data().totalAllowed}`);
+    // console.log(`Test screening total allowed: \n ${data.data().totalAllowed}`);
     await firebase.assertFails(testEvent.update({
       totalAllowed: 90
     }));
   });
 
-  it("Allows a ~~god mod~~ (user for now) to create an event with all required fields", async() => {
-    // const testEvent = godAuthDB.doc(eventPath);
-    const testEvent = myAuthDB.doc(eventPath);
+  it("Allows a ~~god mod~~ (user for now) to create a screening with all required fields", async() => {
+    // const testEvent = godAuthDB.doc(screeningPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     await firebase.assertSucceeds(testEvent.set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -133,12 +133,12 @@ describe("Event security", () => {
     }));
   });
 
-  // it("Doesn't allow a user to create an event", async() => {
+  // it("Doesn't allow a user to create a screening", async() => {
   // });
 
-  it("Doesn't allow a ~~god mod~~ (user for now) with missing fields to create an event", async() => {
-    // const testEvent = godAuthDB.doc(eventPath);
-    const testEvent = myAuthDB.doc(eventPath);
+  it("Doesn't allow a ~~god mod~~ (user for now) with missing fields to create a screening", async() => {
+    // const testEvent = godAuthDB.doc(screeningPath);
+    const testEvent = myAuthDB.doc(screeningPath);
     await firebase.assertFails(testEvent.set({
       totalAllowed: 100,
       totalRegistered: 0,
@@ -150,16 +150,16 @@ describe("Event security", () => {
   /* Events registration & viewing security */
 /* --------------------------------------------------------------------------*/
 describe("Event registration security", () => {
-  it("Allows a user to register for an event only if updating registration info", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
-    await admin.doc(eventPath).set({
+  it("Allows a user to register for a screening only if updating registration info", async() => {
+    const memberPath = `${screeningPath}/members/${myId}`;
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
       registrationUpdatedAt: yesterday
     });
 
     const testMember = myAuthDB.doc(memberPath);
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
 
     const batch = myAuthDB.batch();
     batch.update(testEvent, {
@@ -172,10 +172,10 @@ describe("Event registration security", () => {
     await firebase.assertSucceeds(batch.commit());
   });
 
-  it("Allows a user to unregister for an event only if updating registration info", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
+  it("Allows a user to unregister for a screening only if updating registration info", async() => {
+    const memberPath = `${screeningPath}/members/${myId}`;
     const admin = getAdminFirestore();
-    await admin.doc(eventPath).set({
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 2,
       adminIds: [theirId, "mod_123"],
@@ -186,7 +186,7 @@ describe("Event registration security", () => {
     });
 
     const testMember = myAuthDB.doc(memberPath);
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
 
     const batch = myAuthDB.batch();
     batch.delete(testMember);
@@ -198,15 +198,15 @@ describe("Event registration security", () => {
   });
 
   it("Doesn't allow a user to register if the registration is full", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
+    const memberPath = `${screeningPath}/members/${myId}`;
     const admin = getAdminFirestore();
-    await admin.doc(eventPath).set({
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 100,
     });
 
     const testMember = myAuthDB.doc(memberPath);
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
 
     const batch = myAuthDB.batch();
     batch.set(testMember, {
@@ -220,10 +220,10 @@ describe("Event registration security", () => {
     await firebase.assertFails(batch.commit());
   });
 
-  it("Allows a moderator to remove a member from an event", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
+  it("Allows a moderator to remove a member from a screening", async() => {
+    const memberPath = `${screeningPath}/members/${theirId}`;
     const admin = getAdminFirestore();
-    await admin.doc(eventPath).set({
+    await admin.doc(screeningPath).set({
       adminIds: [myId, "dummy_mod_123"],
       totalAllowed: 100,
       totalRegistered: 2,
@@ -234,7 +234,7 @@ describe("Event registration security", () => {
     });
 
     const testMember = myAuthDB.doc(memberPath);
-    const testEvent = myAuthDB.doc(eventPath);
+    const testEvent = myAuthDB.doc(screeningPath);
 
     const batch = myAuthDB.batch();
     batch.delete(testMember);
@@ -245,9 +245,9 @@ describe("Event registration security", () => {
     await firebase.assertSucceeds(batch.commit());
   });
 
-  it("Doesn't allow a user to register for an event without updating registration count & timestamp", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
-    await admin.doc(eventPath).set({
+  it("Doesn't allow a user to register for a screening without updating registration count & timestamp", async() => {
+    const memberPath = `${screeningPath}/members/${myId}`;
+    await admin.doc(screeningPath).set({
       totalAllowed: 100,
       totalRegistered: 0,
     });
@@ -261,8 +261,8 @@ describe("Event registration security", () => {
     await firebase.assertFails(batch.commit());
   });
 
-  it("Doesn't allow a user to register for an event with missing fields", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
+  it("Doesn't allow a user to register for a screening with missing fields", async() => {
+    const memberPath = `${screeningPath}/members/${myId}`;
 
     const testMember = myAuthDB.doc(memberPath);
     await firebase.assertFails(testMember.set({
@@ -270,8 +270,8 @@ describe("Event registration security", () => {
     }));
   });
 
-  it("Allows a user to edit their own event registration", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
+  it("Allows a user to edit their own screening registration", async() => {
+    const memberPath = `${screeningPath}/members/${myId}`;
     await admin.doc(memberPath).set({
       content: "before",
     });
@@ -280,8 +280,8 @@ describe("Event registration security", () => {
     await firebase.assertSucceeds(testMember.update({content: "after"}));
   });
 
-  it("Doesn't allow a user to edit somebody else's event registration", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
+  it("Doesn't allow a user to edit somebody else's screening registration", async() => {
+    const memberPath = `${screeningPath}/members/${theirId}`;
     await admin.doc(memberPath).set({
       content: "before",
       registeredAt: timestamp
@@ -291,8 +291,8 @@ describe("Event registration security", () => {
     await firebase.assertFails(testMember.update({content: "after"}));
   });
 
-  it("Doesn't allow a user to view somebody else's event registration", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
+  it("Doesn't allow a user to view somebody else's screening registration", async() => {
+    const memberPath = `${screeningPath}/members/${theirId}`;
     await admin.doc(memberPath).set({
       content: "before",
       registeredAt: timestamp
@@ -302,9 +302,9 @@ describe("Event registration security", () => {
     await firebase.assertFails(testMember.get());
   });
 
-  it("Allows a moderator to edit somebody else's event registration", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
-    await admin.doc(eventPath).set({
+  it("Allows a moderator to edit somebody else's screening registration", async() => {
+    const memberPath = `${screeningPath}/members/${theirId}`;
+    await admin.doc(screeningPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
     });
@@ -317,18 +317,18 @@ describe("Event registration security", () => {
     await firebase.assertSucceeds(testMember.update({content: "after"}));
   });
 
-  it("Allows a moderator to get the list of users on an event", async() => {
-    await admin.doc(eventPath).set({
+  it("Allows a moderator to get the list of users on a screening", async() => {
+    await admin.doc(screeningPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
     });
 
-    const testEventMembers = myAuthDB.doc(eventPath).collection("members");
+    const testEventMembers = myAuthDB.doc(screeningPath).collection("members");
     await firebase.assertSucceeds(testEventMembers.get());
   });
 
-  it("Doesn't allow a non-moderator to get the list of users on an event", async() => {
-    const testEventMembers = myAuthDB.doc(eventPath).collection("members");
+  it("Doesn't allow a non-moderator to get the list of users on a screening", async() => {
+    const testEventMembers = myAuthDB.doc(screeningPath).collection("members");
     await firebase.assertFails(testEventMembers.get());
   });
 });
@@ -337,18 +337,18 @@ describe("Event registration security", () => {
 /* --------------------------------------------------------------------------*/
 describe("Event registered-only info", () => {
   it("Allows registered viewers to see registered-only info", async() => {
-    const memberPath = `${eventPath}/members/${myId}`;
+    const memberPath = `${screeningPath}/members/${myId}`;
     await admin.doc(memberPath).set({
       registeredAt: timestamp
     });
 
-    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    const testRegisteredInfo = myAuthDB.doc(screeningPath).collection("registeredInfo");
     await firebase.assertSucceeds(testRegisteredInfo.get());
   });
 
   it("Allows moderators to see registered-only info", async() => {
-    const memberPath = `${eventPath}/members/${theirId}`;
-    await admin.doc(eventPath).set({
+    const memberPath = `${screeningPath}/members/${theirId}`;
+    await admin.doc(screeningPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
     });
@@ -356,22 +356,22 @@ describe("Event registered-only info", () => {
       registeredAt: timestamp
     });
 
-    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    const testRegisteredInfo = myAuthDB.doc(screeningPath).collection("registeredInfo");
     await firebase.assertSucceeds(testRegisteredInfo.get());
   });
 
   it("Doesn't allow non-registered non-moderator users to see registered-only info", async() => {
-    const testRegisteredInfo = myAuthDB.doc(eventPath).collection("registeredInfo");
+    const testRegisteredInfo = myAuthDB.doc(screeningPath).collection("registeredInfo");
     await firebase.assertFails(testRegisteredInfo.get());
   });
 
   it("Allows moderators to update registered-only info", async() => {
-    await admin.doc(eventPath).set({
+    await admin.doc(screeningPath).set({
       adminIds: [myId, "dummy_mod_123"],
       registrationUpdatedAt: timestamp
     });
 
-    const registeredInfoPath = `${eventPath}/registeredInfo/${eventId}`;
+    const registeredInfoPath = `${screeningPath}/registeredInfo/${screeningId}`;
     const testRegisteredInfoDoc = myAuthDB.doc(registeredInfoPath);
     await firebase.assertSucceeds(testRegisteredInfoDoc.set({
       videoId: "12345"
@@ -379,7 +379,7 @@ describe("Event registered-only info", () => {
   });
 
   it("Doesn't allow non-moderators to update registered-only info", async() => {
-    const registeredInfoPath = `${eventPath}/registeredInfo/${eventId}`;
+    const registeredInfoPath = `${screeningPath}/registeredInfo/${screeningId}`;
     const testRegisteredInfoDoc = myAuthDB.doc(registeredInfoPath);
     await firebase.assertFails(testRegisteredInfoDoc.set({
       videoId: "12345"
