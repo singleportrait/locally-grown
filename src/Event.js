@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
 import { generateUserDocument } from './firestore/users';
-import { registerForEvent, unregisterForEvent, getEventRegistration } from './firestore/events';
+import { makeTestHotIronsEvent, getEvent, getEventRegistration, registerForEvent, unregisterForEvent } from './firestore/events';
 
 import { UserContext } from "./providers/UserProvider";
 
@@ -44,29 +44,79 @@ const handleSignin = (authResult) => {
 
 function Event(props) {
   const { user } = useContext(UserContext);
+  const [error, setError] = useState();
+  const eventId = "hot-irons";
 
-  // As of right now, this is all working properly!
-  const [isRegistered, setIsRegistered] = useState();
+  /* Check to see if user exists in Firestore (not Auth) */
   useEffect(() => {
-    console.log("User in useEffect:", user);
-    if (!user?.uid) return;
+    console.log("User in useEffect:", user?.uid);
+    if (!user) {
+      setRegistration(null);
+      return;
+    }
+
+    generateUserDocument(user);
+  }, [user]);
+
+  /* Check to see if event exists */
+  const [event, setEvent] = useState(null);
+  useEffect(() => {
+    if (event) return;
+
+    async function checkEvent() {
+      try {
+        console.log("Checking event...");
+        setEvent(await getEvent(eventId));
+      } catch (error) {
+        setError("Couldn't get event");
+      }
+    }
+
+    checkEvent();
+  }, [event]);
+
+  /* Check to see if user is registered, on load and if event changes */
+  const [registration, setRegistration] = useState(null);
+  useEffect(() => {
+    if (!event || !user) return;
+
     async function checkRegistration() {
       try {
         console.log("Checking registration...");
-        setIsRegistered(await getEventRegistration("hot-irons", user.uid));
+        setRegistration(await getEventRegistration(event.id, user.uid));
       } catch (error) {
         console.log("Error checking registration", error);
+        setError("Error checking registration");
       }
     }
     checkRegistration();
-  }, [user]);
+  }, [user, event]);
 
-  const unregister = async () => {
-    setIsRegistered(await unregisterForEvent("hot-irons", user.uid));
+  /* User interactions */
+  const makeEvent = async () => {
+    setEvent(await makeTestHotIronsEvent(eventId));
   }
 
+  /* Issue: Because the below necessarily updates the event to get the latest
+   * registered event total, it causes the registration useEffect block to
+   * be run twice, once in here and then above. However, if we don't setRegistration
+   * here, it's a bit confusing—though, not necessarily incorrect. */
   const register = async () => {
-    setIsRegistered(await registerForEvent("hot-irons", user.uid));
+    if (!event || !user) return;
+    console.log("Registering in component...");
+    const registration = await registerForEvent(event.id, user.uid)
+      .catch(e => setError(`Error registering because: ${e.code}`));
+    setRegistration(registration);
+    setEvent(await getEvent(event.id));
+  }
+
+  const unregister = async () => {
+    if (!event || !user) return;
+    console.log("Unregistering in component...");
+    const registration = await unregisterForEvent(event.id, user.uid)
+      .catch(e => setError(`Error unregistering because: ${e.code}`));
+    setRegistration(registration);
+    setEvent(await getEvent(event.id));
   }
 
   return (
@@ -87,22 +137,44 @@ function Event(props) {
             <h4>Loaded! Hello { user.displayName }</h4>
             <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
             <br />
-            <hr />
-            { isRegistered &&
+          </>
+        }
+        { !event &&
+          <p style={linkStyle} onClick={() => makeEvent()}>Make test event</p>
+        }
+        { event &&
+          <>
+            <h4>Got the event</h4>
+            <p>Event name: {event.id}</p>
+            <p>Total allowed: {event.totalAllowed}</p>
+            <p>Total registered: {event.totalRegistered}</p>
+            { user &&
               <>
-                <h2>Registered</h2>
-                { isRegistered.created &&
-                  <h4>Registered at: { isRegistered.created.toDate().toLocaleString() }</h4>
+                <hr />
+                { registration &&
+                <>
+                  <h2>Registered</h2>
+                  { registration.registeredAt &&
+                  <h4>Registered at: { registration.registeredAt.toDate().toLocaleString() }</h4>
+                  }
+                  { !registration.registeredAt &&
+                    <h4>We don't have the time you registered saved</h4>
+                  }
+                  <p style={linkStyle} onClick={() => unregister()}>Deregister for Hot Irons</p>
+                </>
                 }
-                { !isRegistered.created &&
-                  <h4>We don't have the time you registered saved</h4>
+                { !registration &&
+                  <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
                 }
-                <p style={linkStyle} onClick={() => unregister()}>Deregister for Hot Irons</p>
               </>
             }
-            { !isRegistered &&
-              <p style={linkStyle} onClick={() => register()}>Register for Hot Irons</p>
-            }
+          </>
+        }
+        { error &&
+          <>
+            <hr />
+            <h4>Sorry, we had an error</h4>
+            <p>{ error }</p>
           </>
         }
       </div>
