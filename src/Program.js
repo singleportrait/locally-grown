@@ -38,27 +38,25 @@ function Program(props) {
   const session = useSelector(state => state.session);
   const reduxProgramBlocks = useSelector(state => state.programBlocks);
 
-  // console.log("Session here: ", session);
-
   const currentProgramBlock = reduxProgramBlocks.currentProgramBlock;
   const { programBlocks } = props.program.fields;
 
   /* Remove loading state once Redux's program blocks are loaded */
   const [isLoaded, setIsLoaded] = useState(reduxProgramBlocks.isLoaded);
   useEffect(() => {
-    console.log("Redux program blocks are changing; loaded is: ", reduxProgramBlocks.isLoaded);
+    // console.log("Redux program blocks are changing; loaded is: ", reduxProgramBlocks.isLoaded);
     setIsLoaded(reduxProgramBlocks.isLoaded);
   }, [reduxProgramBlocks.isLoaded]);
 
   /* Initialize program on mount and when hour changes */
   const prevCurrentHourRef = useRef();
   useEffect(() => {
-    console.log("[Running initialize useEffect]");
+    // console.log("[Running initialize useEffect]");
     // console.log("- Redux program blocks", reduxProgramBlocks);
     const initializeProgram = () => {
       // Note: This will allow you to come to a direct URL and see that there are
       // no programs for the current moment.
-      console.log("[Running initializeProgram]");
+      // console.log("[Running initializeProgram]");
       if (programBlocks) {
         const currentProgramBlock = programBlocks.find(programBlock => {
           return programBlock.fields.startTime === session.currentHour;
@@ -80,9 +78,9 @@ function Program(props) {
     const prevCurrentHour = prevCurrentHourRef.current;
     prevCurrentHourRef.current = session.currentHour;
 
-    console.log("Previous hour:", prevCurrentHour, "Current hour: ", session.currentHour);
+    // console.log("Previous hour:", prevCurrentHour, "Current hour: ", session.currentHour);
     if (!prevCurrentHour || session.currentHour !== prevCurrentHour) {
-      console.log("- Only run me on component mount or on current hour update");
+      // console.log("- Only run me on component mount or on current hour update");
       // console.log("- Session hour:", session.currentHour);
       // console.log("- Program blocks:", programBlocks);
       initializeProgram();
@@ -117,11 +115,11 @@ function Program(props) {
 
   /* Event listeners for mouse move and max mode */
   useEffect(() => {
-    console.log("[Adding event listeners]");
+    // console.log("[Adding mouse move event listeners]");
     document.addEventListener('mousemove', handleEvents);
 
     return () => {
-      console.log("[Removing event listeners]");
+      // console.log("[Removing mouse move event listeners]");
       document.removeEventListener('mousemove', handleEvents);
       handleEventEnd.cancel(); // Lodash's debounce-removing tool
     }
@@ -175,7 +173,7 @@ function Program(props) {
    * Mobile (Android) Chrome: immediately after orientation when rotating both directions
    */
   useEffect(() => {
-    console.log("[useEffect for device rotation]");
+    // console.log("[Adding useEffect for device rotation]");
     const handleOrientationChange = (e) => {
       // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
 
@@ -197,6 +195,7 @@ function Program(props) {
     window.addEventListener('orientationchange', handleOrientationChange);
 
     return () => {
+      // console.log("[Removing useEffect for device rotation]");
       window.removeEventListener('orientationchange', handleOrientationChange);
     }
   }, [viewportWidth, viewportHeight]);
