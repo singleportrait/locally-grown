@@ -15,7 +15,7 @@ class Channel extends Component {
     const shareImageURL = (channelFields.programs[0].fields.previewImage ? channelFields.programs[0].fields.previewImage.fields.file.url : process.env.REACT_APP_DOMAIN + "share.png");
 
     if (channelFields.programs.length > 1) {
-      consoleLog("- Warning: This channel has multiple available programs for this date");
+      consoleLog("- Warning: This channel has multiple available programs for this date. Channel: ", channelFields.title, channelFields.programs);
     }
     return (
       <div className="channel">

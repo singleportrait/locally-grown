@@ -43,9 +43,14 @@ const configureChannels = (channels) => {
   // Configure copied channels
   const configuredChannels = clone()(channels).map(channel => {
 
-    // Filter out programs with no fields or program blocks
-    const validPrograms = channel.fields.programs.filter(program => program.fields && program.fields.programBlocks);
-    // consoleLog("Valid programs", validPrograms);
+    // Filter out programs with no fields, and ones that
+    // aren't active for today
+    const validPrograms = channel.fields.programs.filter(program => {
+      return program.fields && program.fields.featured === true &&
+        moment(program.fields.startDate, dateFormat).isSameOrBefore(today) &&
+        moment(program.fields.endDate, dateFormat).isSameOrAfter(today);
+    });
+    // consoleLog(`Valid programs for channel ${channel.fields.title}:`, validPrograms);
 
     // If a program wants to repeat its blocks, we repeat them (regardless
     // of their original start time) until they fill 24 hours of programming
@@ -69,6 +74,7 @@ const configureChannels = (channels) => {
     // to see if there's one tomorrow that pulls in different program blocks after midnight
     // And if there isn't one, end the programming at midnight
     configuredRepeatedPrograms.forEach(program => {
+      // consoleLog("Configuring repeated programs", program);
       if (moment(program.fields.endDate, dateFormat).isSame(today)) {
         consoleLog(`- This program "${program.fields.title}" ends today`);
         // See if there's a program for tomorrow
@@ -108,17 +114,16 @@ const configureChannels = (channels) => {
       }
     });
 
+    channel.fields.programs = configuredRepeatedPrograms;
     return channel;
   });
 
-  // consoleLog("Configured channels:", configuredChannels);
+  consoleLog("Configured channels:", configuredChannels);
   return configuredChannels;
 }
 
-// This looks at all channels and finds the programs that are featured and
-// "on" for today's current date
+// This looks at all channels and finds the programs that are featured
 const findFeaturedActiveChannels = (channels) => {
-  const today = moment().format(dateFormat);
 
   // All these arrays need to be deep cloned (by rfdc) so that it doesn't keep
   // a reference to the original object.
@@ -135,12 +140,9 @@ const findFeaturedActiveChannels = (channels) => {
     // consoleLog("On channel", channel.fields.title, "there are:");
     // consoleLog("- These programs:", channel.fields.programs);
 
-    const featuredPrograms = channel.fields.programs.filter(program => {
-      // If program is featured, starts today or earlier, and ends today or later
-      return program.fields.featured === true &&
-        moment(program.fields.startDate, dateFormat).isSameOrBefore(today) &&
-        moment(program.fields.endDate, dateFormat).isSameOrAfter(today);
-    });
+    // Earlier we filter out programs that aren't happening today, but here we
+    // filter out prorams that don't have any program blocks, so they can't be featured
+    const featuredPrograms = channel.fields.programs.filter(program => program.fields.programBlocks);
 
     // consoleLog("Featured available programs:", featuredPrograms);
 
@@ -150,8 +152,7 @@ const findFeaturedActiveChannels = (channels) => {
       consoleLog("Warning, this channel has more than 1 active program. Expect bugginess.");
     }
 
-    // We need to set the featured programs as the new correct programs
-    // for the channel
+    // We need to set the featured programs as the new correct channel programs
     channel.fields.programs = featuredPrograms;
 
     return featuredPrograms.length !== 0;
@@ -185,7 +186,7 @@ const findCarouselChannels = (featuredActiveChannels) => {
       consoleLog("There are multiple available programs for this channel!");
     }
     if (availablePrograms.length === 0) {
-      consoleLog("There are no program blocks in this");
+      consoleLog(`There are no available programs in ${channel.fields.title}, not including in keyboard carousel`);
       return false;
     }
     channel.fields.programs = availablePrograms;
@@ -213,8 +214,6 @@ const findCarouselChannels = (featuredActiveChannels) => {
 // TODO: I don't know if this is *exactly* the logic we want, but it serves
 // its purpose for now
 const findNoncarouselChannels = (allChannels, availableChannels) => {
-  // TODO: These probably shouldn't populate programs that aren't happening currently, either.
-  // Should use the date checks from above in findFeaturedActiveChannels() to filter these out too.
   const availableIds = availableChannels.map(channel => channel.sys.id);
 
   // Note: Deep-copied array
@@ -238,11 +237,12 @@ const getCurrentChannel = channels => {
 // Set up the channels objects
 export const findAndSetFeaturedChannels = (allChannels, dispatch) => {
 
-  // Filter out empty programs, repeat program blocks, and
+  // Filter out empty programs, repeat program blocks,
+  // filter out channels that don't have programs on today's date, and
   // ensure program blocks are correct if programming switches at midnight
   const configuredChannels = configureChannels(allChannels);
 
-  // Go through each program and see if it's featured & is active on today's date
+  // Go through each program and see if it's featured and has program blocks
   const featuredActiveChannels = findFeaturedActiveChannels(configuredChannels);
 
   // Go through each featured active program and see if there's a block for this hour
