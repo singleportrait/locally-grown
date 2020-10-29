@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
 import consoleLog from './helpers/consoleLog';
@@ -25,62 +25,100 @@ import {
   VideoPlaceholderWrapper,
 } from './styles';
 
-class Program extends Component {
-  constructor(props) {
-    super(props);
+function Program(props) {
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
+  const [showMobileProgramInfo, setShowMobileProgramInfo] = useState(false);
+  const [maxMode, setMaxMode] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [inputIsFocused, setInputIsFocused] = useState(false);
 
-    this.state = {
-      showInfoTooltip: false,
-      showMobileProgramInfo: false,
-      maxMode: false,
-      viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight,
-      inputIsFocused: false,
+  const session = useSelector(state => state.session);
+  const reduxProgramBlocks = useSelector(state => state.programBlocks);
+
+  const currentProgramBlock = reduxProgramBlocks.currentProgramBlock;
+
+  const dispatch = useDispatch();
+
+  const { programBlocks } = props.program.fields;
+
+  // constructor(props) {
+  //   super(props);
+
+  //   this.state = {
+  //     showInfoTooltip: false,
+  //     showMobileProgramInfo: false,
+  //     maxMode: false,
+  //     viewportWidth: window.innerWidth,
+  //     viewportHeight: window.innerHeight,
+  //     inputIsFocused: false,
+  //   }
+
+  //   this.toggleInfo = this.toggleInfo.bind(this);
+  //   this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
+  // }
+
+  useEffect(() => {
+    initializeProgram();
+
+    document.addEventListener('mousemove', handleEvents);
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      document.removeEventListener('mousemove', handleEvents);
+      handleEventEnd.cancel(); // Lodash's debounce-removing tool
+
+      window.removeEventListener('orientationchange', handleOrientationChange);
     }
+  }, []);
 
-    this.toggleInfo = this.toggleInfo.bind(this);
-    this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
+  /* Update when hour changes */
+  useEffect(() => {
+    consoleLog("Current hour updated");
+    initializeProgram();
+  }, [session.currentHour]);
+
+  // componentDidMount() {
+    // this.initializeProgram();
+
+    // document.addEventListener('mousemove', this.handleEvents);
+
+    // window.addEventListener('orientationchange', this.handleOrientationChange);
+  // }
+
+  // componentDidUpdate(prevProps) {
+    // if (this.props.session.currentHour !== prevProps.session.currentHour) {
+    //   consoleLog("Current hour updated");
+    //   this.initializeProgram();
+    // }
+  // }
+
+  // componentWillUnmount() {
+    // document.removeEventListener('mousemove', this.handleEvents);
+    // this.handleEventEnd.cancel(); // Lodash's debounce-removing tool
+
+    // window.removeEventListener('orientationchange', this.handleOrientationChange);
+  // }
+
+  const handleEvents = () => {
+    handleEventStart();
+    handleEventEnd();
   }
 
-  componentDidMount() {
-    this.initializeProgram();
-
-    document.addEventListener('mousemove', this.handleEvents);
-
-    window.addEventListener('orientationchange', this.handleOrientationChange);
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.session.currentHour !== prevProps.session.currentHour) {
-      consoleLog("Current hour updated");
-      this.initializeProgram();
-    }
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('mousemove', this.handleEvents);
-    this.handleEventEnd.cancel(); // Lodash's debounce-removing tool
-
-    window.removeEventListener('orientationchange', this.handleOrientationChange);
-  }
-
-  handleEvents = () => {
-    this.handleEventStart();
-    this.handleEventEnd();
-  }
-
-  handleEventStart = debounce((e) => {
+  const handleEventStart = debounce((e) => {
     // consoleLog('Preventing or removing max mode');
-    this.setState({ maxMode: false });
+    // this.setState({ maxMode: false });
+    setMaxMode(false);
   }, 100, {
     'leading': true,
     'trailing': false
   });
 
-  handleEventEnd = debounce((e) => {
-    if (!this.state.inputIsFocused) {
+  const handleEventEnd = debounce((e) => {
+    if (!inputIsFocused) {
       // consoleLog('Starting max mode after 4s debounce');
-      this.setState({ maxMode: true });
+      // this.setState({ maxMode: true });
+      setMaxMode(true);
     } else {
       // consoleLog('Not starting max mode because input is focused');
     }
@@ -89,42 +127,48 @@ class Program extends Component {
     'trailing': true
   });
 
-  preventMaxMode = () => {
+  const preventMaxMode = () => {
     consoleLog("Input is focused");
-    this.setState({ inputIsFocused: true });
+    // this.setState({ inputIsFocused: true });
+    setInputIsFocused(true);
   }
 
-  stopPreventingMaxMode = () => {
+  const stopPreventingMaxMode = () => {
     consoleLog("Input is blurred");
-    this.setState({ inputIsFocused: false });
+    // this.setState({ inputIsFocused: false });
+    setInputIsFocused(false);
   }
 
-  initializeProgram() {
+  const initializeProgram = () => {
     // Note: This will allow you to come to a direct URL and see that there are
     // no programs for the current moment.
-    if (this.props.program.fields.programBlocks) {
-      const currentProgramBlock = this.props.program.fields.programBlocks.find(programBlock => {
-        return programBlock.fields.startTime === this.props.session.currentHour;
+    if (props.program.fields.programBlocks) {
+      const currentProgramBlock = props.program.fields.programBlocks.find(programBlock => {
+        return programBlock.fields.startTime === session.currentHour;
       })
 
       if (currentProgramBlock) {
-        this.props.getCurrentProgramBlock(currentProgramBlock.sys.id);
+        // TODO
+        consoleLog("Getting current program block");
+        dispatch(getCurrentProgramBlock(currentProgramBlock.sys.id));
       } else {
         consoleLog("No current program block!");
-        this.props.getCurrentProgramBlock(null);
+        dispatch(getCurrentProgramBlock(null));
       }
     } else {
       consoleLog("No program blocks!");
-      this.props.getCurrentProgramBlock(null);
+      props.getCurrentProgramBlock(null);
     }
   }
 
-  toggleMobileProgramInfo() {
-    this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
+  const toggleMobileProgramInfo = () => {
+    setShowMobileProgramInfo(!showMobileProgramInfo);
+    // this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
   }
 
-  toggleInfo() {
-    this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
+  const toggleInfo = () => {
+    setShowInfoTooltip(!showInfoTooltip);
+    // this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
   }
 
   /* This handles when mobile gets rotated twice. For some reason, <MediaQuery>
@@ -163,14 +207,16 @@ class Program extends Component {
    * Mobile iOS Safari: immediately after orientationchange but *only when rotating from horizontal to vertical*
    * Mobile (Android) Chrome: immediately after orientation when rotating both directions
    */
-  handleOrientationChange = (e) => {
+  const handleOrientationChange = (e) => {
     // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
 
     const handleResizeOnOrientation = () => {
-      this.setState({
-        viewportWidth: window.innerWidth,
-        viewportHeight: window.innerHeight,
-      });
+      setViewportWidth(window.innerWidth);
+      setViewportHeight(window.innerHeight);
+      // this.setState({
+      //   viewportWidth: window.innerWidth,
+      //   viewportHeight: window.innerHeight,
+      // });
 
       // consoleLog("- After orientation timeout, window size now:", this.state.viewportWidth, this.state.viewportHeight);
     }
@@ -183,131 +229,131 @@ class Program extends Component {
     setTimeout(handleResizeOnOrientation, 150);
   }
 
-  render() {
-    const program = this.props.program;
-    const { programBlocks } = program.fields;
-    const currentProgramBlock = this.props.programBlocks.currentProgramBlock;
+  // render() {
+    // const program = props.program;
+    // const { programBlocks } = program.fields;
+    // const currentProgramBlock = props.programBlocks.currentProgramBlock;
 
-    const renderDesktopVideo = (allowMaxMode = true) => {
-      return (
-        <React.Fragment>
-          { currentProgramBlock && currentProgramBlock.fields.videos &&
-            <Video
-              video={currentProgramBlock.currentVideo}
-              timestamp={currentProgramBlock.timestampToStartVideo}
-            />
-          }
-          { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
-              <VideoPlaceholderWrapper />
-          }
-
-          { currentProgramBlock &&
-            <VideoControls hasMultipleChannels={this.props.previousChannelSlug} maxMode={allowMaxMode && this.state.maxMode}>
-              { this.props.previousChannelSlug &&
-                  <ChannelButton direction="previous" to={this.props.previousChannelSlug} />
-              }
-
-              { currentProgramBlock.fields.videos &&
-                <div className={controlButtons}>
-                  <MuteButton />
-                </div>
-              }
-
-              { this.props.nextChannelSlug &&
-                  <ChannelButton direction="next" to={this.props.nextChannelSlug} />
-              }
-            </VideoControls>
-          }
-        </React.Fragment>
-      );
-    }
-
-    const renderChannelInfo = () => {
-      return (
-        <React.Fragment>
-          <MailchimpSubscribeForm
-            preventMaxMode={this.preventMaxMode}
-            stopPreventingMaxMode={this.stopPreventingMaxMode} />
-          <BLMButton />
-          <hr />
-          <Navigation />
-          <p className={channelTitle}>
-            You&apos;re watching {this.props.channelTitle}
-
-            { this.props.channelContributor &&
-                <span> by {this.props.channelContributor.fields.name}</span>
-            }
-            .
-            <InfoTooltip
-              toggleInfo={this.toggleInfo}
-              show={this.state.showInfoTooltip}
-              title={program.fields.title}
-              description={program.fields.description}
-              contributor={this.props.channelContributor}
-            />
-          </p>
-          <hr />
-        </React.Fragment>
-      );
-    }
-
-    const renderSidebarProgramContent = () => {
-      return (
-        <ProgramSidebar
-          currentProgramBlock={currentProgramBlock}
-          programBlocks={programBlocks}
-          currentHour={this.props.session.currentHour}
-          channelTitle={this.props.channelTitle}
-          channelSlug={this.props.channelSlug}
-        ></ProgramSidebar>
-      );
-    }
-
+  const renderDesktopVideo = (allowMaxMode = true) => {
     return (
       <React.Fragment>
-        <KeyboardNavigation
-          previousChannelSlug={this.props.previousChannelSlug}
-          nextChannelSlug={this.props.nextChannelSlug}
-          preventNavigation={this.state.inputIsFocused}
-        />
-        <MediaQuery minWidth={800}>
-          <WideProgramContainer>
-            <VideoAndControlsColumn maxMode={this.state.maxMode}>
-              { renderDesktopVideo() }
-            </VideoAndControlsColumn>
-            <InfoColumnContainer maxMode={this.state.maxMode} onScroll={this.handleEvents}>
-              <div className={infoColumn}>
-                { renderChannelInfo() }
-                { renderSidebarProgramContent() }
+        { currentProgramBlock && currentProgramBlock.fields.videos &&
+          <Video
+            video={currentProgramBlock.currentVideo}
+            timestamp={currentProgramBlock.timestampToStartVideo}
+          />
+        }
+        { (!currentProgramBlock || !currentProgramBlock.fields.videos) &&
+            <VideoPlaceholderWrapper />
+        }
+
+        { currentProgramBlock &&
+          <VideoControls hasMultipleChannels={props.previousChannelSlug} maxMode={allowMaxMode && maxMode}>
+            { props.previousChannelSlug &&
+                <ChannelButton direction="previous" to={props.previousChannelSlug} />
+            }
+
+            { currentProgramBlock.fields.videos &&
+              <div className={controlButtons}>
+                <MuteButton />
               </div>
-            </InfoColumnContainer>
-          </WideProgramContainer>
-        </MediaQuery>
-        <MediaQuery minWidth={415} maxWidth={800}>
-          <MediumProgramContainer>
-            { renderChannelInfo() }
-            <MediumVideoContainer>
-              { renderDesktopVideo(false) }
-            </MediumVideoContainer>
-            { renderSidebarProgramContent() }
-          </MediumProgramContainer>
-        </MediaQuery>
-        { this.state.viewportWidth <= 767 && this.state.viewportHeight >= 415 &&
-          <MobileProgram
-            currentProgramBlock={currentProgramBlock}
-            programBlocks={programBlocks}
-            showMobileProgramInfo={this.state.showMobileProgramInfo}
-            toggleMobileProgramInfo={this.toggleMobileProgramInfo}
-            previousChannelSlug={this.props.previousChannelSlug}
-            nextChannelSlug={this.props.nextChannelSlug}
-            channelTitle={this.props.channelTitle}
-            channelContributor={this.props.channelContributor}
-            currentHour={this.props.session.currentHour}
-          ></MobileProgram>
+            }
+
+            { props.nextChannelSlug &&
+                <ChannelButton direction="next" to={props.nextChannelSlug} />
+            }
+          </VideoControls>
         }
       </React.Fragment>
     );
   }
+
+  const renderChannelInfo = () => {
+    return (
+      <React.Fragment>
+        <MailchimpSubscribeForm
+          preventMaxMode={preventMaxMode}
+          stopPreventingMaxMode={stopPreventingMaxMode} />
+        <BLMButton />
+        <hr />
+        <Navigation />
+        <p className={channelTitle}>
+          You&apos;re watching {props.channelTitle}
+
+          { props.channelContributor &&
+              <span> by {props.channelContributor.fields.name}</span>
+          }
+          .
+          <InfoTooltip
+            toggleInfo={toggleInfo}
+            show={showInfoTooltip}
+            title={props.program.fields.title}
+            description={props.program.fields.description}
+            contributor={props.channelContributor}
+          />
+        </p>
+        <hr />
+      </React.Fragment>
+    );
+  }
+
+  const renderSidebarProgramContent = () => {
+    return (
+      <ProgramSidebar
+        currentProgramBlock={currentProgramBlock}
+        programBlocks={programBlocks}
+        currentHour={session.currentHour}
+        channelTitle={props.channelTitle}
+        channelSlug={props.channelSlug}
+      ></ProgramSidebar>
+    );
+  }
+
+  return (
+    <React.Fragment>
+      <KeyboardNavigation
+        previousChannelSlug={props.previousChannelSlug}
+        nextChannelSlug={props.nextChannelSlug}
+        preventNavigation={inputIsFocused}
+      />
+      <MediaQuery minWidth={800}>
+        <WideProgramContainer>
+          <VideoAndControlsColumn maxMode={maxMode}>
+            { renderDesktopVideo() }
+          </VideoAndControlsColumn>
+          <InfoColumnContainer maxMode={maxMode} onScroll={handleEvents}>
+            <div className={infoColumn}>
+              { renderChannelInfo() }
+              { renderSidebarProgramContent() }
+            </div>
+          </InfoColumnContainer>
+        </WideProgramContainer>
+      </MediaQuery>
+      <MediaQuery minWidth={415} maxWidth={800}>
+        <MediumProgramContainer>
+          { renderChannelInfo() }
+          <MediumVideoContainer>
+            { renderDesktopVideo(false) }
+          </MediumVideoContainer>
+          { renderSidebarProgramContent() }
+        </MediumProgramContainer>
+      </MediaQuery>
+      { viewportWidth <= 767 && viewportHeight >= 415 &&
+        <MobileProgram
+          currentProgramBlock={currentProgramBlock}
+          programBlocks={programBlocks}
+          showMobileProgramInfo={showMobileProgramInfo}
+          toggleMobileProgramInfo={toggleMobileProgramInfo}
+          previousChannelSlug={props.previousChannelSlug}
+          nextChannelSlug={props.nextChannelSlug}
+          channelTitle={props.channelTitle}
+          channelContributor={props.channelContributor}
+          currentHour={session.currentHour}
+        ></MobileProgram>
+      }
+    </React.Fragment>
+  );
+  // }
 }
 
 const WideProgramContainer = styled('div')`
@@ -410,9 +456,9 @@ const channelTitle = css`
   margin: 1rem 0;
 `;
 
-const mapStateToProps = state => ({
-  programBlocks: state.programBlocks,
-  session: state.session
-});
+// const mapStateToProps = state => ({
+//   programBlocks: state.programBlocks,
+//   session: state.session
+// });
 
-export default connect(mapStateToProps, { getCurrentProgramBlock })(Program);
+export default Program;
