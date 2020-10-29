@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
@@ -11,6 +11,7 @@ import { getCurrentProgramBlock } from './operations/programBlockOperations';
 
 import MobileProgram from './MobileProgram';
 
+import LoadingScreen from './components/LoadingScreen';
 import Video from './components/Video';
 import Navigation from './components/Navigation';
 import MuteButton from './components/MuteButton';
@@ -33,46 +34,23 @@ function Program(props) {
   const [viewportHeight, setViewportHeight] = useState(window.visualViewport.height);
   const [inputIsFocused, setInputIsFocused] = useState(false);
 
+  const dispatch = useDispatch();
   const session = useSelector(state => state.session);
   const reduxProgramBlocks = useSelector(state => state.programBlocks);
 
+  // console.log("Session here: ", session);
+
   const currentProgramBlock = reduxProgramBlocks.currentProgramBlock;
-
-  const dispatch = useDispatch();
-
   const { programBlocks } = props.program.fields;
 
-  // constructor(props) {
-  //   super(props);
-
-  //   this.state = {
-  //     showInfoTooltip: false,
-  //     showMobileProgramInfo: false,
-  //     maxMode: false,
-  //     viewportWidth: window.innerWidth,
-  //     viewportHeight: window.innerHeight,
-  //     inputIsFocused: false,
-  //   }
-
-  //   this.toggleInfo = this.toggleInfo.bind(this);
-  //   this.toggleMobileProgramInfo = this.toggleMobileProgramInfo.bind(this);
-  // }
-
+  /* Remove loading state once Redux's program blocks are loaded */
+  const [isLoaded, setIsLoaded] = useState(reduxProgramBlocks.isLoaded);
   useEffect(() => {
-    console.log("Only run me once");
+    console.log("Redux program blocks are changing; loaded is: ", reduxProgramBlocks.isLoaded);
+    setIsLoaded(reduxProgramBlocks.isLoaded);
+  }, [reduxProgramBlocks.isLoaded]);
 
-    document.addEventListener('mousemove', handleEvents);
-    window.addEventListener('orientationchange', handleOrientationChange);
-
-    return () => {
-      document.removeEventListener('mousemove', handleEvents);
-      handleEventEnd.cancel(); // Lodash's debounce-removing tool
-
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    }
-  }, [handleEvents, handleEventEnd, handleOrientationChange]);
-
-  /* Initialize on mount and when hour changes */
+  /* Initialize program on mount and when hour changes */
   const prevCurrentHourRef = useRef();
   useEffect(() => {
     console.log("[Running initialize useEffect]");
@@ -111,89 +89,55 @@ function Program(props) {
     }
   }, [session.currentHour, programBlocks, dispatch]);
 
-  // const prevCurrentHourRef = useRef();
-  // useEffect(() => {
-  //   prevCurrentHourRef.current = session.currentHour;
-  //   console.log("Previous current hour:", prevCurrentHour, "Current hour: ", session.currentHour);
-  //   if (prevCurrentHour && session.currentHour !== prevCurrentHour) {
-  //     consoleLog("Current hour updated");
-  //     initializeProgram();
-  //   }
-  // }, [session.currentHour]);
-  // const prevCurrentHour = prevCurrentHourRef.current;
-
-  // componentDidMount() {
-    // this.initializeProgram();
-
-    // document.addEventListener('mousemove', this.handleEvents);
-
-    // window.addEventListener('orientationchange', this.handleOrientationChange);
-  // }
-
-  // componentDidUpdate(prevProps) {
-    // if (this.props.session.currentHour !== prevProps.session.currentHour) {
-    //   consoleLog("Current hour updated");
-    //   this.initializeProgram();
-    // }
-  // }
-
-  // componentWillUnmount() {
-    // document.removeEventListener('mousemove', this.handleEvents);
-    // this.handleEventEnd.cancel(); // Lodash's debounce-removing tool
-
-    // window.removeEventListener('orientationchange', this.handleOrientationChange);
-  // }
-
-  const handleEvents = () => {
-    handleEventStart();
-    handleEventEnd();
-  }
-
-  const handleEventStart = debounce((e) => {
-    // consoleLog('Preventing or removing max mode');
-    // this.setState({ maxMode: false });
-    setMaxMode(false);
-  }, 100, {
-    'leading': true,
-    'trailing': false
-  });
-
-  const handleEventEnd = debounce((e) => {
+  /* Event handlers for mouse move and max mode */
+  const handleEventEnd = useCallback(debounce((e) => {
     if (!inputIsFocused) {
-      // consoleLog('Starting max mode after 4s debounce');
-      // this.setState({ maxMode: true });
+      consoleLog('Starting max mode after 3s debounce');
       setMaxMode(true);
     } else {
-      // consoleLog('Not starting max mode because input is focused');
+      consoleLog('Not starting max mode because input is focused');
     }
-  }, 7000, {
+  }, 3000, {
     'leading': false,
     'trailing': true
-  });
+  }), [inputIsFocused, setMaxMode]);
+
+  const handleEventStart = useCallback(debounce((e) => {
+    consoleLog('Preventing or removing max mode');
+    setMaxMode(false);
+  }, 1000, {
+    'leading': true,
+    'trailing': false
+  }), [setMaxMode]);
+
+  const handleEvents = useCallback(() => {
+    handleEventStart();
+    handleEventEnd();
+  }, [handleEventStart, handleEventEnd]);
+
+  /* Event listeners for mouse move and max mode */
+  useEffect(() => {
+    console.log("[Adding event listeners]");
+    document.addEventListener('mousemove', handleEvents);
+
+    return () => {
+      console.log("[Removing event listeners]");
+      document.removeEventListener('mousemove', handleEvents);
+      handleEventEnd.cancel(); // Lodash's debounce-removing tool
+    }
+  }, [handleEvents, handleEventEnd]);
 
   const preventMaxMode = () => {
     consoleLog("Input is focused");
-    // this.setState({ inputIsFocused: true });
     setInputIsFocused(true);
   }
 
   const stopPreventingMaxMode = () => {
     consoleLog("Input is blurred");
-    // this.setState({ inputIsFocused: false });
     setInputIsFocused(false);
   }
 
-
-  const toggleMobileProgramInfo = () => {
-    setShowMobileProgramInfo(!showMobileProgramInfo);
-    // this.setState({ showMobileProgramInfo: !this.state.showMobileProgramInfo });
-  }
-
-  const toggleInfo = () => {
-    setShowInfoTooltip(!showInfoTooltip);
-    // this.setState({ showInfoTooltip: !this.state.showInfoTooltip });
-  }
-
+  /* Event listener for mobile device rotating */
   /* This handles when mobile gets rotated twice. For some reason, <MediaQuery>
    * stops detecting properly, even though the window's size appears correctly.
    * So, we detect the rotation manually, wait for the resize to be complete,
@@ -230,32 +174,40 @@ function Program(props) {
    * Mobile iOS Safari: immediately after orientationchange but *only when rotating from horizontal to vertical*
    * Mobile (Android) Chrome: immediately after orientation when rotating both directions
    */
-  const handleOrientationChange = (e) => {
-    // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
+  useEffect(() => {
+    console.log("[useEffect for device rotation]");
+    const handleOrientationChange = (e) => {
+      // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
 
-    const handleResizeOnOrientation = () => {
-      setViewportWidth(window.innerWidth);
-      setViewportHeight(window.innerHeight);
-      // this.setState({
-      //   viewportWidth: window.innerWidth,
-      //   viewportHeight: window.innerHeight,
-      // });
+      const handleResizeOnOrientation = () => {
+        setViewportWidth(window.innerWidth);
+        setViewportHeight(window.innerHeight);
 
-      // consoleLog("- After orientation timeout, window size now:", this.state.viewportWidth, this.state.viewportHeight);
+        // consoleLog("- After orientation timeout, window size now:", this.state.viewportWidth, this.state.viewportHeight);
+      }
+
+      /* Different browsers trigger the resize differently (e.g. Safari
+       * triggers one instantly, but Chrome never does until scroll), so we'll
+       * depend on a timeout :'( and check the viewport size ourselves.
+       * Works just nicely in Safari, is a little flickery in Chrome, but at
+       * least it doesn't completely break. */
+      setTimeout(handleResizeOnOrientation, 150);
     }
 
-    // Different browsers trigger the resize differently (e.g. Safari
-    // triggers one instantly, but Chrome never does until scroll), so we'll
-    // depend on a timeout :'( and check the viewport size ourselves.
-    // Works just nicely in Safari, is a little flickery in Chrome, but at
-    // least it doesn't completely break.
-    setTimeout(handleResizeOnOrientation, 150);
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    }
+  }, [viewportWidth, viewportHeight]);
+
+  const toggleMobileProgramInfo = () => {
+    setShowMobileProgramInfo(!showMobileProgramInfo);
   }
 
-  // render() {
-    // const program = props.program;
-    // const { programBlocks } = program.fields;
-    // const currentProgramBlock = props.programBlocks.currentProgramBlock;
+  const toggleInfo = () => {
+    setShowInfoTooltip(!showInfoTooltip);
+  }
 
   const renderDesktopVideo = (allowMaxMode = true) => {
     return (
@@ -334,45 +286,52 @@ function Program(props) {
 
   return (
     <React.Fragment>
-      <KeyboardNavigation
-        previousChannelSlug={props.previousChannelSlug}
-        nextChannelSlug={props.nextChannelSlug}
-        preventNavigation={inputIsFocused}
-      />
-      <MediaQuery minWidth={800}>
-        <WideProgramContainer>
-          <VideoAndControlsColumn maxMode={maxMode}>
-            { renderDesktopVideo() }
-          </VideoAndControlsColumn>
-          <InfoColumnContainer maxMode={maxMode} onScroll={handleEvents}>
-            <div className={infoColumn}>
+      { !isLoaded &&
+        <LoadingScreen showInitialLoadingState />
+      }
+      { isLoaded &&
+        <>
+          <KeyboardNavigation
+            previousChannelSlug={props.previousChannelSlug}
+            nextChannelSlug={props.nextChannelSlug}
+            preventNavigation={inputIsFocused}
+          />
+          <MediaQuery minWidth={800}>
+            <WideProgramContainer>
+              <VideoAndControlsColumn maxMode={maxMode}>
+                { renderDesktopVideo() }
+              </VideoAndControlsColumn>
+              <InfoColumnContainer maxMode={maxMode} onScroll={handleEvents}>
+                <div className={infoColumn}>
+                  { renderChannelInfo() }
+                  { renderSidebarProgramContent() }
+                </div>
+              </InfoColumnContainer>
+            </WideProgramContainer>
+          </MediaQuery>
+          <MediaQuery minWidth={415} maxWidth={800}>
+            <MediumProgramContainer>
               { renderChannelInfo() }
+              <MediumVideoContainer>
+                { renderDesktopVideo(false) }
+              </MediumVideoContainer>
               { renderSidebarProgramContent() }
-            </div>
-          </InfoColumnContainer>
-        </WideProgramContainer>
-      </MediaQuery>
-      <MediaQuery minWidth={415} maxWidth={800}>
-        <MediumProgramContainer>
-          { renderChannelInfo() }
-          <MediumVideoContainer>
-            { renderDesktopVideo(false) }
-          </MediumVideoContainer>
-          { renderSidebarProgramContent() }
-        </MediumProgramContainer>
-      </MediaQuery>
-      { viewportWidth <= 767 && viewportHeight >= 415 &&
-        <MobileProgram
-          currentProgramBlock={currentProgramBlock}
-          programBlocks={programBlocks}
-          showMobileProgramInfo={showMobileProgramInfo}
-          toggleMobileProgramInfo={toggleMobileProgramInfo}
-          previousChannelSlug={props.previousChannelSlug}
-          nextChannelSlug={props.nextChannelSlug}
-          channelTitle={props.channelTitle}
-          channelContributor={props.channelContributor}
-          currentHour={session.currentHour}
-        ></MobileProgram>
+            </MediumProgramContainer>
+          </MediaQuery>
+          { viewportWidth <= 767 && viewportHeight >= 415 &&
+            <MobileProgram
+              currentProgramBlock={currentProgramBlock}
+              programBlocks={programBlocks}
+              showMobileProgramInfo={showMobileProgramInfo}
+              toggleMobileProgramInfo={toggleMobileProgramInfo}
+              previousChannelSlug={props.previousChannelSlug}
+              nextChannelSlug={props.nextChannelSlug}
+              channelTitle={props.channelTitle}
+              channelContributor={props.channelContributor}
+              currentHour={session.currentHour}
+            ></MobileProgram>
+          }
+        </>
       }
     </React.Fragment>
   );
