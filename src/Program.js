@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import debounce from 'lodash/debounce';
@@ -59,7 +59,7 @@ function Program(props) {
   // }
 
   useEffect(() => {
-    initializeProgram();
+    console.log("Only run me once");
 
     document.addEventListener('mousemove', handleEvents);
     window.addEventListener('orientationchange', handleOrientationChange);
@@ -70,13 +70,57 @@ function Program(props) {
 
       window.removeEventListener('orientationchange', handleOrientationChange);
     }
-  }, []);
+  }, [handleEvents, handleEventEnd, handleOrientationChange]);
 
-  /* Update when hour changes */
+  /* Initialize on mount and when hour changes */
+  const prevCurrentHourRef = useRef();
   useEffect(() => {
-    consoleLog("Current hour updated");
-    initializeProgram();
-  }, [session.currentHour]);
+    console.log("[Running initialize useEffect]");
+    // console.log("- Redux program blocks", reduxProgramBlocks);
+    const initializeProgram = () => {
+      // Note: This will allow you to come to a direct URL and see that there are
+      // no programs for the current moment.
+      console.log("[Running initializeProgram]");
+      if (programBlocks) {
+        const currentProgramBlock = programBlocks.find(programBlock => {
+          return programBlock.fields.startTime === session.currentHour;
+        })
+
+        if (currentProgramBlock) {
+          consoleLog("Getting current program block in initializeProgram");
+          dispatch(getCurrentProgramBlock(currentProgramBlock.sys.id));
+        } else {
+          consoleLog("No current program block!");
+          dispatch(getCurrentProgramBlock(null));
+        }
+      } else {
+        consoleLog("No program blocks!");
+        dispatch(getCurrentProgramBlock(null));
+      }
+    }
+
+    const prevCurrentHour = prevCurrentHourRef.current;
+    prevCurrentHourRef.current = session.currentHour;
+
+    console.log("Previous hour:", prevCurrentHour, "Current hour: ", session.currentHour);
+    if (!prevCurrentHour || session.currentHour !== prevCurrentHour) {
+      console.log("- Only run me on component mount or on current hour update");
+      // console.log("- Session hour:", session.currentHour);
+      // console.log("- Program blocks:", programBlocks);
+      initializeProgram();
+    }
+  }, [session.currentHour, programBlocks, dispatch]);
+
+  // const prevCurrentHourRef = useRef();
+  // useEffect(() => {
+  //   prevCurrentHourRef.current = session.currentHour;
+  //   console.log("Previous current hour:", prevCurrentHour, "Current hour: ", session.currentHour);
+  //   if (prevCurrentHour && session.currentHour !== prevCurrentHour) {
+  //     consoleLog("Current hour updated");
+  //     initializeProgram();
+  //   }
+  // }, [session.currentHour]);
+  // const prevCurrentHour = prevCurrentHourRef.current;
 
   // componentDidMount() {
     // this.initializeProgram();
@@ -139,27 +183,6 @@ function Program(props) {
     setInputIsFocused(false);
   }
 
-  const initializeProgram = () => {
-    // Note: This will allow you to come to a direct URL and see that there are
-    // no programs for the current moment.
-    if (props.program.fields.programBlocks) {
-      const currentProgramBlock = props.program.fields.programBlocks.find(programBlock => {
-        return programBlock.fields.startTime === session.currentHour;
-      })
-
-      if (currentProgramBlock) {
-        // TODO
-        consoleLog("Getting current program block");
-        dispatch(getCurrentProgramBlock(currentProgramBlock.sys.id));
-      } else {
-        consoleLog("No current program block!");
-        dispatch(getCurrentProgramBlock(null));
-      }
-    } else {
-      consoleLog("No program blocks!");
-      props.getCurrentProgramBlock(null);
-    }
-  }
 
   const toggleMobileProgramInfo = () => {
     setShowMobileProgramInfo(!showMobileProgramInfo);
