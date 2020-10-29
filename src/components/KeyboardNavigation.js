@@ -6,7 +6,6 @@ function KeyboardNavigation(props) {
   const { preventNavigation, previousChannelSlug, nextChannelSlug } = props;
 
   useEffect(() => {
-    console.log("[Adding key listeners]");
     const handleKeyDown = (e) => {
       if (!preventNavigation) {
         if (e.keyCode === 37) { // Left arrow
