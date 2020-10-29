@@ -29,8 +29,8 @@ function Program(props) {
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const [showMobileProgramInfo, setShowMobileProgramInfo] = useState(false);
   const [maxMode, setMaxMode] = useState(false);
-  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportWidth, setViewportWidth] = useState(window.visualViewport.width);
+  const [viewportHeight, setViewportHeight] = useState(window.visualViewport.height);
   const [inputIsFocused, setInputIsFocused] = useState(false);
 
   const session = useSelector(state => state.session);
