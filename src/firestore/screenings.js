@@ -1,6 +1,14 @@
 import * as firebase from "firebase/app";
 import { firestore } from '../firebase';
 
+const handleError = (customMessage, error) => {
+  if (error.name === "FirebaseError") {
+    throw new Error(`${customMessage} ${error.code}`);
+  } else {
+    throw new Error(`${customMessage} ${error.message}`);
+  }
+};
+
 export const makeTestHotIronsScreening = async (screeningId) => {
   const testScreeningRef = firestore.doc(`screenings/${screeningId}`);
   const testScreeningDoc = await testScreeningRef.get();
@@ -17,27 +25,69 @@ export const makeTestHotIronsScreening = async (screeningId) => {
       throw new Error(`Error creating screening: ${error}`);
     }
   }
-
-  return getScreening(screeningId);
 };
 
-export const getScreening = async (screeningId) => {
-  if (!screeningId) return null;
+const getScreeningMembers = async(screeningId, uid) => {
+  if (!screeningId || !uid) return;
 
+  try {
+    // console.log("Trying to get members collection");
+    const membersDoc = await firestore.doc(`screenings/${screeningId}`).collection("members").get();
+    if (!membersDoc.size) {
+      console.log("There are no members registered for this screening");
+      return;
+    } else {
+      console.log("Found members for this screening");
+
+      const membersData = membersDoc.docs.map(member => {
+        return {
+          id: member.id,
+          ...member.data()
+        }
+      })
+
+      return membersData;
+    }
+  } catch (error) {
+    handleError("Couldn't fetch members because", error);
+  }
+}
+
+export const getScreening = async (screeningId, uid = null) => {
+  if (!screeningId) return;
+
+  // console.log("[in getScreening]");
   try {
     const screeningDoc = await firestore.doc(`screenings/${screeningId}`).get();
     if (screeningDoc.exists) {
-      console.log("Got screening", screeningDoc.data());
-      return {
-        id: screeningDoc.id,
-        ...screeningDoc.data()
+      const screeningData = screeningDoc.data();
+      // console.log("Got screening", screeningData);
+
+      // Logic to check for admin IDs and user info
+      let members;
+      if (uid && screeningData.adminIds.includes(uid)) {
+        console.log("User has permission to get event members");
+        members = await getScreeningMembers(screeningId, uid);
+      } else {
+        console.log("No user, or user doesn't have permission to get event members");
       }
+
+      const returnedData = {
+        id: screeningDoc.id,
+        ...screeningData,
+      }
+
+      if (members) {
+        returnedData.members = members;
+      }
+
+      return returnedData;
     } else {
       console.log("Screening doesn't exist");
       return null;
     }
   } catch (error) {
-    throw new Error(`Error fetching screening: ${error}`);
+    handleError("Error fetching screening", error);
   }
 }
 
@@ -62,14 +112,14 @@ export const getScreeningRegistration = async (screeningId, uid) => {
 }
 
 /* Register a user for a screening */
-export const registerForScreening = async (screeningId, uid) => {
+export const registerForScreening = async (screeningId, user) => {
   console.log("In registerForScreening");
-  if (!screeningId || !uid) {
-    console.log("Missing screening or uid");
+  if (!screeningId || !user) {
+    console.log("Missing screening or user");
   }
 
   const screeningRef = firestore.doc(`screenings/${screeningId}`);
-  const memberRef = firestore.doc(`screenings/${screeningId}/members/${uid}`);
+  const memberRef = firestore.doc(`screenings/${screeningId}/members/${user.uid}`);
 
   const memberDoc = await memberRef.get();
 
@@ -105,25 +155,21 @@ export const registerForScreening = async (screeningId, uid) => {
     // handling Firebase errors
     // `error.code` comes from Firestore's response if it fails server-side
     // `error.message` comes if we set it ourselves in the `try` block
-    if (error.name === "FirebaseError") {
-      throw new Error(`Transaction failed because ${error.code}`);
-    } else {
-      throw new Error(`Transaction failed because ${error.message}`);
-    }
+    handleError("Transaction failed because", error);
   }
 
-  return getScreeningRegistration(screeningId, uid);
+  return getScreeningRegistration(screeningId, user.uid);
 }
 
 /* Unregister a user for a screening */
-export const unregisterForScreening = async (screeningId, uid) => {
+export const unregisterForScreening = async (screeningId, user) => {
   console.log("In unregisterForScreening");
-  if (!screeningId || !uid) {
+  if (!screeningId || !user) {
     console.log("Missing screening or user id");
   }
 
   const screeningRef = firestore.doc(`screenings/${screeningId}`);
-  const memberRef = firestore.doc(`screenings/${screeningId}/members/${uid}`);
+  const memberRef = firestore.doc(`screenings/${screeningId}/members/${user.uid}`);
 
   try {
     await firestore.runTransaction(async t => {
@@ -145,11 +191,7 @@ export const unregisterForScreening = async (screeningId, uid) => {
       }
     });
   } catch (error) {
-    if (error.name === "FirebaseError") {
-      throw new Error(`Transaction failed because ${error.code}`);
-    } else {
-      throw new Error(`Transaction failed because ${error.message}`);
-    }
+    handleError("Transaction failed because", error);
   }
-  return getScreeningRegistration(screeningId, uid);
+  return getScreeningRegistration(screeningId, user.uid);
 }

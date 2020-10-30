@@ -3,7 +3,13 @@ import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
 import { generateUserDocument } from './firestore/users';
-import { makeTestHotIronsScreening, getScreening, getScreeningRegistration, registerForScreening, unregisterForScreening } from './firestore/screenings';
+import {
+  makeTestHotIronsScreening,
+  getScreening,
+  getScreeningRegistration,
+  registerForScreening,
+  unregisterForScreening
+} from './firestore/screenings';
 
 import { UserContext } from "./providers/UserProvider";
 
@@ -47,16 +53,23 @@ function Registration(props) {
   const [error, setError] = useState();
   const screeningId = "hot-irons";
 
-  /* Check to see if user exists in Firestore (not Auth) */
+  /* Check to see if user exists in Firestore (not Auth),
+  * and re-check screening when users log in and out */
   useEffect(() => {
     console.log("User in useEffect:", user?.uid);
+    if (screening) {
+      (async function() {
+        console.log("Running async");
+        setScreening(await getScreening(screeningId, user?.uid || null));
+      })();
+    }
     if (!user) {
       setRegistration(null);
       return;
     }
 
     generateUserDocument(user);
-  }, [user]);
+  }, [user, screening]);
 
   /* Check to see if screening exists */
   const [screening, setScreening] = useState(null);
@@ -66,14 +79,14 @@ function Registration(props) {
     async function checkScreening() {
       try {
         console.log("Checking screening...");
-        setScreening(await getScreening(screeningId));
-      } catch (error) {
-        setError("Couldn't get screening");
+        setScreening(await getScreening(screeningId, user?.uid || null));
+      } catch (e) {
+        setError(`${e.name}: ${e.message}`);
       }
     }
 
     checkScreening();
-  }, [screening]);
+  }, [screening, user]);
 
   /* Check to see if user is registered, on load and if screening changes */
   const [registration, setRegistration] = useState(null);
@@ -85,8 +98,7 @@ function Registration(props) {
         console.log("Checking registration...");
         setRegistration(await getScreeningRegistration(screening.id, user.uid));
       } catch (error) {
-        console.log("Error checking registration", error);
-        setError("Error checking registration");
+        setError(`Error checking registration ${error}`);
       }
     }
     checkRegistration();
@@ -94,7 +106,8 @@ function Registration(props) {
 
   /* User interactions */
   const makeScreening = async () => {
-    setScreening(await makeTestHotIronsScreening(screeningId));
+    setScreening(await makeTestHotIronsScreening(screeningId)
+      .catch(e => setError(`${e.name}: ${e.message}`)));
   }
 
   /* Issue: Because the below necessarily updates the screening to get the latest
@@ -104,19 +117,19 @@ function Registration(props) {
   const register = async () => {
     if (!screening || !user) return;
     console.log("Registering in component...");
-    const registration = await registerForScreening(screening.id, user.uid)
+    const registration = await registerForScreening(screening.id, user)
       .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
-    setScreening(await getScreening(screening.id));
+    setScreening(await getScreening(screening.id, user.uid));
   }
 
   const unregister = async () => {
     if (!screening || !user) return;
     console.log("Unregistering in component...");
-    const registration = await unregisterForScreening(screening.id, user.uid)
+    const registration = await unregisterForScreening(screening.id, user)
       .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
-    setScreening(await getScreening(screening.id));
+    setScreening(await getScreening(screening.id, user.uid));
   }
 
   return (
@@ -148,6 +161,16 @@ function Registration(props) {
             <p>Screening name: {screening.id}</p>
             <p>Total allowed: {screening.totalAllowed}</p>
             <p>Total registered: {screening.totalRegistered}</p>
+            { screening.members &&
+            <>
+              Members on this event:
+              <ul>
+                { screening.members.map(member =>
+                  <li key={member.id}>Member: {member.displayName}, {member.email}</li>
+                )}
+              </ul>
+            </>
+            }
             { user &&
               <>
                 <hr />
