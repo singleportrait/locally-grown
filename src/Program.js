@@ -27,13 +27,6 @@ import {
 } from './styles';
 
 function Program(props) {
-  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
-  const [showMobileProgramInfo, setShowMobileProgramInfo] = useState(false);
-  const [maxMode, setMaxMode] = useState(false);
-  const [viewportWidth, setViewportWidth] = useState(window.visualViewport.width);
-  const [viewportHeight, setViewportHeight] = useState(window.visualViewport.height);
-  const [inputIsFocused, setInputIsFocused] = useState(false);
-
   const dispatch = useDispatch();
   const session = useSelector(state => state.session);
   const reduxProgramBlocks = useSelector(state => state.programBlocks);
@@ -88,6 +81,9 @@ function Program(props) {
   }, [session.currentHour, programBlocks, dispatch]);
 
   /* Event handlers for mouse move and max mode */
+  const [maxMode, setMaxMode] = useState(false);
+  const [inputIsFocused, setInputIsFocused] = useState(false);
+
   const handleEventEnd = useCallback(debounce((e) => {
     if (!inputIsFocused) {
       consoleLog('Starting max mode after 3s debounce');
@@ -172,6 +168,8 @@ function Program(props) {
    * Mobile iOS Safari: immediately after orientationchange but *only when rotating from horizontal to vertical*
    * Mobile (Android) Chrome: immediately after orientation when rotating both directions
    */
+  const [viewportWidth, setViewportWidth] = useState(window.visualViewport.width);
+  const [viewportHeight, setViewportHeight] = useState(window.visualViewport.height);
   useEffect(() => {
     // console.log("[Adding useEffect for device rotation]");
     const handleOrientationChange = (e) => {
@@ -200,10 +198,12 @@ function Program(props) {
     }
   }, [viewportWidth, viewportHeight]);
 
+  const [showMobileProgramInfo, setShowMobileProgramInfo] = useState(false);
   const toggleMobileProgramInfo = () => {
     setShowMobileProgramInfo(!showMobileProgramInfo);
   }
 
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const toggleInfo = () => {
     setShowInfoTooltip(!showInfoTooltip);
   }
