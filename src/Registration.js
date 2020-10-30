@@ -77,14 +77,10 @@ function Registration(props) {
     if (screening) return;
 
     async function checkScreening() {
-      try {
-        console.log("Checking screening...");
-        setScreening(await getScreening(screeningId, user?.uid || null));
-      } catch (e) {
-        setError(`${e.name}: ${e.message}`);
-      }
+      console.log("Checking screening...");
+      setScreening(await getScreening(screeningId, user?.uid || null)
+        .catch(e => setError(`${e.name}: ${e.message}`)));
     }
-
     checkScreening();
   }, [screening, user]);
 
@@ -94,12 +90,9 @@ function Registration(props) {
     if (!screening || !user) return;
 
     async function checkRegistration() {
-      try {
-        console.log("Checking registration...");
-        setRegistration(await getScreeningRegistration(screening.id, user.uid));
-      } catch (error) {
-        setError(`Error checking registration ${error}`);
-      }
+      console.log("Checking registration...");
+      setRegistration(await getScreeningRegistration(screening.id, user.uid)
+        .catch(e => setError(`Error checking registration ${error}`)));
     }
     checkRegistration();
   }, [user, screening]);
