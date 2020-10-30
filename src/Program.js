@@ -176,8 +176,8 @@ function Program(props) {
       // consoleLog("- Orientation changed; sizes now:", window.innerWidth, window.innerHeight);
 
       const handleResizeOnOrientation = () => {
-        setViewportWidth(window.innerWidth);
-        setViewportHeight(window.innerHeight);
+        setViewportWidth(window.visualViewport.width);
+        setViewportHeight(window.visualViewport.height);
 
         // consoleLog("- After orientation timeout, window size now:", this.state.viewportWidth, this.state.viewportHeight);
       }
