@@ -46,7 +46,7 @@ const configureChannels = (channels) => {
     // Filter out programs with no fields, and ones that
     // aren't active for today
     const validPrograms = channel.fields.programs.filter(program => {
-      return program.fields && program.fields.featured === true &&
+      return program.fields &&
         moment(program.fields.startDate, dateFormat).isSameOrBefore(today) &&
         moment(program.fields.endDate, dateFormat).isSameOrAfter(today);
     });
@@ -141,8 +141,10 @@ const findFeaturedActiveChannels = (channels) => {
     // consoleLog("- These programs:", channel.fields.programs);
 
     // Earlier we filter out programs that aren't happening today, but here we
-    // filter out prorams that don't have any program blocks, so they can't be featured
-    const featuredPrograms = channel.fields.programs.filter(program => program.fields.programBlocks);
+    // filter out programs that don't have any program blocks and aren't featured
+    const featuredPrograms = channel.fields.programs.filter(program => {
+      return program.fields.programBlocks && program.fields.featured === true;
+    });
 
     // consoleLog("Featured available programs:", featuredPrograms);
 
