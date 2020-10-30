@@ -144,6 +144,8 @@ export const registerForScreening = async (screeningId, user) => {
           registrationUpdatedAt: serverTimestamp,
         });
         t.set(memberRef, {
+          displayName: user.displayName,
+          email: user.email,
           registeredAt: serverTimestamp,
         });
       } else {

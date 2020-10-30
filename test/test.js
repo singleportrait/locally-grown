@@ -4,10 +4,26 @@ const firebase = require("@firebase/testing");
 const MY_PROJECT_ID = "locally-grown-tv";
 const myId = "user_12345";
 const modId = "user_mod";
+const godId = "user_god";
 const theirId = "user_67890";
+
+const screeningId = "screening_123";
+
 const myAuth = {
   uid: myId,
+  displayName: "Jenn Scheer",
   email: "user_12345@gmail.com"
+};
+
+const theirAuth = {
+  uid: theirId,
+  displayName: "Jamil Baldwin",
+  email: "user_67890@gmail.com"
+};
+
+const modAuth = {
+  uid: modId,
+  email: "user_mod@gmail.com"
 };
 
 const godAuth = {
@@ -16,7 +32,6 @@ const godAuth = {
   roles: ["godMod"]
 };
 
-const screeningId = "screening_123";
 const screeningPath = `screenings/${screeningId}`;
 
 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
@@ -36,6 +51,7 @@ const admin = getAdminFirestore();
 
 const noAuthDB = getFirestore(null);
 const myAuthDB = getFirestore(myAuth);
+const modAuthDB = getFirestore(modAuth);
 const godAuthDB = getFirestore(godAuth);
 
 /* Clear Firestore before running each test */
@@ -167,6 +183,8 @@ describe("Event registration security", () => {
       registrationUpdatedAt: timestamp
     });
     batch.set(testMember, {
+      displayName: myAuth.displayName,
+      email: myAuth.email,
       registeredAt: timestamp
     });
     await firebase.assertSucceeds(batch.commit());
@@ -182,6 +200,8 @@ describe("Event registration security", () => {
       registrationUpdatedAt: yesterday
     });
     await admin.doc(memberPath).set({
+      displayName: myAuth.displayName,
+      email: myAuth.email,
       registeredAt: timestamp
     });
 

@@ -14,7 +14,7 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /users/{userId} {
-      allow read, update, delete, create: if (request.auth != null && request.auth.uid == userId);
+      allow read, update, delete, create: if isAuthed(userId);
     }
     match /screenings/{screeningId} {
       function userIsEventMod() {
@@ -70,12 +70,12 @@ service cloud.firestore {
       // allow create: if (isGodMod() && screeningHasAllRequiredFields());
 
       match /members/{userId} {
-        function memberHasRegisteredAt() {
+        function memberHasRequiredFields() {
           let debugMessage = debug("** Comparing request auth and user ID **");
           let unused = debug(request.auth.uid);
           let unusedUserId = debug(userId);
           return (request.resource.data.keys()
-            .hasAll(["registeredAt"]));
+            .hasAll(["displayName", "email", "registeredAt"]));
         }
 
         function updatedRegistrationUpdatedAtTimestamp() {
@@ -89,7 +89,7 @@ service cloud.firestore {
 
         allow read, update: if isAuthed(userId) || userIsEventMod();
         allow create: if (isAuthed(userId) || userIsEventMod()) &&
-          debug(memberHasRegisteredAt()) &&
+          debug(memberHasRequiredFields()) &&
           updatedRegistrationUpdatedAtTimestamp();
         allow delete: if (isAuthed(userId) || userIsEventMod()) &&
           updatedRegistrationUpdatedAtTimestamp();
