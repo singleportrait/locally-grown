@@ -229,6 +229,9 @@ const InfoColumnContainer = styled('div')`
   transform: translateZ(0);
   backface-visibility: hidden;
   height: calc(100vh - 1.4rem);
+  // TODO: Set the overall page header to be a specific height that makes this
+  // scrollable section the correct height
+  height: calc(100vh - 1.4rem - 5rem);
   overflow-x: hidden;
   transition: opacity 0.4s ease, right 0.4s ease;
   opacity: ${props => props.maxMode ? '0' : '1' };
