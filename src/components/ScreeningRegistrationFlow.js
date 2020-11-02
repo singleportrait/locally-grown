@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 
+import Modal from './Modal';
+
 function ScreeningRegistrationFlow(props) {
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    console.log("Opening modal");
+    setShowModal(true);
+  }
+
+  const closeModal = () => {
+    console.log("Closing modal");
+    setShowModal(false);
+  }
 
   return (
     <RegistrationContainer>
@@ -26,6 +39,14 @@ function ScreeningRegistrationFlow(props) {
           }
         </>
       }
+      <a onClick={() => openModal()}>Click me to open modal</a>
+      { showModal &&
+        <Modal closeModal={closeModal}>
+          <h2>Here is a modal</h2>
+          <a onClick={() => closeModal()}>Click me to close modal</a>
+        </Modal>
+      }
+
     </RegistrationContainer>
   );
 }
