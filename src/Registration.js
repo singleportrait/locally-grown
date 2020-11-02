@@ -59,7 +59,7 @@ function Registration(props) {
     console.log("User in useEffect:", user?.uid);
     if (screening) {
       (async function() {
-        console.log("Running async");
+        console.log("Running async because user changed");
         setScreening(await getScreening(screeningId, user?.uid || null));
       })();
     }
@@ -71,31 +71,27 @@ function Registration(props) {
     generateUserDocument(user);
   }, [user, screening]);
 
-  /* Check to see if screening exists */
+  /* Check to see if screening and/or member registration exists */
   const [screening, setScreening] = useState(null);
-  useEffect(() => {
-    if (screening) return;
-
-    async function checkScreening() {
-      console.log("Checking screening...");
-      setScreening(await getScreening(screeningId, user?.uid || null)
-        .catch(e => setError(`${e.name}: ${e.message}`)));
-    }
-    checkScreening();
-  }, [screening, user]);
-
-  /* Check to see if user is registered, on load and if screening changes */
   const [registration, setRegistration] = useState(null);
   useEffect(() => {
-    if (!screening || !user) return;
+    if (!user) return;
 
     async function checkRegistration() {
-      console.log("Checking registration...");
-      setRegistration(await getScreeningRegistration(screening.id, user.uid)
-        .catch(e => setError(`Error checking registration ${error}`)));
+      console.log("[Checking registration in useEffect...]");
+      setRegistration(await getScreeningRegistration(screeningId, user.uid)
+        .catch(e => setError(`Error checking registration ${e}`)));
     }
-    checkRegistration();
-  }, [user, screening]);
+
+    async function checkScreening() {
+      console.log("[Checking screening in useEffect...]");
+      setScreening(await getScreening(screeningId, user?.uid || null)
+        .catch(e => setError(`${e.name}: ${e.message}`)));
+      checkRegistration();
+    }
+
+    checkScreening();
+  }, [user]);
 
   /* User interactions */
   const makeScreening = async () => {

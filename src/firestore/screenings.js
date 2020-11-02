@@ -54,6 +54,7 @@ const getScreeningMembers = async(screeningId, uid) => {
 }
 
 export const getScreening = async (screeningId, uid = null) => {
+  console.log("[getScreening]");
   if (!screeningId) return;
 
   // console.log("[in getScreening]");
@@ -93,6 +94,7 @@ export const getScreening = async (screeningId, uid = null) => {
 
 /* Get a user's screening registration */
 export const getScreeningRegistration = async (screeningId, uid) => {
+  console.log("[getScreeningRegistration]");
   if (!screeningId || !uid) {
     console.log("Missing user or screening in getScreeningRegistration");
   }
@@ -113,7 +115,7 @@ export const getScreeningRegistration = async (screeningId, uid) => {
 
 /* Register a user for a screening */
 export const registerForScreening = async (screeningId, user) => {
-  console.log("In registerForScreening");
+  console.log("[registerForScreening]");
   if (!screeningId || !user) {
     console.log("Missing screening or user");
   }
@@ -138,7 +140,7 @@ export const registerForScreening = async (screeningId, user) => {
       }
 
       if (!memberDoc.exists) {
-        console.log("Craeting memeber");
+        console.log("Creating memeber");
         t.update(screeningRef, {
           totalRegistered: firebase.firestore.FieldValue.increment(1),
           registrationUpdatedAt: serverTimestamp,
@@ -165,7 +167,7 @@ export const registerForScreening = async (screeningId, user) => {
 
 /* Unregister a user for a screening */
 export const unregisterForScreening = async (screeningId, user) => {
-  console.log("In unregisterForScreening");
+  console.log("[unregisterForScreening]");
   if (!screeningId || !user) {
     console.log("Missing screening or user id");
   }
@@ -182,7 +184,7 @@ export const unregisterForScreening = async (screeningId, user) => {
       if (!screeningDoc.exists) { throw new Error("Screening doesn't exist!"); }
 
       if (memberDoc.exists) {
-        console.log("Unregistering member...");
+        console.log("[Firebase transaction: Unregistering member...]");
         t.delete(memberRef);
         t.update(screeningRef, {
           totalRegistered: firebase.firestore.FieldValue.increment(-1),
