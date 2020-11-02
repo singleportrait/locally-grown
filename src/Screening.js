@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
+import Markdown from 'react-markdown';
+
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import { UserContext } from "./providers/UserProvider";
 
@@ -11,9 +16,17 @@ import {
   unregisterForScreening
 } from './firestore/screenings';
 
+import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
+
+const red = "#fc4834";
+
 function Screening(props) {
   const { user } = useContext(UserContext);
   const [error, setError] = useState();
+
+  const isWideScreen = useMediaQuery({ minDeviceWidth: 800 });
+  const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
+  // const isPortrait = useMediaQuery({ orientation: 'portrait' });
 
   const { title, slug, description } = props.screening.fields;
   const contentfulScreeningId = slug;
@@ -81,27 +94,165 @@ function Screening(props) {
   }
 
   return (
-    <div style={{padding: "1rem"}}>
-      <Link to="/screenings">Back to screenings</Link>
-      <hr />
-      <br />
-      Individual screening page:
-      <h1>{ props.screening.fields.title }</h1>
-      { !user &&
+    <>
+      { isWideScreen &&
+        <WideProgramContainer color="#111">
+          <div>
+            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+            <hr />
+          </div>
+          <ContentContainer>
+            <VideoAndControlsColumn>
+              <h1>Video here</h1>
+            </VideoAndControlsColumn>
+            <InfoColumnContainer>
+              <div className={infoColumn}>
+                Individual screening page:
+                <h1>{ title }</h1>
+                <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
+                { !screening &&
+                <p style={{textDecoration: "underline"}}>Make test screening</p>
+                }
+                { screening &&
+                  <>
+                    <p>Screening created</p>
+                    <br />
+                      <ScreeningRegistrationFlow
+                        screening={screening}
+                        registration={registration}
+                        register={register}
+                        unregister={unregister} />
+                    <br />
+                  </>
+                }
+                { !screening &&
+                  <h4>There's no screening registration for this screening yet!</h4>
+                }
+                { description &&
+                  <Markdown source={description} />
+                }
+                { !user &&
+                <>
+                  <h4>Not signed in :)</h4>
+                  {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}/> */}
+                </>
+                }
+                { user &&
+                  <>
+                    <h4>Loaded! Hello { user.displayName }</h4>
+                    {/* <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p> */}
+                    <br />
+                  </>
+                }
+                <hr />
+                <br />
+                <Link to="/screenings">Back to screenings</Link>
+                <br />
+                <Link to="/">Back to home</Link>
+              </div>
+            </InfoColumnContainer>
+          </ContentContainer>
+        </WideProgramContainer>
+      }
+      { isMobileOrTablet &&
         <>
-          <h4>Not signed in :)</h4>
-          {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}/> */}
+          Mobile version here.
         </>
       }
-      { user &&
+      { error &&
         <>
-          <h4>Loaded! Hello { user.displayName }</h4>
-          {/* <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p> */}
-          <br />
+          There's an error.
         </>
       }
-    </div>
+    </>
   );
 }
+
+/* COPIED FROM PROGRAM.JS, FOR NOW */
+const WideProgramContainer = styled('div')`
+  // display: flex; // Want to have the header at top, don't want flex
+  // margin: 1.4rem 1.4rem 0; // Might be able to change Program to use padding instead of margin
+  padding: 1.4rem 1.4rem 0;
+  position: relative;
+  overflow: hidden;
+  // height: calc(100vh - 1.4rem); // Because we're using padding not margin
+  height: 100vh;
+  ${props => props.color && `background-color: ${props.color};` }
+
+  hr {
+    border-color: ${red};
+  }
+`;
+
+const shortAspectRatio = '9/5';
+const shortestAspectRatio = '9/4';
+// widthRelativeToBrowserHeight = (Browser width - program padding) * video 4/3 ratio
+const widthRelativeToBrowserHeight = 'calc((100vh - 2.8rem) * 1.333)';
+
+// Use the ratio of the video to learn how wide or tall it is, then position
+// it accordingly based on the browser ratio
+const relativeLeftValue = 'calc((100vw - 2.8rem - ((100vh - 2.8rem) * 1.333)) / 2)';
+const relativeTopValue = 'calc(((100vh - 2.8rem - (100vw - 2.8rem) * .75)) / 2)';
+
+const VideoAndControlsColumn = styled('div')`
+  position: relative;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: width 0.4s ease, left 0.4s ease, top 0.4s ease;
+  max-width: 100%;
+
+  @media (min-aspect-ratio: 4/3) {
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
+    left: ${props => props.maxMode ? relativeLeftValue : '0' };
+  }
+
+  @media (max-aspect-ratio: 4/3) {
+    width: ${props => props.maxMode ? '100%' : '65%' };
+    top: ${props => props.maxMode ? relativeTopValue : '0' };
+  }
+
+  @media (min-aspect-ratio: ${shortAspectRatio}) {
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '55%' };
+    left: ${props => props.maxMode ? relativeLeftValue : '5%' };
+  }
+
+  @media (min-aspect-ratio: ${shortestAspectRatio}) {
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '45%' };
+    left: ${props => props.maxMode ? relativeLeftValue : '10%' };
+  }
+`;
+
+const InfoColumnContainer = styled('div')`
+  position: absolute;
+  width: 35%;
+  padding-left: 1.4rem;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  height: calc(100vh - 1.4rem);
+  overflow-x: hidden;
+  transition: opacity 0.4s ease, right 0.4s ease;
+  opacity: ${props => props.maxMode ? '0' : '1' };
+  right: ${props => props.maxMode ? '-35%' : '0' };
+
+  @media (min-aspect-ratio: ${shortAspectRatio}) {
+    right: ${props => props.maxMode ? '-35%' : '5%' };
+  }
+
+  @media (min-aspect-ratio: ${shortestAspectRatio}) {
+    right: ${props => props.maxMode ? '-35%' : '10%' };
+  }
+`;
+
+const infoColumn = css`
+  padding-right: 16px;
+  margin-right: -16px;
+  overflow-y: scroll;
+  height: 100%;
+`;
+
+/* NEW STYLES BELOW HERE */
+const ContentContainer = styled('div')`
+  display: flex;
+`;
 
 export default Screening;

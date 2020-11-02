@@ -9,7 +9,7 @@ function Screenings(props) {
   const screenings = props.screenings;
 
   return (
-    <div style={{padding: "1rem"}}>
+    <div>
       <Switch>
         <Route exact path={path}>
           {/* <Redirect to="/" /> */}
