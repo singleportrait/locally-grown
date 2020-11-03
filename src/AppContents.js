@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
@@ -10,26 +10,16 @@ import { isIOS } from './helpers/utils';
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
 
+import LoadingScreen from './components/LoadingScreen';
 import Channel from './Channel';
 import TVGuide from './TVGuide';
 import Channels from './Channels';
-import WhatIsThisTooltip from './components/WhatIsThisTooltip';
 import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
 
 import styled from '@emotion/styled';
 
-import { Logo, mobileViewportHeight } from './styles';
-
-const LoadingContainer = styled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  height: ${mobileViewportHeight};
-  width: 100vw;
-`;
+import { mobileViewportHeight } from './styles';
 
 const mobileLowBatteryTooltipHeight = "200px";
 
@@ -84,12 +74,7 @@ class AppContents extends Component {
       // TODO: This is running twice for some reason - we don't want that
       // ReactGA.pageview('/no-programs');
       return (
-        <LoadingContainer>
-          <Logo>Locally Grown</Logo>
-          <h1>No programs right now.</h1>
-          <br /><br />
-          <WhatIsThisTooltip showLink={false} />
-        </LoadingContainer>
+        <LoadingScreen message="No programs right now" showWhatIsThisTooltip />
       );
     };
 
@@ -98,23 +83,13 @@ class AppContents extends Component {
       // TODO: This is running every time for some reason - we don't want that
       // ReactGA.pageview('/404');
       return (
-        <LoadingContainer>
-          <Logo>Locally Grown</Logo>
-          <h1>Sorry, we couldn&apos;t find that.</h1>
-          <br /><br />
-          <h4><Link to="/tv-guide">Find something to watch.</Link></h4>
-        </LoadingContainer>
+        <LoadingScreen message="Sorry, we couldn&apos;t find that." showTVGuideLink />
       );
     };
 
     function LoadingState() {
       return (
-        <LoadingContainer>
-          <Logo>&nbsp;</Logo>
-          <h1>Loading Locally Grown...</h1>
-          <br /><br />
-          <h4>&nbsp;</h4>
-        </LoadingContainer>
+        <LoadingScreen showInitialLoadingState />
       );
     }
 
@@ -122,12 +97,7 @@ class AppContents extends Component {
       // Tracking for errors
       ReactGA.pageview('/error');
       return (
-        <LoadingContainer>
-          <Logo>Locally Grown</Logo>
-          <h1>Sorry, there was an error loading channels.</h1>
-          <br /><br />
-          <h4>&nbsp;</h4>
-        </LoadingContainer>
+        <LoadingScreen message="Sorry, there was an error loading channels." />
       );
     }
 

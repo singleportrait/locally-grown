@@ -3,14 +3,15 @@ import { useHistory } from "react-router-dom";
 
 function KeyboardNavigation(props) {
   let history = useHistory();
+  const { preventNavigation, previousChannelSlug, nextChannelSlug } = props;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (!props.preventNavigation) {
+      if (!preventNavigation) {
         if (e.keyCode === 37) { // Left arrow
-          history.push(props.previousChannelSlug);
+          history.push(previousChannelSlug);
         } else if (e.keyCode === 39) { // Right arrow
-          history.push(props.nextChannelSlug);
+          history.push(nextChannelSlug);
         }
       }
     }
@@ -20,7 +21,7 @@ function KeyboardNavigation(props) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     }
-  });
+  }, [preventNavigation, previousChannelSlug, nextChannelSlug, history]);
 
   return (
     <React.Fragment />
