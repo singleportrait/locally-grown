@@ -53,3 +53,27 @@ export const VideoPlaceholderWrapper = styled('div')`
   background: url(./static_placeholder_simpler.gif);
   background-size: cover;
 `;
+
+export const Button = styled('div')`
+  background-color: ${props => props.color ? props.color : "#fff"};
+  color: ${props => props.textColor ? props.textColor: "#000"};
+  font-weight: 500;
+  font-size: ${props => props.small ? '13px' : props.large ? '22px' : '15px'};
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+  width: 100%;
+  width: auto;
+  margin-top: 1rem;
+  padding: 0 .6em;
+  line-height: 1.8;
+  border-radius: 2em;
+  // padding: .2rem .6rem;
+  // padding: .2em .6em .3em;
+  // height: calc(.4em + 1.4em);
+  // border-radius: calc((.4em + 1.4em) / 2);
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+`;

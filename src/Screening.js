@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Markdown from 'react-markdown';
+import { auth } from './firebase';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
@@ -23,6 +24,7 @@ const red = "#fc4834";
 function Screening(props) {
   const { user } = useContext(UserContext);
   const [error, setError] = useState();
+  const [isLoaded, setIsLoaded] = useState(true);
 
   const isWideScreen = useMediaQuery({ minDeviceWidth: 800 });
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
@@ -44,22 +46,28 @@ function Screening(props) {
   const [registration, setRegistration] = useState(null);
 
   useEffect(() => {
-    if (!user) return;
+    setIsLoaded(false);
+    setRegistration(null); // For user logging out
 
-    async function checkRegistration() {
-      console.log("[Checking registration in useEffect...]");
-      setRegistration(await getScreeningRegistration(contentfulScreening.slug, user.uid)
-        .catch(e => setError(`Error checking registration ${e}`)));
-    }
-
-    async function checkScreening() {
+    async function checkScreeningAndRegistration() {
       console.log("[Checking screening in useEffect...]");
-      setScreening(await getScreening(contentfulScreening.slug, user?.uid || null)
-        .catch(e => setError(`${e.name}: ${e.message}`)));
-      checkRegistration();
+      const screeningResult = await getScreening(contentfulScreening.slug, user?.uid || null)
+        .catch(e => setError(`${e.name}: ${e.message}`));
+
+      let registrationResult = null;
+      if (user) {
+        console.log("[Checking registration in useEffect...]");
+        registrationResult = await getScreeningRegistration(contentfulScreening.slug, user.uid)
+          .catch(e => setError(`Error checking registration ${e}`));
+      }
+
+      // Can set a manual slowdown here whenever it's time to style the loading state
+      setScreening(screeningResult);
+      setRegistration(registrationResult);
+      setIsLoaded(true);
     }
 
-    checkScreening();
+    checkScreeningAndRegistration();
   }, [user, contentfulScreening.slug]);
 
   /* Issue: Because the below necessarily updates the screening to get the latest
@@ -101,24 +109,23 @@ function Screening(props) {
                 Individual screening page:
                 <h1>{ title }</h1>
                 <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
-                { !screening &&
-                <p style={{textDecoration: "underline"}}>Make test screening</p>
-                }
-                { screening &&
+                { !screening && isLoaded &&
                   <>
-                    <p>Screening created</p>
-                    <br />
-                      <ScreeningRegistrationFlow
-                        screening={screening}
-                        registration={registration}
-                        register={register}
-                        unregister={unregister} />
-                    <br />
+                    <h4>There's no screening registration for this screening yet!</h4>
+                    <p style={{textDecoration: "underline"}}>Make test screening</p>
                   </>
                 }
-                { !screening &&
-                  <h4>There's no screening registration for this screening yet!</h4>
-                }
+                <br />
+                  <ScreeningRegistrationFlow
+                    contentfulScreening={contentfulScreening}
+                    screening={screening}
+                    registration={registration}
+                    register={register}
+                    unregister={unregister}
+                    isLoaded={isLoaded}
+                    setIsLoaded={setIsLoaded} />
+                <br />
+                { user && <p className={linkStyle} onClick={() => auth.signOut()}>Sign out</p>}
                 { description &&
                   <Markdown source={description} />
                 }
@@ -131,7 +138,6 @@ function Screening(props) {
                 { user &&
                   <>
                     <h4>Loaded! Hello { user.displayName }</h4>
-                    {/* <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p> */}
                     <br />
                   </>
                 }
@@ -247,6 +253,11 @@ const infoColumn = css`
 /* NEW STYLES BELOW HERE */
 const ContentContainer = styled('div')`
   display: flex;
+`;
+
+const linkStyle = css`
+  cursor: pointer;
+  text-decoration: underline;
 `;
 
 export default Screening;
