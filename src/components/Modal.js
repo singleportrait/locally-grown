@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import styled from '@emotion/styled/macro';
 
+import CloseIcon from './CloseIcon';
+
 const modalRoot = document.getElementById('modal');
 
 class Modal extends Component {
@@ -25,6 +27,11 @@ class Modal extends Component {
         <ModalOverlay onClick={this.props.closeModal} />
         <Content>
           { this.props.children }
+          { this.props.closeModal &&
+            <CloseModal onClick={this.props.closeModal}>
+              <CloseIcon color="#000" />
+            </CloseModal>
+          }
         </Content>
       </ModalContainer>,
       this.el
@@ -57,11 +64,22 @@ const ModalOverlay = styled('div')`
 const Content = styled('div')`
   width: 400px;
   height: 400px;
+  padding: 1rem;
+  position: relative;
   background-color: #fff;
   z-index: 2;
+
   &, a {
     color: #000;
   }
+`;
+
+const CloseModal = styled('div')`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  cursor: pointer;
 `;
 
 export default Modal;
