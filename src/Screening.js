@@ -29,47 +29,38 @@ function Screening(props) {
   // const isPortrait = useMediaQuery({ orientation: 'portrait' });
 
   const { title, slug, description } = props.screening.fields;
-  const contentfulScreeningId = slug;
+  const contentfulScreening = { title, slug, description };
 
   /* Check to see if user exists in Firestore (not Auth),
   * and re-check screening when users log in and out */
   useEffect(() => {
     console.log("User in useEffect:", user?.uid);
-    if (screening) {
-      (async function() {
-        console.log("Running async because user changed");
-        setScreening(await getScreening(contentfulScreeningId, user?.uid || null));
-      })();
-    }
-    if (!user) {
-      setRegistration(null);
-      return;
-    }
 
     generateUserDocument(user);
-  }, [user, screening, contentfulScreeningId]);
+  }, [user]);
 
   /* Check to see if screening and/or member registration exists */
   const [screening, setScreening] = useState(null);
   const [registration, setRegistration] = useState(null);
+
   useEffect(() => {
     if (!user) return;
 
     async function checkRegistration() {
       console.log("[Checking registration in useEffect...]");
-      setRegistration(await getScreeningRegistration(contentfulScreeningId, user.uid)
+      setRegistration(await getScreeningRegistration(contentfulScreening.slug, user.uid)
         .catch(e => setError(`Error checking registration ${e}`)));
     }
 
     async function checkScreening() {
       console.log("[Checking screening in useEffect...]");
-      setScreening(await getScreening(contentfulScreeningId, user?.uid || null)
+      setScreening(await getScreening(contentfulScreening.slug, user?.uid || null)
         .catch(e => setError(`${e.name}: ${e.message}`)));
       checkRegistration();
     }
 
     checkScreening();
-  }, [user, contentfulScreeningId]);
+  }, [user, contentfulScreening.slug]);
 
   /* Issue: Because the below necessarily updates the screening to get the latest
    * registered screening total, it causes the registration useEffect block to
