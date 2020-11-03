@@ -1,4 +1,3 @@
-import * as firebase from "firebase/app";
 import { firestore } from '../firebase';
 
 /* Create a new user */
