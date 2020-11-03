@@ -437,9 +437,4 @@ const channelTitle = css`
   margin: 1rem 0;
 `;
 
-// const mapStateToProps = state => ({
-//   programBlocks: state.programBlocks,
-//   session: state.session
-// });
-
 export default Program;
