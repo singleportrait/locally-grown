@@ -261,7 +261,7 @@ function Program(props) {
           <InfoTooltip
             toggleInfo={toggleInfo}
             show={showInfoTooltip}
-            title={props.program.fields.title}
+            title={props.program.fields.displayTitle || props.program.fields.title}
             description={props.program.fields.description}
             contributor={props.channelContributor}
           />

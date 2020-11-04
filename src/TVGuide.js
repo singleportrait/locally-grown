@@ -69,7 +69,7 @@ function TVGuide(props) {
         <Row key={i}>
           <ChannelTitleContainer>
             <Link to={channel.fields.slug} className={channelTitle} style={{textDecoration: "none"}}>
-              <h3>{program.fields.title}</h3>
+              <h3>{program.fields.displayTitle || program.fields.title}</h3>
               { channel.fields.contributor &&
                 <p className={channelTitleName}>{channel.fields.contributor.fields.name}</p>
               }
