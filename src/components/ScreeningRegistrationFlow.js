@@ -48,7 +48,7 @@ function ScreeningRegistrationFlow(props) {
           { props.registration.registeredAt &&
             <h4>Registered at: { props.registration.registeredAt.toDate().toLocaleString() }</h4>
           }
-          <p className={linkStyle} onClick={props.unregister}>Unregister for Hot Irons</p>
+          <p className={linkStyle} onClick={props.unregister}>Unregister for { props.contentfulScreening.title }</p>
         </>
       }
 
