@@ -14,7 +14,7 @@ const appDescription = "Locally Grown is something you can leave on because you 
 
 const setMetadata = (route, title, description) => {
   app.get(route, (request, response) => {
-    functions.logger.info(`${title} visited!`, {structuredData: true});
+    // functions.logger.info(`${title} visited!`, {structuredData: true});
     let data = fs.readFileSync(path.resolve(__dirname, './web', 'index.html')).toString();
 
     data = data.replace(/(https:\/\/locallygrown\.tv)(\/)/g, '$1'+route);
@@ -33,7 +33,7 @@ setMetadata("/channels", "Channels | Locally Grown TV", "See what's playing now 
 setMetadata("/index.html", appName, appDescription);
 
 const setDynamicMetadata = (response, slug, title, description) => {
-  functions.logger.info(`${title} visited!`);
+  // functions.logger.info(`${title} visited!`);
 
   let data = fs.readFileSync('./web/index.html').toString();
 
@@ -86,3 +86,12 @@ app.get('*', (request, response) => {
 // console.log(app._router.stack);
 
 exports.app = functions.https.onRequest(app);
+
+/* Export Stripe routes from functions/stripe.js
+ * These will look like `stripe-createStripeCustomer` when deployed */
+exports.stripe = require('./stripe');
+
+/* TODO: Remove users from users/{userId} and screenings/{screeningId}/members/{userId}
+ * when auth users are deleted. Stripe's FB Functions has an example */
+// exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
+// });
