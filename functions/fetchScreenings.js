@@ -11,23 +11,23 @@ const client = createClient({
   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
 })
 
-console.log("Fetching events...");
+console.log("Fetching screenings...");
 client.getEntries({
-  content_type: "event",
+  content_type: "screening",
   include: 1,
 })
 .then(response => {
-  console.log("Events fetched.");
+  console.log("Screenings fetched.");
   // console.log(response.items);
-  const events = response.items.map(event => {
+  const screenings = response.items.map(screening => {
     return {
-      title: event.fields.title,
-      slug: event.fields.slug,
-      description: event.fields.description,
+      title: screening.fields.title,
+      slug: screening.fields.slug,
+      description: screening.fields.description,
       // Optional chaining `?.` isn't supported yet by eslint
-      previewImage: event.fields.previewImage && event.fields.previewImage.fields.file.url || null
+      previewImage: screening.fields.previewImage && screening.fields.previewImage.fields.file.url || null
     }
   });
-  return fs.writeFileSync('data/fetchedEvents.json', JSON.stringify(events));
+  return fs.writeFileSync('data/fetchedScreenings.json', JSON.stringify(screenings));
 })
 .catch(console.error)

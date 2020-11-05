@@ -7,7 +7,7 @@ const removeMarkdown = require('remove-markdown');
 const app = express();
 
 const channels = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedChannels.json')));
-const events = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedEvents.json')));
+const screenings = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedScreenings.json')));
 
 const appName = "Locally Grown TV";
 const appDescription = "Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.";
@@ -59,17 +59,17 @@ app.get("/:slug", (request, response) => {
 
 });
 
-// Dynamic (event) routes
+// Dynamic (screening) routes
 app.get("/screenings/:slug", (request, response) => {
   const slug = request.params.slug;
-  const event = events.find(event => event.slug === slug);
+  const screening = screenings.find(screening => screening.slug === slug);
 
-  if (!event) {
+  if (!screening) {
     functions.logger.info(`Didn't find screening '${slug}', redirecting to home`);
     return response.redirect(404, '/');
   }
 
-  setDynamicMetadata(response, slug, event.title, event.description);
+  setDynamicMetadata(response, slug, screening.title, screening.description);
 });
 
 // This line doesn't seem to be necessary
