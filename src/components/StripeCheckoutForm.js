@@ -6,7 +6,9 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-import { css } from 'emotion';
+import { formatAmount, formatAmountForStripe } from '../helpers/stripeHelpers';
+
+import styled from '@emotion/styled';
 
 function StripeCheckoutForm(props) {
   const [succeeded, setSucceeded] = useState(false);
@@ -18,48 +20,36 @@ function StripeCheckoutForm(props) {
   const elements = useElements();
 
   const [amount, setAmount] = useState(10);
-  const [currency, setCurrency] = useState("usd");
 
   /* Mostly copied from Firebase's Stripe demo page */
   let currentUser = {};
   let customerData = {};
 
-  /* Helper Functions */
-  // Format amount for diplay in the UI
-  function formatAmount(amount, currency) {
-    amount = zeroDecimalCurrency(amount, currency)
-      ? amount
-      : (amount / 100).toFixed(2);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount);
-  }
-
-  // Format amount for Stripe
-  function formatAmountForStripe(amount, currency) {
-    return zeroDecimalCurrency(amount, currency)
-      ? amount
-      : Math.round(amount * 100);
-  }
-
-  // Check if we have a zero decimal currency
-  // https://stripe.com/docs/currencies#zero-decimal
-  function zeroDecimalCurrency(amount, currency) {
-    let numberFormat = new Intl.NumberFormat(['en-US'], {
-      style: 'currency',
-      currency: currency,
-      currencyDisplay: 'symbol',
-    });
-    const parts = numberFormat.formatToParts(amount);
-    let zeroDecimalCurrency = true;
-    for (let part of parts) {
-      if (part.type === 'decimal') {
-        zeroDecimalCurrency = false;
-      }
+  firebase.auth().onAuthStateChanged((firebaseUser) => {
+    if (firebaseUser) {
+      currentUser = firebaseUser;
+      firebase
+        .firestore()
+        .collection('stripe_customers')
+        .doc(currentUser.uid)
+        .onSnapshot((snapshot) => {
+          console.log("Found customer data");
+          if (snapshot.data()) {
+            customerData = snapshot.data();
+            startDataListeners();
+            // document.getElementById('loader').style.display = 'none';
+            // document.getElementById('content').style.display = 'block';
+          } else {
+            console.warn(
+              `No Stripe customer found in Firestore for user: ${currentUser.uid}`
+            );
+          }
+        });
+    } else {
+      // document.getElementById('content').style.display = 'none';
+      // firebaseUI.start('#firebaseui-auth-container', firebaseUiConfig);
     }
-    return zeroDecimalCurrency;
-  }
+  });
 
   // Handle card actions like 3D Secure
   async function handleCardAction(payment, docId) {
@@ -135,51 +125,7 @@ function StripeCheckoutForm(props) {
       });
   }
 
-  firebase.auth().onAuthStateChanged((firebaseUser) => {
-    if (firebaseUser) {
-      console.log("There's a user in stripe element");
-      currentUser = firebaseUser;
-      firebase
-        .firestore()
-        .collection('stripe_customers')
-        .doc(currentUser.uid)
-        .onSnapshot((snapshot) => {
-          if (snapshot.data()) {
-            customerData = snapshot.data();
-            startDataListeners();
-            // document.getElementById('loader').style.display = 'none';
-            // document.getElementById('content').style.display = 'block';
-          } else {
-            console.warn(
-              `No Stripe customer found in Firestore for user: ${currentUser.uid}`
-            );
-          }
-        });
-    } else {
-      // document.getElementById('content').style.display = 'none';
-      // firebaseUI.start('#firebaseui-auth-container', firebaseUiConfig);
-    }
-  });
-
   /* Mostly copied from Stripe's demo page */
-  const cardStyle = {
-    style: {
-      base: {
-        color: "#32325d",
-        fontFamily: 'Arial, sans-serif',
-        fontSmoothing: "antialiased",
-        fontSize: "16px",
-        "::placeholder": {
-          color: "#32325d"
-        }
-      },
-      invalid: {
-        color: "#fa755a",
-        iconColor: "#fa755a"
-      }
-    }
-  };
-
   const handleChange = async (event) => {
     // Listen for changes in the CardElement
     // and display any errors as the customer types their card details
@@ -221,17 +167,11 @@ function StripeCheckoutForm(props) {
         console.log("Payment method added");
       });
 
-    // console.log(elements.getElement(CardElement));
-    // console.log("Card?", elements.getElement(CardElement).card);
-    // console.log("Payment method?", elements.getElement(CardElement).payment_method);
-    // return;
-
     /* Then, handle the form itself */
     // const form = new FormData(event.target);
-    console.log("Setup intent id:", setupIntent.id, setupIntent.payment_method);
     const formAmount = Number(amount);
-    // const formCurrency = currency;
-    console.log("Amount & currency?", amount, currency);
+    const currency = "usd";
+    console.log("Amount", formAmount, currency);
     const data = {
       payment_method: setupIntent.payment_method,
       // payment_method: form.get('payment-method'), // Originally, this would be a payment method ID
@@ -275,16 +215,12 @@ function StripeCheckoutForm(props) {
     setAmount(event.target.value);
   }
 
-  const handleCurrencyChange = (event) => {
-    console.log("Handling currency change");
-    setCurrency(event.target.value);
-  }
-
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <div>
         <label>
-          Amount:
+          My Donation:
+          <br />
           <input
             name="amount"
             type="number"
@@ -295,18 +231,11 @@ function StripeCheckoutForm(props) {
             required
           />
         </label>
-        <label>
-          Currency:
-          <select name="currency" value={currency} onChange={handleCurrencyChange}>
-            <option value="usd">USD</option>
-            <option value="eur">EUR</option>
-            <option value="gbp">GBP</option>
-            <option value="jpy">JPY</option>
-          </select>
-        </label>
       </div>
       <br />
-      <CardElement id="card-element" options={cardStyle} onChange={handleChange} />
+      <CardContainer>
+        <CardElement id="card-element" options={cardStyle} onChange={handleChange} />
+      </CardContainer>
       <br />
       <button
         disabled={processing || disabled}
@@ -327,23 +256,45 @@ function StripeCheckoutForm(props) {
         </div>
       )}
       {/* Show a success message upon completion */}
-      <p className={resultMessage} hidden={!succeeded}>
+      <ResultMessage hidden={!succeeded}>
         Payment succeeded, see the result in your
         <a
           href={`https://dashboard.stripe.com/test/payments`}
         >
           {" "}
           Stripe dashboard.
-        </a> Refresh the page to pay again.
-      </p>
+        </a>
+      </ResultMessage>
       <div id="payments-list" />
       <div id="error-message" />
     </form>
   )
 }
 
-const resultMessage = css`
+const CardContainer = styled('div')`
+  padding: .5rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+`;
+
+const ResultMessage = styled('div')`
   display: ${props => props.hidden ? "none" : "block" };
 `;
+
+const cardStyle = {
+  style: {
+    base: {
+      fontFamily: "Larsseit, sans-serif",
+      fontSize: "16px",
+      "::placeholder": {
+        color: "#999"
+      }
+    },
+    invalid: {
+      color: "#fa755a",
+      iconColor: "#fa755a"
+    }
+  },
+}
 
 export default StripeCheckoutForm;

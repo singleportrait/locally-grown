@@ -1,20 +1,28 @@
-import React, { useState, useContext } from 'react';
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import React, { useState, useEffect, useContext } from 'react';
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { auth, handleUiConfig } from '../firebase';
 
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { auth, handleUiConfig } from '../firebase';
+
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 import { UserContext } from "../providers/UserProvider";
 
 import Modal from './Modal';
-import StripePayment from './StripePayment';
+import StripeCheckoutForm from './StripeCheckoutForm';
 
 import { Button } from '../styles';
 
 function ScreeningRegistrationFlow(props) {
   const { user } = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
+
+  const [stripePromise, setStripePromise] = useState();
+  useEffect(() => {
+    setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY));
+  }, []);
 
   const openModal = () => {
     console.log("Opening modal");
@@ -86,12 +94,10 @@ function ScreeningRegistrationFlow(props) {
             <>
               <h4>Optional Donation to Support the Screening</h4>
               <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand. &lt;You can put $0 in the field (or hit skip..)&gt;.</p>
-              <form>
-                <label htmlFor="donationAmount">My donation:</label>
-                <input type="text" id="donationAmount" name="donationAmount" />
-              </form>
               <hr />
-              <StripePayment />
+              <Elements stripe={stripePromise}>
+                <StripeCheckoutForm />
+              </Elements>
             </>
           }
         </Modal>
