@@ -31,8 +31,11 @@ function Screening(props) {
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
   // const isPortrait = useMediaQuery({ orientation: 'portrait' });
 
-  const { title, slug, description } = props.screening.fields;
-  const contentfulScreening = { title, slug, description };
+  const contentfulScreening = {
+    title: props.screening.fields.title,
+    slug: props.screening.fields.slug,
+    description: props.screening.fields.description
+  }
 
   /* Check to see if user exists in Firestore (not Auth),
   * and re-check screening when users log in and out */
@@ -108,7 +111,7 @@ function Screening(props) {
             <InfoColumnContainer>
               <div className={infoColumn}>
                 Individual screening page:
-                <h1>{ title }</h1>
+                <h1>{ contentfulScreening.title }</h1>
                 <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
                 { !screening && isLoaded &&
                   <>
@@ -128,8 +131,8 @@ function Screening(props) {
                     setIsLoaded={setIsLoaded} />
                 <br />
                 { user && <p className={linkStyle} onClick={() => auth.signOut()}>Sign out</p>}
-                { description &&
-                  <Markdown source={description} />
+                { contentfulScreening.description &&
+                  <Markdown source={contentfulScreening.description} />
                 }
                 { !user &&
                 <>

@@ -55,6 +55,7 @@ function Registration(props) {
 
   /* Check to see if user exists in Firestore (not Auth),
   * and re-check screening when users log in and out */
+  const [screening, setScreening] = useState(null);
   useEffect(() => {
     console.log("User in useEffect:", user?.uid);
     if (screening) {
@@ -72,7 +73,6 @@ function Registration(props) {
   }, [user, screening]);
 
   /* Check to see if screening and/or member registration exists */
-  const [screening, setScreening] = useState(null);
   const [registration, setRegistration] = useState(null);
   useEffect(() => {
     if (!user) return;

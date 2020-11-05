@@ -70,7 +70,11 @@ export const getScreening = async (screeningId, uid = null) => {
         console.log("User has permission to get event members");
         members = await getScreeningMembers(screeningId, uid);
       } else {
-        console.log("No user, or user doesn't have permission to get event members");
+        if (!uid) {
+          console.log("No user");
+        } else if (uid && !screeningData.adminIds.includes(uid)) {
+          console.log("User doesn't have permission to get event members");
+        }
       }
 
       const returnedData = {

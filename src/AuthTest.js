@@ -119,7 +119,7 @@ function AuthTest(props) {
     }).catch((error) => {
       console.log(error);
     });
-  }, [isSignedIn]);
+  }, [isSignedIn, displayName]);
 
   // let unregisterAuthObserver;
   useEffect(() => {
