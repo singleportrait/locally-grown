@@ -11,6 +11,7 @@ import { UserContext } from "./providers/UserProvider";
 
 import { generateUserDocument } from './firestore/users';
 import {
+  makeTestHotIronsScreening,
   getScreening,
   getScreeningRegistration,
   registerForScreening,
@@ -111,8 +112,9 @@ function Screening(props) {
                 <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
                 { !screening && isLoaded &&
                   <>
+                    <hr />
                     <h4>There's no screening registration for this screening yet!</h4>
-                    <p style={{textDecoration: "underline"}}>Make test screening</p>
+                    <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestHotIronsScreening(contentfulScreening.slug)}>Make test screening</p>
                   </>
                 }
                 <br />

@@ -18,6 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+/* Using local emulator for functions */
 if (process.env.NODE_ENV === 'development') {
   firebase.functions().useFunctionsEmulator('http://localhost:5001')
 }

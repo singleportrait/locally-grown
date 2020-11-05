@@ -115,5 +115,18 @@ service cloud.firestore {
         (resource.data.authorId == request.auth.uid);
       allow update: if (resource.data.authorId == request.auth.uid);
     }
+
+    match /stripe_customers/{uid} {
+      allow read, write: if request.auth.uid == uid;
+
+      match /payment_methods/{id} {
+        allow read,write: if request.auth.uid == uid;
+      }
+
+      match /payments/{id} {
+        allow read, write: if request.auth.uid == uid;
+      }
+
+    }
   }
 }

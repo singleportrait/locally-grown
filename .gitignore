@@ -33,3 +33,7 @@ firebase-debug.log
 firestore-debug.log
 # logs from the firebase emulator
 ui-debug.log
+# config for local functions with emulator
+.runtimeconfig.json
+# Google Services authentication for running admin locally
+locally-grown-tv-615bd75d5bb6.json

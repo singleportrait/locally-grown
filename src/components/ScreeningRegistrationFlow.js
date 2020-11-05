@@ -8,6 +8,7 @@ import { auth, handleUiConfig } from '../firebase';
 import { UserContext } from "../providers/UserProvider";
 
 import Modal from './Modal';
+import StripePayment from './StripePayment';
 
 import { Button } from '../styles';
 
@@ -51,6 +52,7 @@ function ScreeningRegistrationFlow(props) {
           <p className={linkStyle} onClick={props.unregister}>Unregister for { props.contentfulScreening.title }</p>
         </>
       }
+      <p className={linkStyle} onClick={() => openModal()}>Open modal</p>
 
       { showModal &&
         <Modal closeModal={closeModal}>
@@ -88,6 +90,8 @@ function ScreeningRegistrationFlow(props) {
                 <label htmlFor="donationAmount">My donation:</label>
                 <input type="text" id="donationAmount" name="donationAmount" />
               </form>
+              <hr />
+              <StripePayment />
             </>
           }
         </Modal>
