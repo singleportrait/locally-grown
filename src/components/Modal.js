@@ -69,6 +69,11 @@ const Content = styled('div')`
   background-color: #fff;
   z-index: 2;
 
+  @media screen and (max-width: 600px) {
+    width: 90vw;
+    min-height: 40vh;
+  }
+
   &, a {
     color: #000;
   }

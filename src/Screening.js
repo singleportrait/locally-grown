@@ -20,6 +20,7 @@ import {
 
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
 
+const backgroundColor = "#111";
 const red = "#fc4834";
 
 function Screening(props) {
@@ -27,7 +28,7 @@ function Screening(props) {
   const [error, setError] = useState();
   const [isLoaded, setIsLoaded] = useState(true);
 
-  const isWideScreen = useMediaQuery({ minDeviceWidth: 800 });
+  const isWideScreen = useMediaQuery({ minWidth: 800 });
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
   // const isPortrait = useMediaQuery({ orientation: 'portrait' });
 
@@ -96,61 +97,65 @@ function Screening(props) {
     setScreening(await getScreening(screening.id, user.uid));
   }
 
-  return (
-    <>
-      { isWideScreen &&
-        <WideProgramContainer color="#111">
-          <div>
-            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+  function InfoColumnHeader() {
+    return (
+      <>
+        Individual screening page:
+        <h1>{ contentfulScreening.title }</h1>
+        <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
+        { !screening && isLoaded &&
+          <>
             <hr />
-          </div>
+            <h4>There's no screening registration for this screening yet!</h4>
+            <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestHotIronsScreening(contentfulScreening.slug)}>Make test screening</p>
+          </>
+        }
+        <br />
+      </>
+    );
+  }
+
+  function InfoColumnFooter() {
+    return (
+      <>
+        <br />
+        { contentfulScreening.description &&
+          <Markdown source={contentfulScreening.description} />
+        }
+        <hr />
+          <br />
+          <Link to="/screenings">Back to screenings</Link>
+          <br />
+          <Link to="/">Back to home</Link>
+      </>
+    );
+  }
+
+  return (
+    <Page>
+      { isWideScreen &&
+        <WideProgramContainer>
+          <Header>
+            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+            { user && isWideScreen && <LogOutLink className={linkStyle} onClick={() => auth.signOut()}>Sign out</LogOutLink>}
+            <hr />
+          </Header>
           <ContentContainer>
             <VideoAndControlsColumn>
               <h1>Video here</h1>
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
-                Individual screening page:
-                <h1>{ contentfulScreening.title }</h1>
-                <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
-                { !screening && isLoaded &&
-                  <>
-                    <hr />
-                    <h4>There's no screening registration for this screening yet!</h4>
-                    <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestHotIronsScreening(contentfulScreening.slug)}>Make test screening</p>
-                  </>
-                }
-                <br />
-                  <ScreeningRegistrationFlow
-                    contentfulScreening={contentfulScreening}
-                    screening={screening}
-                    registration={registration}
-                    register={register}
-                    unregister={unregister}
-                    isLoaded={isLoaded}
-                    setIsLoaded={setIsLoaded} />
-                <br />
-                { user && <p className={linkStyle} onClick={() => auth.signOut()}>Sign out</p>}
-                { contentfulScreening.description &&
-                  <Markdown source={contentfulScreening.description} />
-                }
-                { !user &&
-                <>
-                  <h4>Not signed in :)</h4>
-                  {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}/> */}
-                </>
-                }
-                { user &&
-                  <>
-                    <h4>Loaded! Hello { user.displayName }</h4>
-                    <br />
-                  </>
-                }
-                <hr />
-                <br />
-                <Link to="/screenings">Back to screenings</Link>
-                <br />
-                <Link to="/">Back to home</Link>
+                <InfoColumnHeader />
+                <ScreeningRegistrationFlow
+                  contentfulScreening={contentfulScreening}
+                  screening={screening}
+                  registration={registration}
+                  register={register}
+                  unregister={unregister}
+                  isLoaded={isLoaded}
+                  setIsLoaded={setIsLoaded} />
+                <InfoColumnFooter />
               </div>
             </InfoColumnContainer>
           </ContentContainer>
@@ -158,7 +163,24 @@ function Screening(props) {
       }
       { isMobileOrTablet &&
         <>
-          Mobile version here.
+          <MobileHeader>
+            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+            <hr />
+          </MobileHeader>
+          <h1>Video here</h1>
+          <MobileInfoColumn>
+            <InfoColumnHeader />
+            <ScreeningRegistrationFlow
+              contentfulScreening={contentfulScreening}
+              screening={screening}
+              registration={registration}
+              register={register}
+              unregister={unregister}
+              isLoaded={isLoaded}
+              setIsLoaded={setIsLoaded} />
+            <InfoColumnFooter />
+            { user && <p className={linkStyle} onClick={() => auth.signOut()}>Log out</p>}
+          </MobileInfoColumn>
         </>
       }
       { error &&
@@ -166,7 +188,7 @@ function Screening(props) {
           There's an error.
         </>
       }
-    </>
+    </Page>
   );
 }
 
@@ -179,11 +201,6 @@ const WideProgramContainer = styled('div')`
   overflow: hidden;
   // height: calc(100vh - 1.4rem); // Because we're using padding not margin
   height: 100vh;
-  ${props => props.color && `background-color: ${props.color};` }
-
-  hr {
-    border-color: ${red};
-  }
 `;
 
 const shortAspectRatio = '9/5';
@@ -256,13 +273,41 @@ const infoColumn = css`
 `;
 
 /* NEW STYLES BELOW HERE */
+const Page = styled('div')`
+  min-height: 100vh;
+  background-color: ${backgroundColor};
+
+  hr {
+    border-color: ${red};
+  }
+`;
+
 const ContentContainer = styled('div')`
   display: flex;
+`;
+
+const Header = styled('div')`
+  position: relative;
+`;
+
+const LogOutLink = styled('div')`
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  margin-top: -.7rem;
 `;
 
 const linkStyle = css`
   cursor: pointer;
   text-decoration: underline;
+`;
+
+const MobileHeader = styled('div')`
+  padding: 1rem;
+`;
+
+const MobileInfoColumn = styled('div')`
+  padding: 1rem;
 `;
 
 export default Screening;
