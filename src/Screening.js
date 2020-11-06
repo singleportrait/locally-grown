@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Markdown from 'react-markdown';
 import { auth } from './firebase';
+import ReactPlayer from 'react-player';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
@@ -35,7 +36,8 @@ function Screening(props) {
   const contentfulScreening = {
     title: props.screening.fields.title,
     slug: props.screening.fields.slug,
-    description: props.screening.fields.description
+    description: props.screening.fields.description,
+    videoTrailer: props.screening.fields.videoTrailer
   }
 
   /* Check to see if user exists in Firestore (not Auth),
@@ -131,6 +133,28 @@ function Screening(props) {
     );
   }
 
+  const renderVideoPlayer = () => {
+    return (
+      <>
+        <VideoWrapper>
+          <ReactPlayer
+            url={contentfulScreening.videoTrailer.fields.url}
+            width="100%"
+            height="100%"
+            className={reactPlayer}
+            config={{
+              youtube: {
+                modestbranding: 1,
+                rel: 0 // Doesn't work, sadly; could try something later
+              }
+            }}
+          />
+        </VideoWrapper>
+        <TrailerText>Watch the trailer</TrailerText>
+      </>
+    );
+  }
+
   return (
     <Page>
       { isWideScreen &&
@@ -142,7 +166,7 @@ function Screening(props) {
           </Header>
           <ContentContainer>
             <VideoAndControlsColumn>
-              <h1>Video here</h1>
+              { contentfulScreening.videoTrailer && renderVideoPlayer() }
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
@@ -167,7 +191,7 @@ function Screening(props) {
             <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
             <hr />
           </MobileHeader>
-          <h1>Video here</h1>
+          { contentfulScreening.videoTrailer && renderVideoPlayer() }
           <MobileInfoColumn>
             <InfoColumnHeader />
             <ScreeningRegistrationFlow
@@ -308,6 +332,29 @@ const MobileHeader = styled('div')`
 
 const MobileInfoColumn = styled('div')`
   padding: 1rem;
+`;
+
+const VideoWrapper = styled('div')`
+  position: relative;
+  padding-top: 56.25%
+`;
+
+const reactPlayer = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const TrailerText = styled('small')`
+  display: inline-block;
+  padding-top: .5rem;
+  color: #999;
+
+  @media screen and (max-width: 800px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: right;
+  }
 `;
 
 export default Screening;
