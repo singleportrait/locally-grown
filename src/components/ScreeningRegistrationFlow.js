@@ -12,8 +12,9 @@ import { UserContext } from "../providers/UserProvider";
 
 import Modal from './Modal';
 import StripeCheckoutForm from './StripeCheckoutForm';
+import RegisterCheckboxes from './RegisterCheckboxes';
 
-import { Button } from '../styles';
+import { successColor, Button } from '../styles';
 
 function ScreeningRegistrationFlow(props) {
   const { user } = useContext(UserContext);
@@ -44,7 +45,14 @@ function ScreeningRegistrationFlow(props) {
       { props.screening && !props.registration &&
         <>
           { props.screening.totalRegistered <= props.screening.totalAllowed &&
-            <Button large onClick={() => openModal()}>Register</Button>
+            <>
+              <Button large onClick={() => openModal()}>Register Now</Button>
+              { !user &&
+                <p className={loginText}>
+                  Already registered? <span className={linkStyle} onClick={() => openModal()}>Log in</span>
+                </p>
+              }
+            </>
           }
           { props.screening.totalRegistered === props.screening.totalAllowed &&
             <h4>Sorry, this event is sold out!</h4>
@@ -53,36 +61,36 @@ function ScreeningRegistrationFlow(props) {
       }
       { props.screening && props.registration &&
         <>
-          <h2>Registered</h2>
-          { props.registration.registeredAt &&
-            <h4>Registered at: { props.registration.registeredAt.toDate().toLocaleString() }</h4>
-          }
-          <p className={linkStyle} onClick={props.unregister}>Unregister for { props.contentfulScreening.title }</p>
+          <RegistrationConfirmation>
+            <h4 className={bold}>Congrats, you're registered for the screening!</h4>
+            <p>We've sent you a confirmation email, and we'll send a reminder day-of.</p>
+            <hr />
+            <p>Won't be able to watch? Unregister to free up a spot for another viewer:</p>
+            <p className={linkStyle} onClick={props.unregister}>Unregister</p>
+            <hr />
+            <p>Your contribution helps support this screening and enables us to have more screenings in the future. Thank you for your support!</p>
+            <p className={linkStyle} onClick={() => openModal()}>Donate</p>
+          </RegistrationConfirmation>
         </>
       }
-      <p className={linkStyle} onClick={() => openModal()}>Open modal</p>
 
       { showModal &&
         <Modal closeModal={closeModal}>
           { !user &&
             <>
-              <h4>Log In or Create an Account</h4>
+              <h4 className={modalHeader}>Log In or Create an Account</h4>
               <p>After creating an account you'll be able to register for this event.</p>
               <StyledFirebaseAuth uiConfig={handleUiConfig(() => props.setIsLoaded(false))} firebaseAuth={auth}/>
             </>
           }
           { user && !props.registration && props.isLoaded &&
             <>
-              <h4>Register for { props.contentfulScreening.title }</h4>
+              <h4 className={modalHeader}>Register for { props.contentfulScreening.title }</h4>
               <p>We'll send you a calendar invite and reminder emails before the show!</p>
               <br />
-              <form>
-                <div className={flex}>
-                  <input type="checkbox" id="confirmRegister" name="register" />
-                  <label htmlFor="confirmRegister">Register me for { props.contentfulScreening.title } showing on &lt;date&gt;.</label>
-                </div>
-                <Button color="#000" textColor="#fff" onClick={props.register}>Register</Button>
-              </form>
+              <RegisterCheckboxes
+                title={props.contentfulScreening.title}
+                register={props.register} />
             </>
           }
           { user && !props.registration && !props.isLoaded && // When fetching registration status
@@ -92,7 +100,7 @@ function ScreeningRegistrationFlow(props) {
           }
           { user && props.registration &&
             <>
-              <h4>Optional Donation to Support the Screening</h4>
+              <h4 className={modalHeader}>Optional Donation to Support the Screening</h4>
               <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand. &lt;You can put $0 in the field (or hit skip..)&gt;.</p>
               <hr />
               <Elements stripe={stripePromise}>
@@ -108,23 +116,21 @@ function ScreeningRegistrationFlow(props) {
 }
 
 const RegistrationContainer = styled('div')`
-  padding: 1rem;
-  border: 1px solid white;
+  padding: 1rem 0 2rem;
+  // border: 1px solid white;
 `;
 
 const linkStyle = css`
   cursor: pointer;
   text-decoration: underline;
-`;
-
-const flex = css`
-  display: flex;
+  font-weight: 500;
+  display: inline-block;
 `;
 
 const ScreeningLoadingContainer = styled('div')`
   display: flex;
   align-items: center;
-  padding: 5rem 0;
+  padding: .5rem 0;
 `;
 
 const LoadingDiv = styled('div')`
@@ -133,6 +139,34 @@ const LoadingDiv = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const loginText = css`
+  margin-top: 1rem;
+  color: #999;
+`;
+
+const RegistrationConfirmation = styled('div')`
+  padding: 1rem 1.4rem 1.4rem;
+  // background-color: ${successColor};
+  background-color: rgba(92, 203, 102, .2);
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+
+  hr {
+    border-color: #333;
+    mix-blend-mode: screen;
+  }
+`;
+
+const bold = css`
+  font-weight: bold;
+`;
+
+const modalHeader = css`
+  font-weight: bold;
+  padding-right: 2.5rem;
+  margin-bottom: .75rem;
 `;
 
 export default ScreeningRegistrationFlow;

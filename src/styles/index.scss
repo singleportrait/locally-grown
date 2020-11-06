@@ -121,6 +121,11 @@ button {
 
 label {
   font-weight: bold;
+  font-size: 16px;
+
+  &[for] {
+    cursor: pointer;
+  }
 }
 
 input[type="checkbox"] {

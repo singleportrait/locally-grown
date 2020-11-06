@@ -65,9 +65,9 @@ export const Button = styled('div')`
   display: inline-block;
   width: 100%;
   width: auto;
-  margin-top: 1rem;
-  padding: 0 .6em;
-  line-height: 1.8;
+  margin-top: ${props => !props.noMargin && "1rem"};
+  padding: 0 .9em;
+  line-height: 2.2;
   border-radius: 2em;
   // padding: .2rem .6rem;
   // padding: .2em .6em .3em;
@@ -75,5 +75,5 @@ export const Button = styled('div')`
   // border-radius: calc((.4em + 1.4em) / 2);
   -webkit-appearance: none;
   outline: none;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'default' : 'pointer' };
 `;
