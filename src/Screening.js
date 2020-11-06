@@ -37,7 +37,8 @@ function Screening(props) {
     title: props.screening.fields.title,
     slug: props.screening.fields.slug,
     description: props.screening.fields.description,
-    videoTrailer: props.screening.fields.videoTrailer
+    videoTrailer: props.screening.fields.videoTrailer,
+    startDatetime: props.screening.fields.startDatetime
   }
 
   /* Check to see if user exists in Firestore (not Auth),
@@ -99,12 +100,38 @@ function Screening(props) {
     setScreening(await getScreening(screening.id, user.uid));
   }
 
+  const date = new Date(contentfulScreening.startDatetime);
+  const screeningDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+
+  const screeningTimeEastCoast = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    timeZone: 'America/New_York',
+    // timeZoneName: 'short'
+  }).format(date);
+
+  const screeningTimeWestCoast = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    timeZone: 'America/Los_Angeles',
+    // timeZoneName: 'short'
+  }).format(date);
+
   function InfoColumnHeader() {
     return (
       <>
-        Individual screening page:
         <h1>{ contentfulScreening.title }</h1>
         <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
+        <h3 className={marginMedium}>
+          Watch LIVE with us on
+          <br />
+          { screeningDate } @
+          <br />
+          <span className={time}>{ screeningTimeEastCoast }</span> ET / <span className={time}>{ screeningTimeWestCoast }</span> PT
+        </h3>
+        <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p>
         { !screening && isLoaded &&
           <>
             <hr />
@@ -112,7 +139,6 @@ function Screening(props) {
             <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestHotIronsScreening(contentfulScreening.slug)}>Make test screening</p>
           </>
         }
-        <br />
       </>
     );
   }
@@ -120,7 +146,7 @@ function Screening(props) {
   function InfoColumnFooter() {
     return (
       <>
-        <br />
+        <hr />
         { contentfulScreening.description &&
           <Markdown source={contentfulScreening.description} />
         }
@@ -318,7 +344,7 @@ const LogOutLink = styled('div')`
   position: absolute;
   top: 50%;
   right: 1rem;
-  margin-top: -.7rem;
+  margin-top: -1.3rem;
 `;
 
 const linkStyle = css`
@@ -355,6 +381,14 @@ const TrailerText = styled('small')`
     padding-right: 1rem;
     text-align: right;
   }
+`;
+
+const marginMedium = css`
+  margin: 1rem 0;
+`;
+
+const time = css`
+  text-transform: lowercase;
 `;
 
 export default Screening;
