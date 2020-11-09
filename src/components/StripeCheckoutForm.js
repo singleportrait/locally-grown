@@ -13,6 +13,8 @@ import { formatAmount, formatAmountForStripe } from '../helpers/stripeHelpers';
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
+import { ButtonDiv, Button, errorColor } from '../styles';
+
 function StripeCheckoutForm(props) {
   const { user } = useContext(UserContext);
 
@@ -29,14 +31,13 @@ function StripeCheckoutForm(props) {
 
   const [customerData, setCustomerData] = useState({});
 
-  /* Mostly copied from Firebase's Stripe demo page */
-
   useEffect(() => {
     console.log("[User changed in StripeCheckoutForm]", user?.uid);
 
     let stripeCustomerUnsubscribe;
     let paymentUnsubscribe;
 
+    /* Mostly copied from Firebase's Stripe demo page */
     // Handle card actions like 3D Secure
     async function handleCardAction(payment, docId) {
       const { error, paymentIntent } = await stripe.handleCardAction(
@@ -240,6 +241,19 @@ function StripeCheckoutForm(props) {
           {error}
         </CardError>
       }
+      <div className={flexRight}>
+        <ButtonDiv className={skipButton} onClick={props.closeModal}>
+          No thanks
+        </ButtonDiv>
+        <Button
+          disabled={processing || disabled}
+          color={(processing || disabled) ? "#ccc" : "#111"}
+          textColor="#fff"
+          id="submit"
+        >
+          {processing ? "Processing..." : "Donate"}
+        </Button>
+      </div>
       {/* Show a success message upon completion */}
       <ResultMessage hidden={!succeeded}>
         Payment succeeded, see the result in your
@@ -267,7 +281,7 @@ function StripeCheckoutForm(props) {
 }
 
 const CardError = styled('div')`
-  color: #fa755a;
+  color: ${errorColor};
   margin: .5rem 0;
 `;
 
@@ -312,8 +326,8 @@ const cardElementStyle = {
       }
     },
     invalid: {
-      color: "#fa755a",
-      iconColor: "#fa755a"
+      color: errorColor,
+      iconColor: errorColor
     }
   },
 }

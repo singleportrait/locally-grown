@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { css } from 'emotion';
 
-import { Button } from '../styles';
+import { ButtonDiv } from '../styles';
 
 function RegisterCheckboxes(props) {
   const [registrationConfirmed, setRegistrationConfirmed] = useState(false);
@@ -25,11 +25,11 @@ function RegisterCheckboxes(props) {
         <input type="checkbox" id="confirmSecurity" name="security" onChange={() => setConfirmedSecurity(!confirmedSecurity)} />
         <label htmlFor="confirmSecurity">By registering for this event, I agree to not share my login info with anyone else. This is a limited screening, and it’s important that it’s limited to those who have signed up.</label>
       </div>
-      <Button
+      <ButtonDiv
         disabled={!registrationConfirmed}
         color={registrationConfirmed ? "#000" : "#ccc"}
         textColor="#fff"
-        onClick={registrationConfirmed ? props.register : undefined}>Register</Button>
+        onClick={registrationConfirmed ? props.register : undefined}>Register</ButtonDiv>
     </form>
   );
 }

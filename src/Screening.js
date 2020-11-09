@@ -155,6 +155,9 @@ function Screening(props) {
           <Link to="/screenings">Back to screenings</Link>
           <br />
           <Link to="/">Back to home</Link>
+          <br />
+          <br />
+          <br />
       </>
     );
   }
@@ -316,7 +319,8 @@ const InfoColumnContainer = styled('div')`
 `;
 
 const infoColumn = css`
-  padding-right: 16px;
+  // padding-right: 16px;
+  padding-right: 32px;
   margin-right: -16px;
   overflow-y: scroll;
   height: 100%;

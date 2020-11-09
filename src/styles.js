@@ -14,7 +14,8 @@ export const lightBackgroundActiveColor = '#E3D9F6';
 
 export const borderColor = '#4E475D';
 
-export const successColor = '#7AC772';
+// export const successColor = '#7AC772';
+export const successColor = '#5CCB66';
 export const errorColor = '#FF6E6D';
 
 export const mobileViewportHeight = window.innerHeight + 'px';
@@ -54,7 +55,7 @@ export const VideoPlaceholderWrapper = styled('div')`
   background-size: cover;
 `;
 
-export const Button = styled('div')`
+export const Button = styled('button')`
   background-color: ${props => props.color ? props.color : "#fff"};
   color: ${props => props.textColor ? props.textColor: "#000"};
   font-weight: 500;
@@ -77,3 +78,5 @@ export const Button = styled('div')`
   outline: none;
   cursor: ${props => props.disabled ? 'default' : 'pointer' };
 `;
+
+export const ButtonDiv = Button.withComponent('div');

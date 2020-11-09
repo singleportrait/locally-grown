@@ -14,7 +14,7 @@ import Modal from './Modal';
 import StripeCheckoutForm from './StripeCheckoutForm';
 import RegisterCheckboxes from './RegisterCheckboxes';
 
-import { successColor, Button } from '../styles';
+import { successColor, ButtonDiv } from '../styles';
 
 function ScreeningRegistrationFlow(props) {
   const { user } = useContext(UserContext);
@@ -46,7 +46,7 @@ function ScreeningRegistrationFlow(props) {
         <>
           { props.screening.totalRegistered <= props.screening.totalAllowed &&
             <>
-              <Button large onClick={() => openModal()}>Register Now</Button>
+              <ButtonDiv large onClick={() => openModal()}>Register Now</ButtonDiv>
               { !user &&
                 <p className={loginText}>
                   Already registered? <span className={linkStyle} onClick={() => openModal()}>Log in</span>
