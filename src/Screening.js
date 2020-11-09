@@ -101,19 +101,19 @@ function Screening(props) {
   }
 
   const date = new Date(contentfulScreening.startDatetime);
-  const screeningDate = new Intl.DateTimeFormat('en-US', {
+  contentfulScreening.screeningDate = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric'
   }).format(date);
 
-  const screeningTimeEastCoast = new Intl.DateTimeFormat('en-US', {
+  contentfulScreening.screeningTimeEastCoast = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     timeZone: 'America/New_York',
     // timeZoneName: 'short'
   }).format(date);
 
-  const screeningTimeWestCoast = new Intl.DateTimeFormat('en-US', {
+  contentfulScreening.screeningTimeWestCoast = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     timeZone: 'America/Los_Angeles',
     // timeZoneName: 'short'
@@ -127,9 +127,9 @@ function Screening(props) {
         <h3 className={marginMedium}>
           Watch LIVE with us on
           <br />
-          { screeningDate } @
+          { contentfulScreening.screeningDate } @
           <br />
-          <span className={time}>{ screeningTimeEastCoast }</span> ET / <span className={time}>{ screeningTimeWestCoast }</span> PT
+          <span className={time}>{ contentfulScreening.screeningTimeEastCoast }</span> ET / <span className={time}>{ contentfulScreening.screeningTimeWestCoast }</span> PT
         </h3>
         <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p>
         { !screening && isLoaded &&

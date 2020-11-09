@@ -100,12 +100,16 @@ function ScreeningRegistrationFlow(props) {
           }
           { user && props.registration &&
             <>
-              <h4 className={modalHeader}>Optional Donation to Support the Screening</h4>
-              <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand. &lt;You can put $0 in the field (or hit skip..)&gt;.</p>
-              <hr />
-              <Elements stripe={stripePromise}>
-                <StripeCheckoutForm />
-              </Elements>
+              <h3 className={confirmedHeader}>Congrats, you're registered for the screening!</h3>
+              <p>We've sent you a confirmation email, and we'll send a reminder on {props.contentfulScreening.screeningDate}. <span className={linkStyle}>Add to Google calendar</span>.</p>
+              <DonationContainer>
+                <h4 className={modalHeader}>Donate to Support the Screening</h4>
+                <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand.</p>
+                <hr />
+                <Elements stripe={stripePromise}>
+                  <StripeCheckoutForm closeModal={closeModal} />
+                </Elements>
+              </DonationContainer>
             </>
           }
         </Modal>
@@ -167,6 +171,18 @@ const modalHeader = css`
   font-weight: bold;
   padding-right: 2.5rem;
   margin-bottom: .75rem;
+`;
+
+const confirmedHeader = css`
+  color: ${successColor};
+  padding-right: 2.5rem;
+  margin-bottom: .75rem;
+`;
+
+const DonationContainer = styled('div')`
+  padding: .75rem 1rem 1.25rem;
+  margin: 1rem -1rem -1rem;
+  background-color: #eee;
 `;
 
 export default ScreeningRegistrationFlow;

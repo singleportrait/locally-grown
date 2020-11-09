@@ -11,6 +11,7 @@ import { UserContext } from "../providers/UserProvider";
 import { formatAmount, formatAmountForStripe } from '../helpers/stripeHelpers';
 
 import styled from '@emotion/styled';
+import { css } from 'emotion';
 
 function StripeCheckoutForm(props) {
   const { user } = useContext(UserContext);
@@ -225,26 +226,14 @@ function StripeCheckoutForm(props) {
             value={amount}
             onChange={handleAmountChange}
             required
+            className={inputStyle}
           />
         </label>
       </div>
       <br />
-      <CardContainer>
-        <CardElement id="card-element" options={cardStyle} onChange={handleChange} />
-      </CardContainer>
-      <br />
-      <button
-        disabled={processing || disabled}
-        id="submit"
-      >
-        <span id="button-text">
-          {processing ? (
-            <div className="spinner" id="spinner">Processing...</div>
-          ) : (
-            "Pay"
-          )}
-        </span>
-      </button>
+      <div className={cardStyle}>
+        <CardElement id="card-element" options={cardElementStyle} onChange={handleChange} />
+      </div>
       {/* Show any error that happens when processing the payment */}
       { error &&
         <CardError role="alert">
@@ -262,13 +251,16 @@ function StripeCheckoutForm(props) {
         </a>
       </ResultMessage>
       { paymentsMessage &&
-        <ul>
-          { paymentsMessage.map((paymentMessage, i) =>
-            <li key={i}>
-              { paymentMessage }
-            </li>
-          )}
-        </ul>
+        <>
+          <hr />
+          <ul>
+            { paymentsMessage.map((paymentMessage, i) =>
+              <li key={i}>
+                { paymentMessage }
+              </li>
+            )}
+          </ul>
+        </>
       }
     </form>
   )
@@ -279,10 +271,30 @@ const CardError = styled('div')`
   margin: .5rem 0;
 `;
 
-const CardContainer = styled('div')`
-  padding: .5rem;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+const inputStyle = css`
+  padding: 0.7rem 1rem 0.6rem;
+  border: 1px solid #666;
+  border-radius: 2rem;
+  font-weight: 500;
+  width: 100%;
+`;
+
+const cardStyle = css`
+  padding: 0.8rem 1rem 0.6rem;
+  border: 1px solid #666;
+  border-radius: 2rem;
+  background-color: #fff;
+`;
+
+const flexRight = css`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const skipButton = css`
+  margin-right: 1rem;
+  background-color: none;
+  text-decoration: underline;
 `;
 
 const ResultMessage = styled('div')`
@@ -290,7 +302,7 @@ const ResultMessage = styled('div')`
   margin: 1rem 0;
 `;
 
-const cardStyle = {
+const cardElementStyle = {
   style: {
     base: {
       fontFamily: "Larsseit, sans-serif",
