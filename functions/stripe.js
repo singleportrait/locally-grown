@@ -1,9 +1,5 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: 'https://locally-grown-tv.firebaseio.com'
-});
 
 const stripe = require('stripe')(functions.config().stripe.secret, {
   apiVersion: '2020-08-27',
@@ -58,18 +54,18 @@ exports.addPaymentMethodDetails = functions.firestore
     }
   });
 
-exports.createPaymentIntent = functions.https.onCall((data, context) => {
-  return stripe.paymentIntents.create({
-    amount: 1000,
-    currency: "usd"
-  }).then((paymentIntent) => {
-    // functions.logger.info("Received payment intent", paymentIntent.client_secret);
-    return {
-      client_secret: paymentIntent.client_secret,
-      // payment_intent: paymentIntent
-    }
-  });
-});
+// exports.createPaymentIntent = functions.https.onCall((data, context) => {
+//   return stripe.paymentIntents.create({
+//     amount: 1000,
+//     currency: "usd"
+//   }).then((paymentIntent) => {
+//     // functions.logger.info("Received payment intent", paymentIntent.client_secret);
+//     return {
+//       client_secret: paymentIntent.client_secret,
+//       // payment_intent: paymentIntent
+//     }
+//   });
+// });
 
 // exports.updatePaymentIntent = functions.https.onCall((data, context) => {
 //   return stripe.paymentIntents.update(

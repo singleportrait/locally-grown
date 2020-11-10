@@ -1,4 +1,10 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  databaseURL: 'https://locally-grown-tv.firebaseio.com'
+});
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -91,7 +97,6 @@ exports.app = functions.https.onRequest(app);
  * These will look like `stripe-createStripeCustomer` when deployed */
 exports.stripe = require('./stripe');
 
-/* TODO: Remove users from users/{userId} and screenings/{screeningId}/members/{userId}
- * when auth users are deleted. Stripe's FB Functions has an example */
-// exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
-// });
+/* Remove users from users/{userId} and screenings/{screeningId}/members/{userId}
+ * when authenticated users are deleted. */
+exports.firestore = require('./firestore');

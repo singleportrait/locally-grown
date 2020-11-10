@@ -190,6 +190,7 @@ function Screening(props) {
         <WideProgramContainer>
           <Header>
             <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+            { user && user.email }
             { user && isWideScreen && <LogOutLink className={linkStyle} onClick={() => auth.signOut()}>Sign out</LogOutLink>}
             <hr />
           </Header>

@@ -137,7 +137,7 @@ function Registration(props) {
         }
         { user &&
           <>
-            <h4>Loaded! Hello { user.displayName }</h4>
+            <h4>Loaded! Hello { user.displayName } ({ user.email })</h4>
             <p style={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
             <br />
           </>
