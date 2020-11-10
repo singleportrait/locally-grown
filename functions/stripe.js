@@ -58,6 +58,34 @@ exports.addPaymentMethodDetails = functions.firestore
     }
   });
 
+exports.createPaymentIntent = functions.https.onCall((data, context) => {
+  return stripe.paymentIntents.create({
+    amount: 1000,
+    currency: "usd"
+  }).then((paymentIntent) => {
+    // functions.logger.info("Received payment intent", paymentIntent.client_secret);
+    return {
+      client_secret: paymentIntent.client_secret,
+      // payment_intent: paymentIntent
+    }
+  });
+});
+
+// exports.updatePaymentIntent = functions.https.onCall((data, context) => {
+//   return stripe.paymentIntents.update(
+//     // data.client_secret
+//   {
+//     amount: 1000,
+//     currency: "usd"
+//   }).then((paymentIntent) => {
+//     functions.logger.info("Received payment intent", paymentIntent.client_secret);
+//     return {
+//       client_secret: paymentIntent.client_secret,
+//       // payment_intent: paymentIntent
+//     }
+//   });
+// });
+
 /**
  * When a payment document is written on the client,
  * this function is triggered to create the payment in Stripe.
@@ -71,7 +99,7 @@ exports.createStripePayment = functions.firestore
   .document('stripe_customers/{userId}/payments/{pushId}')
   .onCreate(async (snap, context) => {
     functions.logger.info("Creating Stripe payment");
-    const { amount, currency, payment_method } = snap.data();
+    const { amount, currency, payment_method, metadata } = snap.data();
     try {
       // Look up the Stripe customer id.
       const customer = (await snap.ref.parent.parent.get()).data().customer_id;
@@ -85,6 +113,7 @@ exports.createStripePayment = functions.firestore
           currency,
           customer,
           payment_method,
+          metadata,
           description: "Screening Donation v0.1",
           off_session: false,
           confirm: true,

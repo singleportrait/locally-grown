@@ -17,29 +17,56 @@ import { ButtonDiv, Button, errorColor } from '../styles';
 
 function StripeCheckoutForm(props) {
   const { user } = useContext(UserContext);
+  const { setPayment } = props;
 
-  const [succeeded, setSucceeded] = useState(false);
-  const [error, setError] = useState(null);
-  const [processing, setProcessing] = useState('');
-  const [disabled, setDisabled] = useState(true);
-  // const [clientSecret, setClientSecret] = useState('');
   const stripe = useStripe();
   const elements = useElements();
 
+  const [error, setError] = useState(null);
+
   const [amount, setAmount] = useState(10);
-  const [paymentsMessage, setPaymentsMessage] = useState();
+  const [paymentMessage, setPaymentMessage] = useState();
 
   const [customerData, setCustomerData] = useState({});
 
+  const [paymentId, setPaymentId] = useState();
+
+  /* Listener for customer data */
   useEffect(() => {
     console.log("[User changed in StripeCheckoutForm]", user?.uid);
-
-    let stripeCustomerUnsubscribe;
-    let paymentUnsubscribe;
+    if (!user) return;
 
     /* Mostly copied from Firebase's Stripe demo page */
+    const stripeCustomerUnsubscribe = firestore
+        .collection('stripe_customers')
+        .doc(user.uid)
+        .onSnapshot((snapshot) => {
+          if (snapshot.data()) {
+            setCustomerData(snapshot.data());
+          } else {
+            console.warn(
+              `No Stripe customer found in Firestore for user: ${user.uid}`
+            );
+          }
+        });
+
+    return () => {
+      if (user) {
+        stripeCustomerUnsubscribe();
+      }
+    }
+  }, [user]);
+
+  /* Listener for any individual payments */
+  const [processing, setProcessing] = useState('');
+  const [succeeded, setSucceeded] = useState(false);
+  useEffect(() => {
+    if (!paymentId) return;
+    console.log("Running useEffect for payment ID");
+
     // Handle card actions like 3D Secure
     async function handleCardAction(payment, docId) {
+      console.log("Handling 3D security");
       const { error, paymentIntent } = await stripe.handleCardAction(
         payment.client_secret
       );
@@ -59,72 +86,56 @@ function StripeCheckoutForm(props) {
         .set(payment, { merge: true });
     }
 
-    function listenForPayments() {
-      /**
-       * Get all payments for the logged in customer
-       */
-      paymentUnsubscribe = firestore
-        .collection('stripe_customers')
-        .doc(user.uid)
-        .collection('payments')
-        .onSnapshot((snapshot) => {
-          const paymentsData = snapshot.docs.map(doc => {
-            const payment = doc.data();
-            console.log("Checking payment", payment);
-            let content = '';
-            const amount = formatAmount(payment.amount, payment.currency);
-            switch (payment.status) {
-              case 'new':
-              case 'requires_confirmation':
-                content = `Creating Payment for ${amount}`;
-                break;
-              case 'succeeded':
-                const card = payment.charges.data[0].payment_method_details.card;
-                content = `✅ Payment for ${amount} on ${card.brand} card •••• ${card.last4}.`;
-                break;
-              case 'requires_action':
-                content = `🚨 Payment for ${amount} ${payment.status}`;
-                handleCardAction(payment, doc.id);
-                break;
-              default:
-                content = `⚠️  Payment for ${amount} ${payment.status}`;
-            }
-            return content;
-          });
-          setPaymentsMessage(paymentsData);
-        });
-    }
+    const paymentUnsubscribe = firestore
+      .collection('stripe_customers')
+      .doc(user.uid)
+      .collection('payments')
+      .doc(paymentId)
+      .onSnapshot((doc) => {
+        const payment = doc.data();
+        console.log("Checking individual payment", payment);
 
-    if (user) {
-      stripeCustomerUnsubscribe = firestore
-        .collection('stripe_customers')
-        .doc(user.uid)
-        .onSnapshot((snapshot) => {
-          console.log("Found customer data");
-          if (snapshot.data()) {
-            setCustomerData(snapshot.data());
-            listenForPayments();
-          } else {
-            console.warn(
-              `No Stripe customer found in Firestore for user: ${user.uid}`
-            );
-          }
-        });
-    }
+        let content = '';
+        const amount = formatAmount(payment.amount, payment.currency);
+        switch (payment.status) {
+          case 'new':
+          case 'requires_confirmation':
+            setProcessing(true);
+            content = `Creating Payment for ${amount}`;
+            break;
+          case 'succeeded':
+            setProcessing(false);
+            setSucceeded(true);
+            const card = payment.charges.data[0].payment_method_details.card;
+            content = `✅ Payment processed for ${amount} on ${card.brand} card •••• ${card.last4}.`;
+            setPayment(content);
+            // Returning here on success because we're ready to be done with this component
+            return;
+            break;
+          case 'requires_action':
+            setProcessing(true);
+            setError(`🚨 Payment for ${amount} ${payment.status}`);
+            content = `🚨 Payment for ${amount} ${payment.status}`;
+            handleCardAction(payment, doc.id);
+            break;
+          default:
+            setProcessing(false);
+            setError(`⚠️  Payment for ${amount} ${payment.status}`);
+            content = `⚠️  Payment for ${amount} ${payment.status}`;
+        }
+
+        console.log("Setting payment message", content);
+        setPaymentMessage(content);
+      });
 
     return () => {
-      if (user) {
-        stripeCustomerUnsubscribe();
-
-        if (customerData) {
-          paymentUnsubscribe();
-        }
-      }
+      console.log("Cleaning up individual payment listener");
+      paymentUnsubscribe();
     }
-  }, [user]);
-
+  }, [paymentId, setPayment, stripe, user.uid]);
 
   /* Mostly copied from Stripe's demo page */
+  const [disabled, setDisabled] = useState(true);
   const handleChange = async (event) => {
     // Listen for changes in the CardElement
     // and display any errors as the customer types their card details
@@ -135,6 +146,7 @@ function StripeCheckoutForm(props) {
   const handleSubmit = async event => {
     event.preventDefault();
     setProcessing(true);
+    setSucceeded(false);
 
     /* This section from Firebase demo */
     /* ------- */
@@ -169,7 +181,7 @@ function StripeCheckoutForm(props) {
     // const form = new FormData(event.target);
     const formAmount = Number(amount);
     const currency = "usd";
-    console.log("Amount", formAmount, currency);
+    // console.log("Amount", formAmount, currency);
     const data = {
       payment_method: setupIntent.payment_method,
       // payment_method: form.get('payment-method'), // Originally, this would be a payment method ID
@@ -179,9 +191,16 @@ function StripeCheckoutForm(props) {
       currency,
       amount: formatAmountForStripe(formAmount, currency),
       status: 'new',
+      // Include screenings information here
+      metadata: {
+        reason_id: "black-archives-recorder",
+        reason_title: "Recorder: The Marion Stokes Project",
+        reason_type: "screening"
+      }
     };
 
-    await firebase
+    // console.log("Payment data", data);
+    const paymentRef = await firebase
       .firestore()
       .collection('stripe_customers')
       .doc(user.uid)
@@ -190,26 +209,13 @@ function StripeCheckoutForm(props) {
     /* ------- */
     /* End Firebase demo */
 
-    setProcessing(false);
-    setSucceeded(true);
-
-    // const payload = await stripe.confirmCardPayment(customerData.clientSecret, {
-    //   payment_method: {
-    //     card: elements.getElement(CardElement)
-    //   }
-    // });
-    // if (payload.error) {
-    //   setError(`Payment failed ${payload.error.message}`);
-    //   setProcessing(false);
-    // } else {
-    //   setError(null);
-    //   setProcessing(false);
-    //   setSucceeded(true);
-    // }
+    // console.log("Payment written with ID", paymentRef.id);
+    setPaymentId(paymentRef.id);
+    // Add donation to screenings/{screeningId}/members/{userId}
   };
 
   const handleAmountChange = (event) => {
-    console.log("Handling amount change");
+    // console.log("Handling amount change");
     setAmount(event.target.value);
   }
 
@@ -242,12 +248,13 @@ function StripeCheckoutForm(props) {
         </CardError>
       }
       <div className={flexRight}>
-        <ButtonDiv className={skipButton} onClick={props.closeModal}>
+        <ButtonDiv className={skipButton} onClick={() => props.setSkipPayment(true)}>
           No thanks
         </ButtonDiv>
         <Button
           disabled={processing || disabled}
           color={(processing || disabled) ? "#ccc" : "#111"}
+          focusColor="#333"
           textColor="#fff"
           id="submit"
         >
@@ -255,6 +262,7 @@ function StripeCheckoutForm(props) {
         </Button>
       </div>
       {/* Show a success message upon completion */}
+      {/* paymentMessage && paymentMessage */}
       <ResultMessage hidden={!succeeded}>
         Payment succeeded, see the result in your
         <a
@@ -264,18 +272,6 @@ function StripeCheckoutForm(props) {
           Stripe dashboard.
         </a>
       </ResultMessage>
-      { paymentsMessage &&
-        <>
-          <hr />
-          <ul>
-            { paymentsMessage.map((paymentMessage, i) =>
-              <li key={i}>
-                { paymentMessage }
-              </li>
-            )}
-          </ul>
-        </>
-      }
     </form>
   )
 }

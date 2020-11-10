@@ -77,6 +77,10 @@ export const Button = styled('button')`
   -webkit-appearance: none;
   outline: none;
   cursor: ${props => props.disabled ? 'default' : 'pointer' };
+
+  &:focus {
+    background-color: ${props => props.backgroundColor ? props.backgroundColor : "#eee"};
+  }
 `;
 
 export const ButtonDiv = Button.withComponent('div');

@@ -20,6 +20,9 @@ function ScreeningRegistrationFlow(props) {
   const { user } = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
 
+  const [payment, setPayment] = useState(null);
+  const [skipPayment, setSkipPayment] = useState(false);
+
   const [stripePromise, setStripePromise] = useState();
   useEffect(() => {
     setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY));
@@ -33,6 +36,8 @@ function ScreeningRegistrationFlow(props) {
   const closeModal = () => {
     console.log("Closing modal");
     setShowModal(false);
+    setPayment(null);
+    setSkipPayment(false);
   }
 
   return (
@@ -98,7 +103,7 @@ function ScreeningRegistrationFlow(props) {
               <h3>Loading Registration...</h3>
             </LoadingDiv>
           }
-          { user && props.registration &&
+          { user && props.registration && !payment && !skipPayment &&
             <>
               <h3 className={confirmedHeader}>Congrats, you're registered for the screening!</h3>
               <p>We've sent you a confirmation email, and we'll send a reminder on {props.contentfulScreening.screeningDate}. <span className={linkStyle}>Add to Google calendar</span>.</p>
@@ -107,9 +112,26 @@ function ScreeningRegistrationFlow(props) {
                 <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand.</p>
                 <hr />
                 <Elements stripe={stripePromise}>
-                  <StripeCheckoutForm closeModal={closeModal} />
+                  <StripeCheckoutForm
+                    setPayment={setPayment}
+                    setSkipPayment={setSkipPayment}
+                  />
                 </Elements>
               </DonationContainer>
+            </>
+          }
+          { user && props.registration && payment &&
+            <>
+              <h3 className={confirmedHeader}>Thanks for your donation!</h3>
+              <h4>Supporters like you keep us running. We appreciate you! See you on {props.contentfulScreening.screeningDate}.</h4>
+              <br />
+              <PaymentContainer>{ payment }</PaymentContainer>
+            </>
+          }
+          { user && props.registration && skipPayment &&
+            <>
+              <h3>Ok, see you soon!</h3>
+              <h4>See you on {props.contentfulScreening.screeningDate}.</h4>
             </>
           }
         </Modal>
@@ -182,6 +204,11 @@ const confirmedHeader = css`
 const DonationContainer = styled('div')`
   padding: .75rem 1rem 1.25rem;
   margin: 1rem -1rem -1rem;
+  background-color: #eee;
+`;
+
+const PaymentContainer = styled('div')`
+  padding: .7rem 1rem .5rem;
   background-color: #eee;
 `;
 
