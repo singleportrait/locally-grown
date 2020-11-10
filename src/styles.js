@@ -79,7 +79,7 @@ export const Button = styled('button')`
   cursor: ${props => props.disabled ? 'default' : 'pointer' };
 
   &:focus {
-    background-color: ${props => props.backgroundColor ? props.backgroundColor : "#eee"};
+    background-color: ${props => props.focusColor ? props.focusColor : "#eee"};
   }
 `;
 
