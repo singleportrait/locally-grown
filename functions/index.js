@@ -100,3 +100,5 @@ exports.stripe = require('./stripe');
 /* Remove users from users/{userId} and screenings/{screeningId}/members/{userId}
  * when authenticated users are deleted. */
 exports.firestore = require('./firestore');
+
+exports.mailchimp = require('./mailchimp');
