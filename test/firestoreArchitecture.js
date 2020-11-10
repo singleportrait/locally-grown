@@ -7,7 +7,7 @@
   mod_user_456
 },
 
-"events" { // Collection
+"screening" { // Collection
   "hot-irons": {
     totalAllowed: 100,
     totalRegistered: 0,

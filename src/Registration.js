@@ -4,7 +4,7 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
 import { generateUserDocument } from './firestore/users';
 import {
-  makeTestHotIronsScreening,
+  makeTestScreening,
   getScreening,
   getScreeningRegistration,
   registerForScreening,
@@ -96,7 +96,7 @@ function Registration(props) {
 
   /* User interactions */
   const makeScreening = async () => {
-    setScreening(await makeTestHotIronsScreening(screeningId)
+    setScreening(await makeTestScreening(screeningId)
       .catch(e => setError(`${e.name}: ${e.message}`)));
   }
 
@@ -145,8 +145,8 @@ function Registration(props) {
         { !screening &&
           <p style={linkStyle} onClick={() => makeScreening()}>Make test screening</p>
         }
-        <p style={linkStyle} onClick={() => makeTestHotIronsScreening("test-1")}>Make test 1 screening</p>
-        <p style={linkStyle} onClick={() => makeTestHotIronsScreening("test-2")}>Make test 2 screening</p>
+        <p style={linkStyle} onClick={() => makeTestScreening("test-1")}>Make test 1 screening</p>
+        <p style={linkStyle} onClick={() => makeTestScreening("test-2")}>Make test 2 screening</p>
         <p style={linkStyle} onClick={() => registerForScreening("test-1", user)}>Register user for Test 1 screening</p>
         <p style={linkStyle} onClick={() => deleteUserFromAllScreenings(user)}>Delete user from all screenings</p>
         { screening &&

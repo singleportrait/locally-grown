@@ -156,7 +156,7 @@ const linkStyle = css`
 const ScreeningLoadingContainer = styled('div')`
   display: flex;
   align-items: center;
-  padding: .5rem 0;
+  padding: 2rem 0;
 `;
 
 const LoadingDiv = styled('div')`

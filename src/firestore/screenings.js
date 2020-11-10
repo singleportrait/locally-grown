@@ -9,7 +9,7 @@ const handleError = (customMessage, error) => {
   }
 };
 
-export const makeTestHotIronsScreening = async (screeningId) => {
+export const makeTestScreening = async (screeningId) => {
   const testScreeningRef = firestore.doc(`screenings/${screeningId}`);
   const testScreeningDoc = await testScreeningRef.get();
 
@@ -151,7 +151,6 @@ export const registerForScreening = async (screeningId, user) => {
 
       if (!screeningDoc.exists) { throw new Error("Screening doesn't exist!"); }
 
-      // TODO: Add logic to check that current totalAllowed is greater than totalRegistered
       const screeningData = screeningDoc.data();
       if (screeningData.totalRegistered + 1 > screeningData.totalAllowed) {
         throw new Error("this event is already full!");
@@ -173,10 +172,6 @@ export const registerForScreening = async (screeningId, user) => {
       }
     });
   } catch (error) {
-    // TODO: More structured checks depending on error type, especially for
-    // handling Firebase errors
-    // `error.code` comes from Firestore's response if it fails server-side
-    // `error.message` comes if we set it ourselves in the `try` block
     handleError("Transaction failed because", error);
   }
 
