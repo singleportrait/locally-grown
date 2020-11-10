@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Markdown from 'react-markdown';
@@ -175,6 +176,9 @@ function Screening(props) {
 
   return (
     <Page>
+      <Helmet>
+        <title>{ contentfulScreening.title }</title>
+      </Helmet>
       { isWideScreen &&
         <WideProgramContainer>
           <Header>
