@@ -203,3 +203,20 @@ export const unregisterForScreening = async (screeningId, user) => {
   }
   return getScreeningRegistration(screeningId, user.uid);
 }
+
+export const deleteUserFromAllScreenings = async (user) => {
+  console.log("[deleteUserFromAllScreenings]");
+
+  const querySnapshot = await firestore.collection('screenings').get();
+  querySnapshot.forEach(async (doc) => {
+    try {
+      const userDoc = await firestore.doc(`screenings/${doc.id}/members/${user.uid}`).get();
+      if (userDoc.exists) {
+        // Transaction to update screening & delete member
+        unregisterForScreening(doc.id, user);
+      }
+    } catch {
+      throw new Error("No screenings");
+    }
+  });
+}

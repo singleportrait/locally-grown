@@ -8,7 +8,8 @@ import {
   getScreening,
   getScreeningRegistration,
   registerForScreening,
-  unregisterForScreening
+  unregisterForScreening,
+  deleteUserFromAllScreenings
 } from './firestore/screenings';
 
 import { UserContext } from "./providers/UserProvider";
@@ -55,7 +56,6 @@ function Registration(props) {
 
   /* Check to see if user exists in Firestore (not Auth),
   * and re-check screening when users log in and out */
-  const [screening, setScreening] = useState(null);
   useEffect(() => {
     console.log("User in useEffect:", user?.uid);
     if (screening) {
@@ -73,6 +73,7 @@ function Registration(props) {
   }, [user, screening]);
 
   /* Check to see if screening and/or member registration exists */
+  const [screening, setScreening] = useState(null);
   const [registration, setRegistration] = useState(null);
   useEffect(() => {
     if (!user) return;
@@ -144,6 +145,10 @@ function Registration(props) {
         { !screening &&
           <p style={linkStyle} onClick={() => makeScreening()}>Make test screening</p>
         }
+        <p style={linkStyle} onClick={() => makeTestHotIronsScreening("test-1")}>Make test 1 screening</p>
+        <p style={linkStyle} onClick={() => makeTestHotIronsScreening("test-2")}>Make test 2 screening</p>
+        <p style={linkStyle} onClick={() => registerForScreening("test-1", user)}>Register user for Test 1 screening</p>
+        <p style={linkStyle} onClick={() => deleteUserFromAllScreenings(user)}>Delete user from all screenings</p>
         { screening &&
           <>
             <h4>Got the screening</h4>
