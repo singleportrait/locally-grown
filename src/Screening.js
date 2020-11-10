@@ -14,7 +14,7 @@ import { generateUserDocument } from './firestore/users';
 import {
   makeTestHotIronsScreening,
   getScreening,
-  getScreeningRegistration,
+  getScreeningAndRegistration,
   registerForScreening,
   unregisterForScreening
 } from './firestore/screenings';
@@ -25,9 +25,9 @@ const backgroundColor = "#111";
 const red = "#fc4834";
 
 function Screening(props) {
-  const { user } = useContext(UserContext);
+  const { user, userIsLoaded } = useContext(UserContext);
   const [error, setError] = useState();
-  const [isLoaded, setIsLoaded] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const isWideScreen = useMediaQuery({ minWidth: 800 });
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
@@ -44,44 +44,32 @@ function Screening(props) {
   /* Check to see if user exists in Firestore (not Auth),
   * and re-check screening when users log in and out */
   useEffect(() => {
-    console.log("User in useEffect:", user?.uid);
 
     generateUserDocument(user);
-  }, [user]);
+  }, [user, userIsLoaded]);
 
   /* Check to see if screening and/or member registration exists */
   const [screening, setScreening] = useState(null);
   const [registration, setRegistration] = useState(null);
-
   useEffect(() => {
-    setIsLoaded(false);
-    setRegistration(null); // For user logging out
+    if (!userIsLoaded) return;
 
+    setIsLoaded(false);
+    setScreening(null);
+    // console.log("[useEffect reset]");
     async function checkScreeningAndRegistration() {
-      console.log("[Checking screening in useEffect...]");
-      const screeningResult = await getScreening(contentfulScreening.slug, user?.uid || null)
+      const result = await getScreeningAndRegistration(contentfulScreening.slug, user?.uid || null)
         .catch(e => setError(`${e.name}: ${e.message}`));
 
-      let registrationResult = null;
-      if (user) {
-        console.log("[Checking registration in useEffect...]");
-        registrationResult = await getScreeningRegistration(contentfulScreening.slug, user.uid)
-          .catch(e => setError(`Error checking registration ${e}`));
-      }
-
-      // Can set a manual slowdown here whenever it's time to style the loading state
-      setScreening(screeningResult);
-      setRegistration(registrationResult);
+      setScreening(result.screening);
+      setRegistration(result.registration);
       setIsLoaded(true);
     }
 
     checkScreeningAndRegistration();
-  }, [user, contentfulScreening.slug]);
+  }, [userIsLoaded, user, contentfulScreening.slug]);
 
-  /* Issue: Because the below necessarily updates the screening to get the latest
-   * registered screening total, it causes the registration useEffect block to
-   * be run twice, once in here and then above. However, if we don't setRegistration
-   * here, it's a bit confusing—though, not necessarily incorrect. */
+  /* User interactions */
   const register = async () => {
     if (!screening || !user) return;
     console.log("Registering in component...");
@@ -100,6 +88,7 @@ function Screening(props) {
     setScreening(await getScreening(screening.id, user.uid));
   }
 
+  /* Date formatting */
   const date = new Date(contentfulScreening.startDatetime);
   contentfulScreening.screeningDate = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
@@ -123,7 +112,7 @@ function Screening(props) {
     return (
       <>
         <h1>{ contentfulScreening.title }</h1>
-        <h4>A Private Screening{ screening && ` for ${screening.totalAllowed} viewers`}</h4>
+        <h4>A Private Screening</h4>
         <h3 className={marginMedium}>
           Watch LIVE with us on
           <br />

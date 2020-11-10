@@ -117,6 +117,20 @@ export const getScreeningRegistration = async (screeningId, uid) => {
   }
 }
 
+export const getScreeningAndRegistration = async (screeningId, uid = null) => {
+  const screening = await getScreening(screeningId, uid);
+
+  let registration = null;
+  if (uid) {
+    registration = await getScreeningRegistration(screeningId, uid);
+  }
+
+  return {
+    screening: screening,
+    registration: registration
+  }
+}
+
 /* Register a user for a screening */
 export const registerForScreening = async (screeningId, user) => {
   console.log("[registerForScreening]");
