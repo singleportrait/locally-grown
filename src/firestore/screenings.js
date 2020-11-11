@@ -229,3 +229,25 @@ export const deleteUserFromAllScreenings = async (user) => {
     }
   });
 }
+
+export const addDonationtoScreening = async (screeningId, user, paymentInfo) => {
+  console.log("[addDonationtoScreening]");
+
+  // Get member from screening
+  const memberRef = firestore.doc(`screenings/${screeningId}/members/${user.uid}`);
+  try {
+    const memberDoc = await memberRef.get();
+    if (memberDoc.exists) {
+      // console.log("Member doc exists");
+      // Update by adding payment ID from Stripe
+      memberRef.update({
+        payments: firebase.firestore.FieldValue.arrayUnion(paymentInfo)
+      });
+    } else {
+      // console.log("No member doc");
+    }
+
+  } catch (error) {
+    throw new Error("Unable to update screening member donation", error);
+  }
+}

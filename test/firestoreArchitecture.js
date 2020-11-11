@@ -20,7 +20,18 @@
     },
     "members": { // Sub-collection
       user_123: {
-        registeredAt: Date.now();
+        registeredAt: Date.now(),
+        payments: [
+          {
+            id: "1nv55T5Jpn..",
+            amount: 1000,
+            created: Date.now()
+          }
+          {
+            id: "2MFZ8L79T...",
+            ...
+          }
+        ]
       },
       user_456: {
         registeredAt: Date.yesterday();

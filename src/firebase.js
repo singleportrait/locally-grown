@@ -26,6 +26,7 @@ if (process.env.NODE_ENV === 'development') {
 export default firebase;
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+export const functions = firebase.functions();
 
 /* Using local emulator for Firestore */
 if (window.location.hostname === "localhost") {

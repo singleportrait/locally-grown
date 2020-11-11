@@ -115,6 +115,8 @@ function ScreeningRegistrationFlow(props) {
                   <StripeCheckoutForm
                     setPayment={setPayment}
                     setSkipPayment={setSkipPayment}
+                    screening={props.screening}
+                    contentfulScreeningTitle={props.contentfulScreening.title}
                   />
                 </Elements>
               </DonationContainer>
