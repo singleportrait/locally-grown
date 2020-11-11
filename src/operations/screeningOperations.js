@@ -6,6 +6,7 @@ const fetchScreenings = () => dispatch => {
   return new Promise(function(resolve, reject) {
     client.getEntries({
       content_type: 'screening',
+      'fields.isLive': process.env.NODE_ENV === `development` ? '' : true,
       include: 3
     }).then(screenings => {
       resolve(screenings.items);

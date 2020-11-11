@@ -14,6 +14,7 @@ const client = createClient({
 console.log("Fetching screenings...");
 client.getEntries({
   content_type: "screening",
+  'fields.isLive': true,
   include: 1,
 })
 .then(response => {

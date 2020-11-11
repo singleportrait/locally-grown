@@ -20,7 +20,9 @@ function Screenings(props) {
             }
             <h3>Please select a screening:</h3>
             { screenings && screenings.map((screening, i) =>
-            <Link key={i} to={`${url}/${screening.fields.slug}`}>{screening.fields.title}</Link>
+              <p key={i}>
+                <Link to={`${url}/${screening.fields.slug}`}>{screening.fields.title}</Link>
+              </p>
             )}
           </>
         </Route>
