@@ -5,21 +5,17 @@ const stripe = require('stripe')(functions.config().stripe.secret, {
   apiVersion: '2020-08-27',
 });
 
+const currency = "usd";
+
 /**
  * When the donation form is visible, create a new Payment Intent
  */
 exports.createPaymentIntent = functions.https.onCall((data, context) => {
-  // Perhaps later: save customer on user auth
-  // let customer;
-  // stripe.customers.create({ email: data.email })
-  //   .then(result => {
-  //     customer = result;
-  //   });
-
   return stripe.paymentIntents.create({
     amount: 1000,
-    currency: "usd",
+    currency: currency,
     // status: "new",
+    customer: data.customerId,
     receipt_email: data.email,
     description: `${data.metadata.reason_title} Donation`,
     metadata: data.metadata,
@@ -40,7 +36,7 @@ exports.updatePaymentIntent = functions.https.onCall((data, context) => {
     data.payment_intent,
   {
     amount: data.amount,
-    currency: "usd"
+    currency: currency
   }).then((paymentIntent) => {
     // functions.logger.info("Updated payment intent", paymentIntent);
     return {

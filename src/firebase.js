@@ -3,8 +3,6 @@ import 'firebase/functions';
 import 'firebase/auth';
 import 'firebase/firestore';
 
-import { generateUserDocument } from './firestore/users';
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -36,15 +34,6 @@ if (window.location.hostname === "localhost") {
   });
 }
 
-const handleSignin = (authResult) => {
-  console.log("Handling sign in");
-  try {
-    generateUserDocument(authResult.user);
-  } catch (error) {
-    console.log("Error signing in", error);
-  }
-};
-
 export const handleUiConfig = (signinCallback) => {
   const uiConfig = {
     // Popup signin flow rather than redirect flow.
@@ -63,7 +52,6 @@ export const handleUiConfig = (signinCallback) => {
     callbacks: {
       // Avoid redirects after sign-in.
       signInSuccessWithAuthResult: (authResult) => {
-        handleSignin(authResult);
         if (signinCallback) {
           console.log("Handling additional signin callback");
           signinCallback();

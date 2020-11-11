@@ -1,8 +1,29 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
+const stripe = require('stripe')(functions.config().stripe.secret, {
+  apiVersion: '2020-08-27',
+});
+
+/**
+ * When a user is created, create a Stripe customer object for them.
+ * Note: onCreate() only has access to a user email and UID (not display name), so we set this in the UserProvider when adding the user to the store
+ *
+ * @see https://stripe.com/docs/payments/save-and-reuse#web-create-customer
+ */
+exports.createUser = functions.auth.user().onCreate(async (user) => {
+  const customer = await stripe.customers.create({ email: user.email });
+  await admin.firestore().collection('users').doc(user.uid).set({
+    email: user.email,
+    displayName: '',
+    customer_id: customer.id,
+  });
+  return;
+});
+
 /* Similar to the function in firestore/screenings.js/unregisterForScreening,
- * but we need to run here when any authenticated users get deleted */
+ * but we need to run here when any authenticated users get deleted,
+ * and also delete the Stripe customer data */
 exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
   /* Remove member and update all screenings */
   try {
@@ -37,9 +58,13 @@ exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
     functions.logger.error("Error getting screenings", error);
   }
 
-  /* Then, delete user from /users/{userId} */
+  /* Remove customer from Stripe */
   const userRef = admin.firestore().collection('users').doc(user.uid);
 
+  const customer = (await userRef.doc(user.uid).get()).data();
+  await stripe.customers.del(customer.customer_id);
+
+  /* Then, delete user from /users/{userId} */
   try {
     const userDoc = await userRef.get();
 

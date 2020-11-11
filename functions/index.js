@@ -97,8 +97,10 @@ exports.app = functions.https.onRequest(app);
  * These will look like `stripe-createStripeCustomer` when deployed */
 exports.stripe = require('./stripe');
 
-/* Remove users from users/{userId} and screenings/{screeningId}/members/{userId}
- * when authenticated users are deleted. */
-exports.firestore = require('./firestore');
+/* Firebase Auth triggers:
+ * - Add users to users/{userId}, and create Stripe customer
+ * - Remove users from users/{userId}, screenings/{screeningId}/members/{userId}, and Stripe
+ *   when authenticated users are deleted. */
+exports.auth = require('./auth');
 
-exports.mailchimp = require('./mailchimp');
+// exports.mailchimp = require('./mailchimp');

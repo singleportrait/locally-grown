@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { functions } from '../firebase';
+import { firestore, functions } from '../firebase';
 import {
   CardElement,
   useStripe,
@@ -27,16 +27,36 @@ function StripeCheckoutForm(props) {
   const [error, setError] = useState(null);
 
   const [amount, setAmount] = useState(10);
+  const currency = "usd";
+
+  const [customerId, setCustomerId] = useState(null);
+  /* Get Stripe customer */
+  useEffect(() => {
+    if (!user) return;
+    async function getStripeCustomerId() {
+      const userDoc = await firestore.doc(`users/${user.uid}`).get()
+        .catch(e => console.log("No user doc exists!"));
+
+      if (userDoc.data().customerId) {
+        setCustomerId(userDoc.data().customer_id);
+      } else {
+        console.warn(`No Stripe customer found in Firestore for user: ${user.uid}`);
+      }
+    }
+
+    getStripeCustomerId();
+  }, [user]);
 
   /* Create Payment Intent */
   const [clientSecret, setClientSecret] = useState(null);
   const [resetPaymentIntent, setResetPaymentIntent] = useState(false);
   const [paymentIntent, setPaymentIntent] = useState('');
   useEffect(() => {
-    if (resetPaymentIntent) return;
+    if (resetPaymentIntent || !customerId) return;
 
     const intentData = {
       email: user.email,
+      customerId: customerId,
       metadata: {
         reason_id: screeningId,
         reason_title: props.contentfulScreeningTitle,
@@ -52,7 +72,7 @@ function StripeCheckoutForm(props) {
     }).catch((error) => {
       console.log(error);
     });
-  }, [resetPaymentIntent, user.email, screeningId, props.contentfulScreeningTitle]);
+  }, [resetPaymentIntent, user.email, screeningId, props.contentfulScreeningTitle, customerId]);
 
   const [processing, setProcessing] = useState('');
   // const [succeeded, setSucceeded] = useState(false);
@@ -72,7 +92,6 @@ function StripeCheckoutForm(props) {
     setProcessing(true);
     // setSucceeded(false);
 
-    console.log("Submitting", elements.getElement(CardElement));
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement)
@@ -95,6 +114,7 @@ function StripeCheckoutForm(props) {
       const paymentInfo = {
         id: payload.paymentIntent.id,
         amount: payload.paymentIntent.amount,
+        currency: currency,
         created: new Date(payload.paymentIntent.created*1000)
       }
       console.log("Payload id", payload.paymentIntent.id);
@@ -107,7 +127,6 @@ function StripeCheckoutForm(props) {
   const handleAmountChange = (event) => {
     console.log("Handling amount change");
     const formAmount = Number(event.target.value);
-    const currency = "usd";
     const formattedAmount = formatAmountForStripe(formAmount, currency);
     setProcessing(true);
 

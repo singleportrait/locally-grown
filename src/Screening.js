@@ -11,7 +11,6 @@ import { css } from 'emotion';
 
 import { UserContext } from "./providers/UserProvider";
 
-import { generateUserDocument } from './firestore/users';
 import {
   makeTestScreening,
   getScreening,
@@ -41,13 +40,6 @@ function Screening(props) {
     videoTrailer: props.screening.fields.videoTrailer,
     startDatetime: props.screening.fields.startDatetime
   }
-
-  /* Check to see if user exists in Firestore (not Auth),
-  * and re-check screening when users log in and out */
-  useEffect(() => {
-
-    generateUserDocument(user);
-  }, [user, userIsLoaded]);
 
   /* Check to see if screening and/or member registration exists */
   const [screening, setScreening] = useState(null);

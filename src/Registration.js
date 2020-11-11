@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase, { auth } from './firebase';
-import { generateUserDocument } from './firestore/users';
 import {
   makeTestScreening,
   getScreening,
@@ -31,7 +30,7 @@ const uiConfig = {
   credentialHelper: 'none',
   callbacks: {
     // Avoid redirects after sign-in.
-    signInSuccessWithAuthResult: (authResult) => handleSignin(authResult)
+    signInSuccessWithAuthResult: () => false
   }
 };
 
@@ -39,15 +38,6 @@ const linkStyle = {
   textDecoration: "underline",
   cursor: "pointer"
 }
-
-const handleSignin = (authResult) => {
-  console.log("Handling sign in");
-  try {
-    generateUserDocument(authResult.user);
-  } catch (error) {
-    console.log("Error signing in", error);
-  }
-};
 
 function Registration(props) {
   const { user } = useContext(UserContext);
@@ -69,7 +59,6 @@ function Registration(props) {
       return;
     }
 
-    generateUserDocument(user);
   }, [user, screening]);
 
   /* Check to see if screening and/or member registration exists */
