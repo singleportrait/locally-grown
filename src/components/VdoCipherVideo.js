@@ -54,26 +54,34 @@ function VdoCipherVideo(props) {
   useEffect(() => {
     if (!video) return;
 
-    video.addEventListener('load', () => {
+    let timeout;
+    const loadListener = video.addEventListener('load', () => {
       console.log("Loaded video");
       video.seek(4);
       video.mute();
       video.play();
       // setCanMute(true);
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         setCanMute(true);
         console.log("Able to set mute now");
       }, 8000);
     });
-    video.addEventListener('ended', () => {
+    const endedListener = video.addEventListener('ended', () => {
       console.log("Video ended");
       // video.seek(0);
       // video.play();
     });
 
-    video.addEventListener("play", () => {
+    const playListener = video.addEventListener("play", () => {
       console.log("Video playing");
     });
+
+    return () => {
+      loadListener();
+      clearTimeout(timeout);
+      endedListener();
+      playListener();
+    }
   }, [video]);
 
   /* Play/pause controls */
