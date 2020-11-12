@@ -22,6 +22,7 @@ import {
 } from './firestore/screenings';
 
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
+import VdoCipherVideo from './components/VdoCipherVideo';
 
 const backgroundColor = "#111";
 const red = "#fc4834";
@@ -192,6 +193,9 @@ function Screening(props) {
               }}
             />
           </VideoWrapper>
+        }
+        { registration && timeLeft.complete &&
+          <VdoCipherVideo />
         }
         <VideoDetails>
           <TrailerText>Watch the trailer</TrailerText>
