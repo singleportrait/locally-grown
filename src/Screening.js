@@ -238,7 +238,7 @@ function Screening(props) {
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
-                { registration && timeLeft.complete &&
+                { registration && timeLeft.complete && false &&
                   <Tlkio />
                 }
                 <InfoColumnHeader />
