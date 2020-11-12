@@ -95,7 +95,6 @@ service cloud.firestore {
           updatedRegistrationUpdatedAtTimestamp();
       }
 
-      // Something like this; pseudocode at this point !
       match /registeredInfo/{document=**} {
         function isRegisteredMember() {
           return exists(/databases/$(database)/documents/screenings/$(screeningId)/members/$(request.auth.uid));
@@ -104,29 +103,6 @@ service cloud.firestore {
         allow read: if (isRegisteredMember() || userIsEventMod());
         allow update, create: if userIsEventMod();
       }
-    }
-
-    match /readonly/{docId} {
-      allow read: if true;
-      allow write: if false;
-    }
-    match /posts/{postId} {
-      allow read: if (resource.data.visibility == "public") ||
-        (resource.data.authorId == request.auth.uid);
-      allow update: if (resource.data.authorId == request.auth.uid);
-    }
-
-    match /stripe_customers/{uid} {
-      allow read, write: if request.auth.uid == uid;
-
-      match /payment_methods/{id} {
-        allow read,write: if request.auth.uid == uid;
-      }
-
-      match /payments/{id} {
-        allow read, write: if request.auth.uid == uid;
-      }
-
     }
   }
 }
