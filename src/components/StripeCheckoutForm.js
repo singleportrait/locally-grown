@@ -33,12 +33,15 @@ function StripeCheckoutForm(props) {
   /* Get Stripe customer */
   useEffect(() => {
     if (!user) return;
+    let isMounted = true;
     async function getStripeCustomerId() {
       try {
         const userDoc = await firestore.doc(`users/${user.uid}`).get();
 
         if (userDoc?.data().customer_id) {
-          setCustomerId(userDoc.data().customer_id);
+          if (isMounted) {
+            setCustomerId(userDoc.data().customer_id);
+          }
         } else {
           console.warn(`No Stripe customer found in Firestore for user: ${user.uid}`);
         }
@@ -48,6 +51,7 @@ function StripeCheckoutForm(props) {
     }
 
     getStripeCustomerId();
+    return () => isMounted = false;
   }, [user]);
 
   /* Create Payment Intent */
@@ -56,6 +60,7 @@ function StripeCheckoutForm(props) {
   const [paymentIntent, setPaymentIntent] = useState('');
   useEffect(() => {
     if (resetPaymentIntent || !customerId) return;
+    let isMounted = true;
 
     const intentData = {
       email: user.email,
@@ -69,12 +74,15 @@ function StripeCheckoutForm(props) {
     const createPaymentIntent = functions.httpsCallable('stripe-createPaymentIntent');
     createPaymentIntent(intentData).then(result => {
       // console.log("Setting client secret", result.data.client_secret);
-      setClientSecret(result.data.client_secret);
-      setPaymentIntent(result.data.payment_intent_id);
-      setResetPaymentIntent(true);
+      if (isMounted) {
+        setClientSecret(result.data.client_secret);
+        setPaymentIntent(result.data.payment_intent_id);
+        setResetPaymentIntent(true);
+      }
     }).catch((error) => {
       console.log(error);
     });
+    return () => isMounted = false;
   }, [resetPaymentIntent, user.email, screeningId, props.contentfulScreeningTitle, customerId]);
 
   const [processing, setProcessing] = useState('');
