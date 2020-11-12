@@ -124,7 +124,7 @@ function Screening(props) {
       clearTimeout(timer);
     }
     return () => clearTimeout(timer);
-  }, [startTime]);
+  }, [startTime, timeLeft.complete]);
 
   function InfoColumnHeader() {
     return (
@@ -179,7 +179,8 @@ function Screening(props) {
   const renderVideoPlayer = () => {
     return (
       <>
-        { contentfulScreening.videoTrailer && !timeLeft.complete &&
+        { (contentfulScreening.videoTrailer && !timeLeft.complete) ||
+          (contentfulScreening.videoTrailer && timeLeft.complete && !registration) &&
           <VideoWrapper>
             <ReactPlayer
               url={contentfulScreening.videoTrailer.fields.url}
@@ -237,7 +238,7 @@ function Screening(props) {
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
-                { timeLeft.complete &&
+                { registration && timeLeft.complete &&
                   <Tlkio />
                 }
                 <InfoColumnHeader />
