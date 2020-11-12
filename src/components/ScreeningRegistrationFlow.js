@@ -29,12 +29,12 @@ function ScreeningRegistrationFlow(props) {
   }, []);
 
   const openModal = () => {
-    console.log("Opening modal");
+    // console.log("Opening modal");
     setShowModal(true);
   }
 
   const closeModal = () => {
-    console.log("Closing modal");
+    // console.log("Closing modal");
     setShowModal(false);
     setPayment(null);
     setSkipPayment(false);

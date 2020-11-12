@@ -119,7 +119,10 @@ function Screening(props) {
             <hr />
             <h4>There's no screening registration for this screening yet!</h4>
             { process.env.NODE_ENV === "development" &&
-              <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestScreening(contentfulScreening.slug)}>Make test screening</p>
+              <>
+                <p>Reminder!! You need to make sure you're using the <strong>production Firestore database</strong> when you click this</p>
+                <span style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestScreening(contentfulScreening.slug)}>Make test screening</span>
+              </>
             }
           </>
         }
@@ -132,11 +135,13 @@ function Screening(props) {
       <>
         <hr />
         { contentfulScreening.description &&
-          <Markdown source={contentfulScreening.description} />
+          <Markdown className={description} source={contentfulScreening.description} />
         }
         <hr />
           <br />
-          <Link to="/screenings">Back to screenings</Link>
+          { process.env.NODE_ENV === "development" &&
+            <Link to="/screenings">Back to screenings</Link>
+          }
           <br />
           <Link to="/">Back to home</Link>
           <br />
@@ -386,6 +391,16 @@ const marginMedium = css`
 
 const time = css`
   text-transform: lowercase;
+`;
+
+const description = css`
+  h3, h4 {
+    margin-top: 1rem;
+  }
+
+  p {
+    margin-top: .5rem;
+  }
 `;
 
 export default Screening;

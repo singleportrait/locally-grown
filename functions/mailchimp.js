@@ -67,6 +67,8 @@ exports.mailchimpScreeningSubscribe = functions.firestore
       updateTag(subscriberHash, tagName, "active");
 
     } catch (error) {
+      /* Mailchimp returns an `error` if it doesn't find a member in the list */
+
       // console.error(`This email is not subscribed to this list`);
 
       try {
