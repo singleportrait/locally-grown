@@ -1,0 +1,59 @@
+html {
+  /* font-size: 13px; */
+  font-family: "Larsseit";
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #000;
+}
+
+.header-avatar {
+  display: none;
+}
+
+.header-channel {
+  /* display: none; */
+}
+
+.header-status {
+  left: 1rem;
+}
+
+/* Colors */
+.theme--night .header-bar,
+.theme--night .post,
+.theme--night .button {
+  background-color: #333;
+}
+
+.theme--night .post.me {
+  background-color: #222;
+}
+
+/* Social icons */
+.join-button-icon {
+  fill: #ccc;
+}
+
+/* Last message in block */
+.post-message:last-of-type {
+  padding-bottom: 7px; /* Originally were 10px */
+}
+
+/* Name and icon */
+.post-meta {
+  top: 0; /* Originally was 3px, */
+}
+
+@media (max-width: 919px) {
+  /* User name */
+  .post-name {
+    padding-top: 7px;
+  }
+
+  /* User message */
+  .chat .post:nth-last-of-type(-n+3) .post-message:first-of-type {
+    padding-top: 7px;
+  }
+}

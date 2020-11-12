@@ -23,6 +23,7 @@ import {
 
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
 import VdoCipherVideo from './components/VdoCipherVideo';
+import Tlkio from './components/Tlkio';
 
 const backgroundColor = "#111";
 const red = "#fc4834";
@@ -236,6 +237,9 @@ function Screening(props) {
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
+                { timeLeft.complete &&
+                  <Tlkio />
+                }
                 <InfoColumnHeader />
                 <ScreeningRegistrationFlow
                   contentfulScreening={contentfulScreening}
