@@ -74,7 +74,7 @@ app.get("/screenings/:slug", (request, response) => {
     return response.redirect(404, '/');
   }
 
-  return setDynamicMetadata(response, slug, screening.title, screening.description);
+  return setDynamicMetadata(response, `screenings/${slug}`, screening.title, screening.description);
 });
 
 // This line doesn't seem to be necessary
