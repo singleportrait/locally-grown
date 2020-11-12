@@ -37,7 +37,7 @@ function StripeCheckoutForm(props) {
       const userDoc = await firestore.doc(`users/${user.uid}`).get()
         .catch(e => console.log("No user doc exists!"));
 
-      if (userDoc.data().customerId) {
+      if (userDoc.data().customer_id) {
         setCustomerId(userDoc.data().customer_id);
       } else {
         console.warn(`No Stripe customer found in Firestore for user: ${user.uid}`);
@@ -65,7 +65,7 @@ function StripeCheckoutForm(props) {
     }
     const createPaymentIntent = functions.httpsCallable('stripe-createPaymentIntent');
     createPaymentIntent(intentData).then(result => {
-      // console.log("Setting client secret");
+      // console.log("Setting client secret", result.data.client_secret);
       setClientSecret(result.data.client_secret);
       setPaymentIntent(result.data.payment_intent_id);
       setResetPaymentIntent(true);

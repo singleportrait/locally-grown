@@ -61,8 +61,7 @@ app.get("/:slug", (request, response) => {
     return response.redirect(404, "/");
   }
 
-  setDynamicMetadata(response, slug, channel.title, channel.description);
-
+  return setDynamicMetadata(response, slug, channel.title, channel.description);
 });
 
 // Dynamic (screening) routes
@@ -75,7 +74,7 @@ app.get("/screenings/:slug", (request, response) => {
     return response.redirect(404, '/');
   }
 
-  setDynamicMetadata(response, slug, screening.title, screening.description);
+  return setDynamicMetadata(response, slug, screening.title, screening.description);
 });
 
 // This line doesn't seem to be necessary

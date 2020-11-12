@@ -18,7 +18,7 @@ function RegisterCheckboxes(props) {
     <form>
       <div className={flex}>
         <input type="checkbox" id="confirmRegister" name="register" onChange={() => setConfirmedRegister(!confirmedRegister)} />
-        <label htmlFor="confirmRegister">Register me for { props.title } showing on &lt;date&gt;.</label>
+        <label htmlFor="confirmRegister">Register me for { props.title } showing on { props.screeningDate }.</label>
       </div>
       <br />
       <div className={flex}>

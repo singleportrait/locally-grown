@@ -118,7 +118,9 @@ function Screening(props) {
           <>
             <hr />
             <h4>There's no screening registration for this screening yet!</h4>
-            <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestScreening(contentfulScreening.slug)}>Make test screening</p>
+            { process.env.NODE_ENV === "development" &&
+              <p style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestScreening(contentfulScreening.slug)}>Make test screening</p>
+            }
           </>
         }
       </>
@@ -175,8 +177,12 @@ function Screening(props) {
         <WideProgramContainer>
           <Header>
             <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
-            { user && user.email }
-            { user && isWideScreen && <LogOutLink className={linkStyle} onClick={() => auth.signOut()}>Sign out</LogOutLink>}
+            { user &&
+              <LogOutLink>
+                <p className={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
+                { user.email }
+              </LogOutLink>
+            }
             <hr />
           </Header>
           <ContentContainer>
@@ -335,6 +341,7 @@ const LogOutLink = styled('div')`
   top: 50%;
   right: 1rem;
   margin-top: -1.3rem;
+  text-align: right;
 `;
 
 const linkStyle = css`

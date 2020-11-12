@@ -95,6 +95,7 @@ function ScreeningRegistrationFlow(props) {
               <br />
               <RegisterCheckboxes
                 title={props.contentfulScreening.title}
+                screeningDate={props.contentfulScreening.screeningDate}
                 register={props.register} />
             </>
           }
@@ -109,7 +110,7 @@ function ScreeningRegistrationFlow(props) {
               <p>We've sent you a confirmation email, and we'll send a reminder on {props.contentfulScreening.screeningDate}. <span className={linkStyle}>Add to Google calendar</span>.</p>
               <DonationContainer>
                 <h4 className={modalHeader}>Donate to Support the Screening</h4>
-                <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support &lt;Black Archives&gt; and Locally Grown in our mission to build an independent home for films we can watch together. If you can't pay anything, we understand.</p>
+                <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support Black Archives and Locally Grown in our mission to build an independent home for films we can watch together. Our suggested donation is $10. If you can't pay anything, we understand.</p>
                 <hr />
                 <Elements stripe={stripePromise}>
                   <StripeCheckoutForm

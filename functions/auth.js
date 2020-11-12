@@ -58,17 +58,17 @@ exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
     functions.logger.error("Error getting screenings", error);
   }
 
-  /* Remove customer from Stripe */
   const userRef = admin.firestore().collection('users').doc(user.uid);
-
-  const customer = (await userRef.doc(user.uid).get()).data();
-  await stripe.customers.del(customer.customer_id);
 
   /* Then, delete user from /users/{userId} */
   try {
     const userDoc = await userRef.get();
 
     if (userDoc.exists) {
+      /* Remove customer from Stripe */
+      const customer = userDoc.data();
+      await stripe.customers.del(customer.customer_id);
+
       userRef.delete();
     }
   } catch (error) {
