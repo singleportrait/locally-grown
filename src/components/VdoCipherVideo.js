@@ -20,7 +20,7 @@ function VdoCipherVideo(props) {
     }
 
     fetchRealVideo();
-  }, []);
+  }, [props.videoId]);
 
   /* Add VdoCipher script to page, then save `video` once it loads */
   /* Run within useEffect to prevent it being added twice */
@@ -28,7 +28,7 @@ function VdoCipherVideo(props) {
   const [video, setVideo] = useState();
 
   useEffect(() => {
-    if (!vdoKeys) return;
+    if (!vdoKeys.otp || !vdoKeys.playbackInfo) return;
 
     // console.log("Vdo keys", vdoKeys);
     script.src = "https://player.vdocipher.com/playerAssets/1.x/vdo.js";
