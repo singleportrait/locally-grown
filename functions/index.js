@@ -78,7 +78,7 @@ app.get("/screenings/:slug", (request, response) => {
 });
 
 // This line doesn't seem to be necessary
-// app.use(express.static(path.resolve(__dirname, './web')));
+app.use(express.static(path.resolve(__dirname, './web')));
 
 setMetadata("/", appName, appDescription);
 
