@@ -20,13 +20,17 @@ function UserProvider(props) {
        * creating user in Firebase Functions */
       const addDisplayName = async () => {
         const userRef = firestore.doc(`users/${userAuth.uid}`);
-        const userDoc = await userRef.get().catch(e => console.log("No user!", e));
+        try {
+          const userDoc = await userRef.get();
 
-        if (!userDoc.data().displayName) {
-          // console.log("Adding display name");
-          userRef.update({
-            displayName: userAuth.displayName
-          });
+          if (!userDoc.data().displayName) {
+            console.log("Adding display name");
+            userRef.update({
+              displayName: userAuth.displayName
+            });
+          }
+        } catch (error) {
+          console.error("We couldn't find that user (yet)");
         }
       }
       if (userAuth) {
