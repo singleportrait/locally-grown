@@ -17,6 +17,7 @@ import {
   makeTestScreening,
   getScreening,
   getScreeningAndRegistration,
+  getRegisteredInfo,
   registerForScreening,
   unregisterForScreening
 } from './firestore/screenings';
@@ -66,10 +67,22 @@ function Screening(props) {
     checkScreeningAndRegistration();
   }, [userIsLoaded, user, contentfulScreening.slug]);
 
+  const [registeredInfo, setRegisteredInfo] = useState();
+  useEffect(() => {
+    if (!registration) return;
+
+    // console.log("Registered user, let's get the private stuff");
+    (async () => {
+      const registeredInfo = await getRegisteredInfo(contentfulScreening.slug)
+        .catch(e => setError(`${e.name}: ${e.message}`));
+      setRegisteredInfo(registeredInfo);
+    })();
+  }, [registration]);
+
   /* User interactions */
   const register = async () => {
     if (!screening || !user) return;
-    console.log("Registering in component...");
+    // console.log("Registering in component...");
     const registration = await registerForScreening(screening.id, user)
       .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
@@ -78,7 +91,7 @@ function Screening(props) {
 
   const unregister = async () => {
     if (!screening || !user) return;
-    console.log("Unregistering in component...");
+    // console.log("Unregistering in component...");
     const registration = await unregisterForScreening(screening.id, user)
       .catch(e => setError(`${e.name}: ${e.message}`));
     setRegistration(registration);
@@ -129,6 +142,9 @@ function Screening(props) {
   function InfoColumnHeader() {
     return (
       <>
+        { error &&
+          <h4 className={errorText}>{ error }</h4>
+        }
         <h1>{ contentfulScreening.title }</h1>
         <h4>A Private Screening</h4>
         <h3 className={marginMedium}>
@@ -196,10 +212,10 @@ function Screening(props) {
             />
           </VideoWrapper>
         }
-        { registration && timeLeft.complete &&
+        { registration && timeLeft.complete && registeredInfo &&
           /* To pull from `screenings/{screeningId}/registeredInfo/{screeningId} */
           <VdoCipherVideo
-            videoId="1feaa1e1b0d94af2a92dd020b15dedc6"
+            videoId={registeredInfo.videoId}
           />
         }
         <VideoDetails>
@@ -276,11 +292,6 @@ function Screening(props) {
             <InfoColumnFooter />
             { user && <p className={linkStyle} onClick={() => auth.signOut()}>Log out</p>}
           </MobileInfoColumn>
-        </>
-      }
-      { error &&
-        <>
-          There's an error.
         </>
       }
     </Page>
@@ -452,6 +463,10 @@ const description = css`
   p {
     margin-top: .5rem;
   }
+`;
+
+const errorText = css`
+  color: ${red};
 `;
 
 export default Screening;

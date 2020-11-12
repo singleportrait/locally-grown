@@ -96,6 +96,24 @@ export const getScreening = async (screeningId, uid = null) => {
   }
 }
 
+/* Get the private info about a screening, which only registered users can access */
+export const getRegisteredInfo = async (screeningId) => {
+  // console.log("[getRegisteredInfo]");
+  if (!screeningId) return;
+
+  try {
+    const registeredInfoDoc = await firestore.doc(`screenings/${screeningId}/registeredInfo/${screeningId}`).get();
+    if (registeredInfoDoc.exists) {
+      return registeredInfoDoc.data();
+    } else {
+      console.log("Registered info doesn't exist");
+      return;
+    }
+  } catch (error) {
+    handleError("Error fetching registered info", error);
+  }
+};
+
 /* Get a user's screening registration */
 export const getScreeningRegistration = async (screeningId, uid) => {
   console.log("[getScreeningRegistration]");
