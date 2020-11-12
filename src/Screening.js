@@ -11,6 +11,8 @@ import { css } from 'emotion';
 
 import { UserContext } from "./providers/UserProvider";
 
+import { calculateTimeLeft } from './helpers/utils';
+
 import {
   makeTestScreening,
   getScreening,
@@ -82,24 +84,45 @@ function Screening(props) {
   }
 
   /* Date formatting */
-  const date = new Date(contentfulScreening.startDatetime);
+  const startTime = new Date(contentfulScreening.startDatetime);
   contentfulScreening.screeningDate = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric'
-  }).format(date);
+  }).format(startTime);
+
+  let format = {
+    hour: 'numeric'
+  };
+
+  if (startTime.getMinutes() !== 0) {
+    format.minute = 'numeric';
+  }
 
   contentfulScreening.screeningTimeEastCoast = new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
+    ...format,
     timeZone: 'America/New_York',
     // timeZoneName: 'short'
-  }).format(date);
+  }).format(startTime);
 
   contentfulScreening.screeningTimeWestCoast = new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
+    ...format,
     timeZone: 'America/Los_Angeles',
     // timeZoneName: 'short'
-  }).format(date);
+  }).format(startTime);
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(startTime));
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Setting time");
+      setTimeLeft(calculateTimeLeft(startTime));
+    }, 1000);
+
+    if (timeLeft?.complete) {
+      clearTimeout(timer);
+    }
+    return () => clearTimeout(timer);
+  }, [startTime]);
 
   function InfoColumnHeader() {
     return (
@@ -154,21 +177,31 @@ function Screening(props) {
   const renderVideoPlayer = () => {
     return (
       <>
-        <VideoWrapper>
-          <ReactPlayer
-            url={contentfulScreening.videoTrailer.fields.url}
-            width="100%"
-            height="100%"
-            className={reactPlayer}
-            config={{
-              youtube: {
-                modestbranding: 1,
-                rel: 0 // Doesn't work, sadly; could try something later
-              }
-            }}
-          />
-        </VideoWrapper>
-        <TrailerText>Watch the trailer</TrailerText>
+        { contentfulScreening.videoTrailer && !timeLeft.complete &&
+          <VideoWrapper>
+            <ReactPlayer
+              url={contentfulScreening.videoTrailer.fields.url}
+              width="100%"
+              height="100%"
+              className={reactPlayer}
+              config={{
+                youtube: {
+                  modestbranding: 1,
+                  rel: 0 // Doesn't work, sadly; could try something later
+                }
+              }}
+            />
+          </VideoWrapper>
+        }
+        <VideoDetails>
+          <TrailerText>Watch the trailer</TrailerText>
+          { timeLeft && !timeLeft.complete &&
+            <small>Starting in: { timeLeft.hours }:{ timeLeft.minutes }:{ timeLeft.seconds }</small>
+          }
+          { timeLeft && timeLeft.complete &&
+            <small>Showtime :)</small>
+          }
+        </VideoDetails>
       </>
     );
   }
@@ -192,7 +225,7 @@ function Screening(props) {
           </Header>
           <ContentContainer>
             <VideoAndControlsColumn>
-              { contentfulScreening.videoTrailer && renderVideoPlayer() }
+              { renderVideoPlayer() }
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
@@ -217,7 +250,7 @@ function Screening(props) {
             <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
             <hr />
           </MobileHeader>
-          { contentfulScreening.videoTrailer && renderVideoPlayer() }
+          { renderVideoPlayer() }
           <MobileInfoColumn>
             <InfoColumnHeader />
             <ScreeningRegistrationFlow
@@ -371,6 +404,12 @@ const reactPlayer = css`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+const VideoDetails = styled('div')`
+  padding-top: .5rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const TrailerText = styled('small')`

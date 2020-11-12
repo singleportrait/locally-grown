@@ -56,6 +56,29 @@ export const calculateSecondsUntilNextProgram = () => {
 }
 
 /**
+ * Calculate how much time is left until a given time
+ * `endTime`: Date
+ */
+export const calculateTimeLeft = (endTime) => {
+  let difference = endTime - +new Date();
+  let timeLeft = {};
+
+  if (difference > 1000) { // In milliseconds
+    timeLeft = {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24).toString().padStart(2, '0'),
+      minutes: Math.floor((difference / 1000 / 60) % 60).toString().padStart(2, '0'),
+      seconds: Math.floor((difference / 1000) % 60).toString().padStart(2, '0')
+    };
+  } else {
+    // console.log("Time's up!");
+    timeLeft = { complete: true }
+  }
+
+  return timeLeft;
+}
+
+/**
  * Determine if the user is on iOS
  * Inspired by: https://stackoverflow.com/questions/21741841/detecting-ios-android-operating-system
  *
