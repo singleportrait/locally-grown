@@ -5,7 +5,7 @@ import { css } from 'emotion';
 function Tlkio(props) {
   const [script] = useState(document.createElement("script"));
   useEffect(() => {
-    script.src = "http://tlk.io/embed.js";
+    script.src = "https://tlk.io/embed.js";
     script.async = true;
     document.body.appendChild(script);
     script.onload = () => addTlkio();
@@ -15,7 +15,7 @@ function Tlkio(props) {
     }
   }, [script]);
   return (
-    <div id="tlkio" data-channel="LocallyGrownTV" data-theme="theme--night" data-custom-css="http://localhost:3000/tlkio_styles.css" className={tlkio}></div>
+    <div id="tlkio" data-channel="LocallyGrownTV" data-theme="theme--night" data-custom-css={`${process.env.REACT_APP_DOMAIN}tlkio_styles.css`} className={tlkio}></div>
   );
 }
 
