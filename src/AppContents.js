@@ -151,9 +151,6 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
-              <Route key={"registration"} path={"/registration"} render={props => (
-                <Registration {...props} />
-              )} />
 
               <Route path="/screenings">
                 <Screenings screenings={this.props.screenings.screenings} />
