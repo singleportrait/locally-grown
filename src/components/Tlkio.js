@@ -11,7 +11,7 @@ function Tlkio(props) {
     script.onload = () => addTlkio();
 
     const addTlkio = () => {
-      // console.log("Tlkio loaded");
+      console.log("Tlkio loaded");
     }
   }, [script]);
   return (
