@@ -34,13 +34,16 @@ function StripeCheckoutForm(props) {
   useEffect(() => {
     if (!user) return;
     async function getStripeCustomerId() {
-      const userDoc = await firestore.doc(`users/${user.uid}`).get()
-        .catch(e => console.log("No user doc exists!"));
+      try {
+        const userDoc = await firestore.doc(`users/${user.uid}`).get();
 
-      if (userDoc.data().customer_id) {
-        setCustomerId(userDoc.data().customer_id);
-      } else {
-        console.warn(`No Stripe customer found in Firestore for user: ${user.uid}`);
+        if (userDoc?.data().customer_id) {
+          setCustomerId(userDoc.data().customer_id);
+        } else {
+          console.warn(`No Stripe customer found in Firestore for user: ${user.uid}`);
+        }
+      } catch (error) {
+        console.error("No user doc exists!");
       }
     }
 
