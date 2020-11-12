@@ -179,8 +179,8 @@ function Screening(props) {
   const renderVideoPlayer = () => {
     return (
       <>
-        { (contentfulScreening.videoTrailer && !timeLeft.complete) ||
-          (contentfulScreening.videoTrailer && timeLeft.complete && !registration) &&
+        { ((contentfulScreening.videoTrailer && timeLeft.complete && !registration) ||
+          (contentfulScreening.videoTrailer && !timeLeft.complete)) &&
           <VideoWrapper>
             <ReactPlayer
               url={contentfulScreening.videoTrailer.fields.url}
