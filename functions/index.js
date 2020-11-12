@@ -83,8 +83,10 @@ app.use(express.static(path.resolve(__dirname, './web')));
 setMetadata("/", appName, appDescription);
 
 // Fallback that 404s for all other unknown pages
-app.get('*', (request, response) => {
-  response.status(404).send("Sorry, we couldn't find that!");
+app.get('/*', (request, response) => {
+  // response.status(404).send("Sorry, we couldn't find that!");
+  // Suggestion from Create React App that may have helped:
+  response.sendFile(path.join(__dirname, './web', 'index.html'));
 });
 
 // For debugging routes, if needed
