@@ -102,7 +102,7 @@ exports.stripe = require('./stripe');
  *   when authenticated users are deleted. */
 exports.auth = require('./auth');
 
-// exports.mailchimp = require('./mailchimp');
+exports.mailchimp = require('./mailchimp');
 
 /* VdoCipher authentication function
 */
