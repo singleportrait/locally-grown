@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { functions } from '../firebase';
 import styled from '@emotion/styled';
-// import firebase from './firebase';
 
 import { css } from 'emotion/macro';
 
 function VdoCipherVideo(props) {
 
   /* Requesting otp and playback info from the server, which we should do eventually */
-  // const fetchRealVideo = async () => {
-  //   const callFunction = firebase.functions().httpsCallable('getVdoCipherOTPCode');
-  //   try {
-  //     const result = await callFunction({videoId: ""});
-  //     console.log(result);
-  //   } catch (error) {
-  //     console.log("Error requesting function: \n", error);
-  //   }
-  // }
+  const [vdoKeys, setVdoKeys] = useState({});
+  useEffect(() => {
+    const fetchRealVideo = async () => {
+      const callFunction = functions.httpsCallable('vdoCipher-getOTPAndPlaybackInfo');
+      callFunction({videoId: props.videoId})
+        .then(result => {
+          setVdoKeys(result.data);
+        }).catch(error => {
+          console.log("Error requesting function: \n", error);
+        });
+    }
+
+    fetchRealVideo();
+  }, []);
 
   /* Add VdoCipher script to page, then save `video` once it loads */
   /* Run within useEffect to prevent it being added twice */
@@ -23,6 +28,9 @@ function VdoCipherVideo(props) {
   const [video, setVideo] = useState();
 
   useEffect(() => {
+    if (!vdoKeys) return;
+
+    // console.log("Vdo keys", vdoKeys);
     script.src = "https://player.vdocipher.com/playerAssets/1.x/vdo.js";
     script.async = true;
     document.body.appendChild(script);
@@ -32,15 +40,15 @@ function VdoCipherVideo(props) {
     const addVdo = () => {
       vdo = window.vdo;
       vdo.add({
-        otp: "20160313versUSE3231tg7fVPKftt7znXG1Lcf1PlBUYNTv0oOdBdEegyOAHra1I",
-        playbackInfo: "eyJ2aWRlb0lkIjoiMWZlYWExZTFiMGQ5NGFmMmE5MmRkMDIwYjE1ZGVkYzYifQ==",
+        otp: vdoKeys.otp,
+        playbackInfo: vdoKeys.playbackInfo,
         theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
         container: document.querySelector( "#vdoVideo" ),
       });
 
       setVideo(vdo.getObjects()[0]);
     }
-  }, [script])
+  }, [script, vdoKeys])
 
   /* Sample VdoCipher event listeners */
   useEffect(() => {
@@ -186,7 +194,7 @@ function VdoCipherVideo(props) {
             pageClicked={true}
           />
         </VideoContainer>
-        { video &&
+        { video && false &&
           <>
             <h3>You can view the video now</h3>
             <p onClick={() => playPauseMuted()}>Play/pause video (with mute, has to be clicked first for `mute()` to work)</p>

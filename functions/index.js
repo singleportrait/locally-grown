@@ -103,3 +103,7 @@ exports.stripe = require('./stripe');
 exports.auth = require('./auth');
 
 // exports.mailchimp = require('./mailchimp');
+
+/* VdoCipher authentication function
+*/
+exports.vdoCipher = require('./vdoCipher');

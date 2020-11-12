@@ -15,6 +15,7 @@
   "main": "index.js",
   "dependencies": {
     "@mailchimp/mailchimp_marketing": "^3.0.23",
+    "axios": "^0.21.0",
     "contentful": "^7.14.6",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

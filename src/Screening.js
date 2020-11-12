@@ -195,7 +195,10 @@ function Screening(props) {
           </VideoWrapper>
         }
         { registration && timeLeft.complete &&
-          <VdoCipherVideo />
+          /* To pull from `screenings/{screeningId}/registeredInfo/{screeningId} */
+          <VdoCipherVideo
+            videoId="1feaa1e1b0d94af2a92dd020b15dedc6"
+          />
         }
         <VideoDetails>
           <TrailerText>Watch the trailer</TrailerText>
