@@ -24,6 +24,8 @@ const tlkio = css`
   height: 400px;
   max-width: 100%;
   background-color: #000;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
 `;
 
 export default Tlkio;

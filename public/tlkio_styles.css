@@ -2,10 +2,11 @@ html {
   /* font-size: 13px; */
   font-family: "Larsseit";
   -webkit-font-smoothing: antialiased;
+  background-color: #111;
 }
 
 body {
-  background-color: #000;
+  /* background-color: #000; */
 }
 
 .header-avatar {
@@ -13,7 +14,8 @@ body {
 }
 
 .header-channel {
-  /* display: none; */
+  display: none;
+  /* font-family: "Larsseit"; */
 }
 
 .header-status {
@@ -21,7 +23,11 @@ body {
 }
 
 /* Colors */
-.theme--night .header-bar,
+.theme--night .header-bar {
+  background-color: transparent;
+  border-bottom: 1px solid #333;
+}
+
 .theme--night .post,
 .theme--night .button {
   background-color: #333;
@@ -29,6 +35,18 @@ body {
 
 .theme--night .post.me {
   background-color: #222;
+}
+
+.theme--night .input-text,
+.theme--night .message-input {
+  background-color: #333;
+  box-shadow: none;
+}
+
+.theme--night .input-text:focus,
+.theme--night .message-input:focus {
+  background-color: #444;
+  border-color: rgba(0,0,0,0.3);
 }
 
 /* Social icons */
