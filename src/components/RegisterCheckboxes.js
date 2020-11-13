@@ -25,6 +25,8 @@ function RegisterCheckboxes(props) {
         <input type="checkbox" id="confirmSecurity" name="security" onChange={() => setConfirmedSecurity(!confirmedSecurity)} />
         <label htmlFor="confirmSecurity">By registering for this event, I agree to not share my login info with anyone else. This is a limited screening, and it’s important that it’s limited to those who have signed up.</label>
       </div>
+      <br />
+      <p>Important note: Only viewers in the US will be able to watch this film.</p>
       <ButtonDiv
         disabled={!registrationConfirmed}
         color={registrationConfirmed ? "#000" : "#ccc"}
