@@ -9,7 +9,7 @@ mailchimp.setConfig({
 
 const listId = "81c8d59bc1";
 
-const updateTag = async (subscriberHash, tagName, status) => {
+const updateTag = async (email, subscriberHash, tagName, status) => {
   try {
     const tagResponse = await mailchimp.lists.updateListMemberTags(
       listId,
@@ -26,6 +26,7 @@ const updateTag = async (subscriberHash, tagName, status) => {
       }
     );
     // console.log("Successfully updated tag");
+    functions.logger.info("Successfully updated tag", email, tagName, status);
   } catch (error) {
     functions.logger.error("Error tagging user", error.message);
   }
@@ -46,7 +47,7 @@ exports.mailchimpScreeningSubscribe = functions.firestore
     try {
       const response = await mailchimp.lists.getListMember(listId, subscriberHash);
       // Note: We can't 'resubscribe' users that have been manually archived in the admin
-      console.log(`This user's subscription status is ${response.status}.`);
+      // console.log(`This user's subscription status is ${response.status}.`);
 
       if (response.status === "unsubscribed") {
         console.log("Resubscribing...", subscriberHash);
@@ -64,7 +65,7 @@ exports.mailchimpScreeningSubscribe = functions.firestore
         }
       }
 
-      updateTag(subscriberHash, tagName, "active");
+      updateTag(email, subscriberHash, tagName, "active");
 
     } catch (error) {
       /* Mailchimp returns an `error` if it doesn't find a member in the list */
@@ -81,7 +82,7 @@ exports.mailchimpScreeningSubscribe = functions.firestore
         });
         // console.log(`Successfully added contact as an audience member. The contact's id is ${response.id}.`);
 
-        updateTag(subscriberHash, tagName, "active");
+        updateTag(email, subscriberHash, tagName, "active");
 
       } catch (error) {
         functions.logger.error("Error subscribing user", error.message);
@@ -98,5 +99,5 @@ exports.mailchimpScreeningUnsubsribe = functions.firestore
     const subscriberHash = md5(snap.data().email.toLowerCase());
     const tagName = context.params.screeningId;
 
-    updateTag(subscriberHash, tagName, "inactive");
+    updateTag(email, subscriberHash, tagName, "inactive");
   });
