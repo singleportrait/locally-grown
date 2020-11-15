@@ -17,13 +17,17 @@ function RegisterCheckboxes(props) {
   return (
     <form>
       <div className={flex}>
-        <input type="checkbox" id="confirmRegister" name="register" onChange={() => setConfirmedRegister(!confirmedRegister)} />
-        <label htmlFor="confirmRegister">Register me for { props.title } showing on { props.screeningDate }.</label>
+        <div className={checkbox}>
+          <input type="checkbox" id="confirmSecurity" name="security" onChange={() => setConfirmedSecurity(!confirmedSecurity)} />
+        </div>
+        <label htmlFor="confirmSecurity">By registering for this event, I agree to not share my login info with anyone else. This is a limited screening, and it’s important that it’s limited to those who have signed up.</label>
       </div>
       <br />
       <div className={flex}>
-        <input type="checkbox" id="confirmSecurity" name="security" onChange={() => setConfirmedSecurity(!confirmedSecurity)} />
-        <label htmlFor="confirmSecurity">By registering for this event, I agree to not share my login info with anyone else. This is a limited screening, and it’s important that it’s limited to those who have signed up.</label>
+        <div className={checkbox}>
+          <input type="checkbox" id="confirmRegister" name="register" onChange={() => setConfirmedRegister(!confirmedRegister)} />
+        </div>
+        <label htmlFor="confirmRegister">Register me for { props.title } showing on { props.screeningDate }.</label>
       </div>
       <br />
       <p>Important note: Only viewers in the US will be able to watch this film.</p>
@@ -38,6 +42,10 @@ function RegisterCheckboxes(props) {
 
 const flex = css`
   display: flex;
+`;
+
+const checkbox = css`
+  min-width: 2rem;
 `;
 
 export default RegisterCheckboxes;

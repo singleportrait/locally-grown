@@ -11,14 +11,27 @@ class Modal extends Component {
   constructor(props) {
     super(props);
     this.el = document.createElement('div');
+
+    this.state = {
+      scrollY: window.scrollY
+    }
   }
 
   componentDidMount() {
     modalRoot.appendChild(this.el);
+    document.body.classList.add('modal-open');
+
+    // console.log("Scroll top", this.state.scrollY);
+    document.body.style.top = `-${this.state.scrollY}px`;
   }
 
   componentWillUnmount() {
     modalRoot.removeChild(this.el);
+    document.body.classList.remove('modal-open');
+
+    document.body.style.top = "";
+    // console.log("Scrolling to...", parseInt(this.state.scrollY || '0') * 1);
+    window.scrollTo(0, parseInt(this.state.scrollY || '0') * 1);
   }
 
   render() {
@@ -40,7 +53,7 @@ class Modal extends Component {
 }
 
 const ModalContainer = styled('div')`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -64,6 +77,8 @@ const ModalOverlay = styled('div')`
 const Content = styled('div')`
   width: 400px;
   min-height: 300px;
+  max-height: 94vh;
+  overflow-y: scroll;
   padding: 1rem;
   position: relative;
   background-color: #fff;
@@ -72,6 +87,7 @@ const Content = styled('div')`
   @media screen and (max-width: 600px) {
     width: 90vw;
     min-height: 40vh;
+    max-height: 75vh;
   }
 
   &, a {

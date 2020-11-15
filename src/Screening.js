@@ -226,12 +226,13 @@ function Screening(props) {
           <Markdown className={description} source={contentfulScreening.description} />
         }
         <hr />
+          <Link to="/">
+            <h4>View all Locally Grown TV &#8594;</h4>
+          </Link>
           <br />
           { process.env.NODE_ENV === "development" &&
             <Link to="/screenings">Back to screenings</Link>
           }
-          <br />
-          <Link to="/">Back to home</Link>
           <br />
           <br />
           <br />
