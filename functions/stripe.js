@@ -26,7 +26,6 @@ exports.createPaymentIntent = functions.https.onCall((data, context) => {
       payment_intent_id: paymentIntent.id
     }
   }).catch(error => {
-    snap.ref.set({ error: userFacingMessage(error) }, { merge: true });
     reportError(error, { user: context.params.userId });
   });
 });
@@ -42,6 +41,8 @@ exports.updatePaymentIntent = functions.https.onCall((data, context) => {
     return {
       client_secret: paymentIntent.client_secret,
     }
+  }).catch(error => {
+    reportError(error, { user: context.params.userId });
   });
 });
 

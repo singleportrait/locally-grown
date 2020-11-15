@@ -138,6 +138,11 @@ function StripeCheckoutForm(props) {
   const handleAmountChange = (event) => {
     console.log("Handling amount change");
     const formAmount = Number(event.target.value);
+    if (formAmount <= 0) {
+      setAmount(event.target.value);
+      setProcessing(true);
+      return;
+    }
     const formattedAmount = formatAmountForStripe(formAmount, currency);
     setProcessing(true);
 
@@ -146,7 +151,7 @@ function StripeCheckoutForm(props) {
       payment_intent: paymentIntent,
       amount: formattedAmount
     }).then(result => {
-      console.log("Amount change updated:", result);
+      console.log("Amount change updated:", result, formattedAmount);
       setProcessing(false);
     });
     setAmount(event.target.value);

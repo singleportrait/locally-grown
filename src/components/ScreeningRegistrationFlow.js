@@ -6,6 +6,10 @@ import { auth, handleUiConfig } from '../firebase';
 
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
+/* Gets us the URL for the font, but Stripe's elements options still
+ * doesn't seem to be pulling it (at end of file) */
+// import larsseit from '../fonts/larsseit-light.woff';
+
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
@@ -128,7 +132,7 @@ function ScreeningRegistrationFlow(props) {
                 <h4 className={modalHeader}>Donate to Support the Screening</h4>
                 <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support Black Archives and Locally Grown in our mission to build an independent home for films we can watch together. Our suggested donation is $10. If you can't pay anything, we understand.</p>
                 <hr />
-                <Elements stripe={stripePromise}>
+                <Elements stripe={stripePromise} options={elementsOptions}>
                   <StripeCheckoutForm
                     setPayment={setPayment}
                     setSkipPayment={setSkipPayment}
@@ -230,5 +234,17 @@ const PaymentContainer = styled('div')`
   padding: .7rem 1rem .5rem;
   background-color: #eee;
 `;
+
+const elementsOptions = {
+  /* This is how we actually use the custom fonts, but we need to generate the full URL to them for this to work... later */
+  // fonts: [
+  //   {
+  //     family: 'Larsseit',
+  //   //   src: 'url(https://my-domain.com/assets/avenir.woff)',
+  //     src: `url(${process.env.REACT_APP_DOMAIN + larsseit})`,
+  //     weight: '300',
+  //   }
+  // ]
+}
 
 export default ScreeningRegistrationFlow;
