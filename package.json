@@ -37,7 +37,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "rfdc": "^1.1.4",
-    "screenfull": "^4.2.1"
+    "screenfull": "^4.2.1",
+    "spacetime": "^6.9.0"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/ -o src/",

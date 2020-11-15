@@ -5,13 +5,14 @@ import { useMediaQuery } from 'react-responsive';
 import Markdown from 'react-markdown';
 import { auth } from './firebase';
 import ReactPlayer from 'react-player';
+import spacetime from 'spacetime';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
 import { UserContext } from "./providers/UserProvider";
 
-import { calculateTimeLeft } from './helpers/utils';
+import { calculateTimeLeft, convertTimeToSeconds } from './helpers/utils';
 
 import {
   makeTestScreening,
@@ -38,12 +39,18 @@ function Screening(props) {
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
   // const isPortrait = useMediaQuery({ orientation: 'portrait' });
 
+  const {
+    startDatetime,
+    endDatetime,
+    videoTrailer,
+    preScreeningVideo,
+    preScreeningVideoLength
+  } = props.screening.fields;
+
   const contentfulScreening = {
     title: props.screening.fields.title,
     slug: props.screening.fields.slug,
-    description: props.screening.fields.description,
-    videoTrailer: props.screening.fields.videoTrailer,
-    startDatetime: props.screening.fields.startDatetime
+    description: props.screening.fields.description
   }
 
   /* Check to see if screening and/or member registration exists */
@@ -77,7 +84,7 @@ function Screening(props) {
         .catch(e => setError(`${e.name}: ${e.message}`));
       setRegisteredInfo(registeredInfo);
     })();
-  }, [registration]);
+  }, [registration, contentfulScreening.slug]);
 
   /* User interactions */
   const register = async () => {
@@ -98,46 +105,83 @@ function Screening(props) {
     setScreening(await getScreening(screening.id, user.uid));
   }
 
-  /* Date formatting */
-  const startTime = new Date(contentfulScreening.startDatetime);
-  contentfulScreening.screeningDate = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric'
-  }).format(startTime);
+  /* Custom hook for calculating various countdowns */
+  const useExpired = (time, beforeState, afterState, customCheck = null) => {
+    const [expired, setExpired] = useState();
+    useEffect(() => {
+      if (screeningState !== beforeState) return;
+      if (customCheck) customCheck();
 
-  let format = {
-    hour: 'numeric'
-  };
-
-  if (startTime.getMinutes() !== 0) {
-    format.minute = 'numeric';
+      const timeoutRef = setTimeout(() => {
+        const timeLeft = calculateTimeLeft(time);
+        // console.log("Time left", timeLeft);
+        if (timeLeft.complete) {
+          clearTimeout(timeoutRef);
+          setScreeningState(afterState);
+          return false;
+        }
+        setExpired(timeLeft);
+      }, 1000);
+      return () => clearTimeout(timeoutRef);
+    }, [time, beforeState, afterState, customCheck]);
+    return expired;
   }
 
-  contentfulScreening.screeningTimeEastCoast = new Intl.DateTimeFormat('en-US', {
-    ...format,
-    timeZone: 'America/New_York',
-    // timeZoneName: 'short'
-  }).format(startTime);
+  /* Date and timezone formatting */
+  const now = spacetime.now();
+  const timezone = now.timezone().name;
+  const startTime = spacetime(startDatetime).goto(timezone);
+  const endTime = spacetime(endDatetime).goto(timezone);
 
-  contentfulScreening.screeningTimeWestCoast = new Intl.DateTimeFormat('en-US', {
-    ...format,
-    timeZone: 'America/Los_Angeles',
-    // timeZoneName: 'short'
-  }).format(startTime);
+  /* Set time live film starts after pre-screening video */
+  const preScreeningVideoLengthInSeconds = preScreeningVideoLength ? convertTimeToSeconds(preScreeningVideoLength) : 0;
+  let liveTime = new Date(startDatetime);
+  liveTime.setSeconds(liveTime.getSeconds() + preScreeningVideoLengthInSeconds);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(startTime));
+  /* Only run on page load, no matter if the other states change,
+  * otherwise this will constantly re-render */
+  const [screeningState, setScreeningState] = useState();
   useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log("Setting time");
-      setTimeLeft(calculateTimeLeft(startTime));
-    }, 1000);
-
-    if (timeLeft?.complete) {
-      clearTimeout(timer);
+    const setState = () => {
+      if (now.isBefore(startTime)) {
+        return 'preshow';
+      } else if (now.isAfter(endTime)) {
+        return 'finished';
+      } else {
+        if (spacetime(liveTime).isAfter(now)) {
+          return 'trailer';
+        } else {
+          return 'live';
+        }
+      }
     }
-    return () => clearTimeout(timer);
-  }, [startTime, timeLeft.complete]);
+
+    setScreeningState(setState());
+  }, []);
+
+  /* For some reason, spacetime's stateTime won't work here, but using the
+   * proper Date() does work, no matter the time zone */
+  const dateTime = new Date(startDatetime);
+  const timeLeftUntilScreening = useExpired(dateTime, "preshow", "trailer");
+
+  const customCheck = () => {
+    if (!preScreeningVideo || !preScreeningVideoLength) {
+      // console.log("This screening doesn't have a pre-screening video");
+      setScreeningState("live");
+      return;
+    }
+  }
+
+  const timeLeftUntilLive = useExpired(liveTime, "trailer", "live", customCheck);
+
+  const finishedTime = new Date(endDatetime);
+  const timeUntilFinished = useExpired(finishedTime, "live", "finished");
+
+  /* Visual displays of event time */
+  contentfulScreening.screeningDate = startTime.format('{day}, {month} {date-ordinal}');
+  const timeFormat = startTime.minutes() === 0 ? '{hour}{ampm}' : 'time';
+  const screeningTimeEastCoast = startTime.goto('America/New_York').format(timeFormat);
+  const screeningTimeWestCoast = startTime.goto('America/Los_Angeles').format(timeFormat);
 
   function InfoColumnHeader() {
     return (
@@ -152,7 +196,7 @@ function Screening(props) {
           <br />
           { contentfulScreening.screeningDate } @
           <br />
-          <span className={time}>{ contentfulScreening.screeningTimeEastCoast }</span> ET / <span className={time}>{ contentfulScreening.screeningTimeWestCoast }</span> PT
+          <span className={time}>{ screeningTimeEastCoast }</span> ET / <span className={time}>{ screeningTimeWestCoast }</span> PT
         </h3>
         <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p>
         { !screening && isLoaded &&
@@ -195,11 +239,13 @@ function Screening(props) {
   const renderVideoPlayer = () => {
     return (
       <>
-        { ((contentfulScreening.videoTrailer && timeLeft.complete && !registration) ||
-          (contentfulScreening.videoTrailer && !timeLeft.complete)) &&
+        { videoTrailer &&
+          (!registration ||
+          (registration && screeningState === "preshow") ||
+          (registration && screeningState === "finished")) &&
           <VideoWrapper>
             <ReactPlayer
-              url={contentfulScreening.videoTrailer.fields.url}
+              url={videoTrailer.fields.url}
               width="100%"
               height="100%"
               className={reactPlayer}
@@ -212,7 +258,26 @@ function Screening(props) {
             />
           </VideoWrapper>
         }
-        { registration && timeLeft.complete && registeredInfo &&
+        { preScreeningVideo && registration && screeningState === "trailer" &&
+          <VideoWrapper>
+            <ReactPlayer
+              url={preScreeningVideo.fields.url}
+              width="100%"
+              height="100%"
+              playing={true}
+              muted={true}
+              playsinline={true}
+              className={reactPlayer}
+              config={{
+                youtube: {
+                  modestbranding: 1,
+                  rel: 0 // Doesn't work, sadly; could try something later
+                }
+              }}
+            />
+          </VideoWrapper>
+        }
+        { registration && registeredInfo && screeningState === "live" &&
           /* To pull from `screenings/{screeningId}/registeredInfo/{screeningId} */
           <VdoCipherVideo
             videoId={registeredInfo.videoId}
@@ -220,12 +285,22 @@ function Screening(props) {
         }
         <VideoDetails>
           <TrailerText>Watch the trailer</TrailerText>
-          { timeLeft && !timeLeft.complete &&
-            <small>Starting in: { timeLeft.hours }:{ timeLeft.minutes }:{ timeLeft.seconds }</small>
-          }
-          { timeLeft && timeLeft.complete &&
-            <small>Showtime :)</small>
-          }
+          <small style={{textAlign: "right"}}>
+            { screeningState === "preshow" && "Preshow" }
+            { screeningState === "trailer" && "Trailer" }
+            { screeningState === "live" && "Showtime :)" }
+            { screeningState === "finished" && "It's over now!" }
+
+            { screeningState === "preshow" && timeLeftUntilScreening &&
+              <><br />Starting in: { timeLeftUntilScreening.hours }:{ timeLeftUntilScreening.minutes }:{ timeLeftUntilScreening.seconds }</>
+            }
+            { screeningState === "trailer" && timeLeftUntilLive &&
+              <>
+                <br />
+                Showing pre-screening film; time until film starts: { timeLeftUntilLive.hours }:{ timeLeftUntilLive.minutes }:{ timeLeftUntilLive.seconds }
+              </>
+            }
+          </small>
         </VideoDetails>
       </>
     );
@@ -254,7 +329,7 @@ function Screening(props) {
             </VideoAndControlsColumn>
             <InfoColumnContainer>
               <div className={infoColumn}>
-                { registration && timeLeft.complete &&
+                { registration && (screeningState === "trailer" || screeningState === "live") &&
                   <Tlkio />
                 }
                 <InfoColumnHeader />
