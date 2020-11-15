@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { auth, handleUiConfig } from '../firebase';
@@ -9,6 +10,8 @@ import styled from '@emotion/styled';
 import { css } from 'emotion';
 
 import { UserContext } from "../providers/UserProvider";
+
+import { getGoogleCalendarShareUrl } from '../helpers/utils';
 
 import Modal from './Modal';
 import StripeCheckoutForm from './StripeCheckoutForm';
@@ -39,6 +42,15 @@ function ScreeningRegistrationFlow(props) {
     setPayment(null);
     setSkipPayment(false);
   }
+
+  const googleShareUrl = getGoogleCalendarShareUrl(
+    props.contentfulScreening.title,
+    props.contentfulScreening.shortDescription,
+    `screenings/${useParams().screeningSlug}`,
+    props.contentfulScreening.startDatetime,
+    props.contentfulScreening.endDatetime,
+    true
+  );
 
   return (
     <RegistrationContainer>
@@ -107,7 +119,11 @@ function ScreeningRegistrationFlow(props) {
           { user && props.registration && !payment && !skipPayment &&
             <>
               <h3 className={confirmedHeader}>Congrats, you're registered for the screening!</h3>
-              <p>We've sent you a confirmation email, and we'll send a reminder on {props.contentfulScreening.screeningDate}. <span className={linkStyle}>Add to Google calendar</span>.</p>
+              <p>
+                We've sent you a confirmation email, and we'll send a reminder on {props.contentfulScreening.screeningDate}.
+                <br /><br />
+                <a href={googleShareUrl} target="_blank" rel="noopener noreferrer nofollow">Add to Google calendar</a>.
+              </p>
               <DonationContainer>
                 <h4 className={modalHeader}>Donate to Support the Screening</h4>
                 <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support Black Archives and Locally Grown in our mission to build an independent home for films we can watch together. Our suggested donation is $10. If you can't pay anything, we understand.</p>

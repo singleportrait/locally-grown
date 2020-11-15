@@ -50,7 +50,10 @@ function Screening(props) {
   const contentfulScreening = {
     title: props.screening.fields.title,
     slug: props.screening.fields.slug,
-    description: props.screening.fields.description
+    description: props.screening.fields.description,
+    shortDescription: props.screening.fields.shortDescription,
+    startDatetime: startDatetime,
+    endDatetime: endDatetime,
   }
 
   /* Check to see if screening and/or member registration exists */
