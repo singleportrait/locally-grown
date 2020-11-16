@@ -1,7 +1,9 @@
 import React from 'react';
 import { Switch, Route, Link, useRouteMatch, useParams } from 'react-router-dom';
+import withTracker from './components/withTracker';
 
 import Screening from './Screening';
+const ScreeningWithTracker = withTracker(Screening);
 
 function Screenings(props) {
   let { path, url } = useRouteMatch();
@@ -41,7 +43,7 @@ function ScreeningContainer(props) {
   return (
     <>
       { screening &&
-        <Screening screening={screening} {...props} />
+        <ScreeningWithTracker screening={screening} {...props} />
       }
       { !screening &&
         <>

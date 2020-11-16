@@ -25,6 +25,10 @@ import styled from '@emotion/styled';
 
 import { mobileViewportHeight } from './styles';
 
+import withTracker from './components/withTracker';
+const TVGuideWithTracker = withTracker(TVGuide);
+const ChannelsWithTracker = withTracker(Channels);
+
 const mobileLowBatteryTooltipHeight = "200px";
 
 const MobileSupportOverlay = styled('div')`
@@ -199,8 +203,7 @@ class AppContents extends Component {
                     <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
                     <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
                   </Helmet>
-                  {this.trackPageview()}
-                  <TVGuide {...props} channels={this.props.channels.featuredChannels} />
+                  <TVGuideWithTracker {...props} channels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
 
@@ -213,8 +216,7 @@ class AppContents extends Component {
                     <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
                     <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
                   </Helmet>
-                  {this.trackPageview()}
-                  <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
+                  <ChannelsWithTracker {...props} featuredChannels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
 
