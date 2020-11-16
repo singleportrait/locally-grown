@@ -214,10 +214,6 @@ const ConfirmationH4 = styled('h4')`
   color: ${successColor};
 `;
 
-const bold = css`
-  font-weight: bold;
-`;
-
 const modalHeader = css`
   font-weight: bold;
   padding-right: 2.5rem;
