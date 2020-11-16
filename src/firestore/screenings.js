@@ -1,5 +1,6 @@
 import * as firebase from "firebase/app";
 import { firestore } from '../firebase';
+import consoleLog from '../helpers/consoleLog';
 
 const handleError = (customMessage, error) => {
   if (error.name === "FirebaseError") {
@@ -31,13 +32,13 @@ const getScreeningMembers = async(screeningId, uid) => {
   if (!screeningId || !uid) return;
 
   try {
-    // console.log("Trying to get members collection");
+    // consoleLog("Trying to get members collection");
     const membersDoc = await firestore.doc(`screenings/${screeningId}`).collection("members").get();
     if (!membersDoc.size) {
-      console.log("There are no members registered for this screening");
+      consoleLog("There are no members registered for this screening");
       return;
     } else {
-      console.log("Found members for this screening");
+      consoleLog("Found members for this screening");
 
       const membersMap = membersDoc.docs.map(member => {
         return {
@@ -55,26 +56,26 @@ const getScreeningMembers = async(screeningId, uid) => {
 }
 
 export const getScreening = async (screeningId, uid = null) => {
-  console.log("[getScreening]");
+  consoleLog("[getScreening]");
   if (!screeningId) return;
 
-  // console.log("[in getScreening]");
+  // consoleLog("[in getScreening]");
   try {
     const screeningDoc = await firestore.doc(`screenings/${screeningId}`).get();
     if (screeningDoc.exists) {
       const screeningData = screeningDoc.data();
-      // console.log("Got screening", screeningData);
+      // consoleLog("Got screening", screeningData);
 
       // Logic to check for admin IDs and user info
       let members;
       if (uid && screeningData.adminIds.includes(uid)) {
-        console.log("User has permission to get event members");
+        consoleLog("User has permission to get event members");
         members = await getScreeningMembers(screeningId, uid);
       } else {
         if (!uid) {
-          console.log("No user");
+          consoleLog("No user");
         } else if (uid && !screeningData.adminIds.includes(uid)) {
-          console.log("User doesn't have permission to get event members");
+          consoleLog("User doesn't have permission to get event members");
         }
       }
 
@@ -89,7 +90,7 @@ export const getScreening = async (screeningId, uid = null) => {
 
       return returnedData;
     } else {
-      console.log("Screening doesn't exist");
+      consoleLog("Screening doesn't exist");
       return null;
     }
   } catch (error) {
@@ -99,7 +100,7 @@ export const getScreening = async (screeningId, uid = null) => {
 
 /* Get the private info about a screening, which only registered users can access */
 export const getRegisteredInfo = async (screeningId) => {
-  // console.log("[getRegisteredInfo]");
+  // consoleLog("[getRegisteredInfo]");
   if (!screeningId) return;
 
   try {
@@ -107,7 +108,7 @@ export const getRegisteredInfo = async (screeningId) => {
     if (registeredInfoDoc.exists) {
       return registeredInfoDoc.data();
     } else {
-      console.log("Registered info doesn't exist");
+      consoleLog("Registered info doesn't exist");
       return;
     }
   } catch (error) {
@@ -117,18 +118,18 @@ export const getRegisteredInfo = async (screeningId) => {
 
 /* Get a user's screening registration */
 export const getScreeningRegistration = async (screeningId, uid) => {
-  console.log("[getScreeningRegistration]");
+  consoleLog("[getScreeningRegistration]");
   if (!screeningId || !uid) {
-    console.log("Missing user or screening in getScreeningRegistration");
+    consoleLog("Missing user or screening in getScreeningRegistration");
   }
 
   try {
     const memberDocument = await firestore.doc(`screenings/${screeningId}/members/${uid}`).get();
     if (memberDocument.exists) {
-      console.log("Member is registered!", memberDocument.data());
+      consoleLog("Member is registered!", memberDocument.data());
       return memberDocument.data();
     } else {
-      console.log("Member isn't registered");
+      consoleLog("Member isn't registered");
       return null;
     }
   } catch (error) {
@@ -152,9 +153,9 @@ export const getScreeningAndRegistration = async (screeningId, uid = null) => {
 
 /* Register a user for a screening */
 export const registerForScreening = async (screeningId, user) => {
-  console.log("[registerForScreening]");
+  consoleLog("[registerForScreening]");
   if (!screeningId || !user) {
-    console.log("Missing screening or user");
+    consoleLog("Missing screening or user");
   }
 
   const screeningRef = firestore.doc(`screenings/${screeningId}`);
@@ -176,7 +177,7 @@ export const registerForScreening = async (screeningId, user) => {
       }
 
       if (!memberDoc.exists) {
-        console.log("Creating memeber");
+        consoleLog("Creating memeber");
         t.update(screeningRef, {
           totalRegistered: firebase.firestore.FieldValue.increment(1),
           registrationUpdatedAt: serverTimestamp,
@@ -199,9 +200,9 @@ export const registerForScreening = async (screeningId, user) => {
 
 /* Unregister a user for a screening */
 export const unregisterForScreening = async (screeningId, user) => {
-  console.log("[unregisterForScreening]");
+  consoleLog("[unregisterForScreening]");
   if (!screeningId || !user) {
-    console.log("Missing screening or user id");
+    consoleLog("Missing screening or user id");
   }
 
   const screeningRef = firestore.doc(`screenings/${screeningId}`);
@@ -216,7 +217,7 @@ export const unregisterForScreening = async (screeningId, user) => {
       if (!screeningDoc.exists) { throw new Error("Screening doesn't exist!"); }
 
       if (memberDoc.exists) {
-        console.log("[Firebase transaction: Unregistering member...]");
+        consoleLog("[Firebase transaction: Unregistering member...]");
         t.delete(memberRef);
         t.update(screeningRef, {
           totalRegistered: firebase.firestore.FieldValue.increment(-1),
@@ -233,7 +234,7 @@ export const unregisterForScreening = async (screeningId, user) => {
 }
 
 export const deleteUserFromAllScreenings = async (user) => {
-  console.log("[deleteUserFromAllScreenings]");
+  consoleLog("[deleteUserFromAllScreenings]");
 
   const querySnapshot = await firestore.collection('screenings').get();
   querySnapshot.forEach(async (doc) => {
@@ -250,20 +251,20 @@ export const deleteUserFromAllScreenings = async (user) => {
 }
 
 export const addDonationtoScreening = async (screeningId, user, paymentInfo) => {
-  console.log("[addDonationtoScreening]");
+  consoleLog("[addDonationtoScreening]");
 
   // Get member from screening
   const memberRef = firestore.doc(`screenings/${screeningId}/members/${user.uid}`);
   try {
     const memberDoc = await memberRef.get();
     if (memberDoc.exists) {
-      // console.log("Member doc exists");
+      // consoleLog("Member doc exists");
       // Update by adding payment ID from Stripe
       memberRef.update({
         payments: firebase.firestore.FieldValue.arrayUnion(paymentInfo)
       });
     } else {
-      // console.log("No member doc");
+      // consoleLog("No member doc");
     }
 
   } catch (error) {

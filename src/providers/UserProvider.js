@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { auth, firestore } from '../firebase';
+import consoleLog from '../helpers/consoleLog';
 
 export const UserContext = createContext({
   user: null,
@@ -11,10 +12,10 @@ function UserProvider(props) {
   const [userIsLoaded, setUserIsLoaded] = useState(false);
 
   useEffect(() => {
-    // console.log("In UserProvider");
+    // consoleLog("In UserProvider");
     // When state changes, generally
     auth.onAuthStateChanged(userAuth => {
-      console.log("State changed; userAuth: ", userAuth);
+      consoleLog("State changed; userAuth: ", userAuth);
 
       /* Adding display name which we don't have access to server-side when
        * creating user in Firebase Functions */
@@ -24,7 +25,7 @@ function UserProvider(props) {
           const userDoc = await userRef.get();
 
           if (!userDoc.data().displayName) {
-            console.log("Adding display name");
+            consoleLog("Adding display name");
             userRef.update({
               displayName: userAuth.displayName
             });
