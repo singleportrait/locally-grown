@@ -1,12 +1,12 @@
 import React from 'react';
-import { Switch, Route, Link, useRouteMatch, useParams } from 'react-router-dom';
+import { Switch, Route, Link, useRouteMatch, useParams, Redirect } from 'react-router-dom';
 import withTracker from './components/withTracker';
 
 import Screening from './Screening';
 const ScreeningWithTracker = withTracker(Screening);
 
 function Screenings(props) {
-  let { path, url } = useRouteMatch();
+  let { path } = useRouteMatch();
 
   const screenings = props.screenings;
 
@@ -14,19 +14,7 @@ function Screenings(props) {
     <div>
       <Switch>
         <Route exact path={path}>
-          {/* <Redirect to="/" /> */}
-          <>
-            <h1>Screenings</h1>
-            { !props.screenings &&
-            <p>No events found</p>
-            }
-            <h3>Please select a screening:</h3>
-            { screenings && screenings.map((screening, i) =>
-              <p key={i}>
-                <Link to={`${url}/${screening.fields.slug}`}>{screening.fields.title}</Link>
-              </p>
-            )}
-          </>
+          <Redirect to="/" />
         </Route>
         <Route path={`${path}/:screeningSlug`} render={(props) => (
           <ScreeningContainer screenings={screenings} {...props} />

@@ -245,10 +245,6 @@ function Screening(props) {
             <h4>View all Locally Grown TV &#8594;</h4>
           </Link>
           <br />
-          { process.env.NODE_ENV === "development" &&
-            <Link to="/screenings">Back to screenings</Link>
-          }
-          <br />
           <br />
           <br />
       </>
