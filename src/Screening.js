@@ -308,13 +308,21 @@ function Screening(props) {
         <VideoDetails>
           <TrailerText>Watch the trailer &uarr;</TrailerText>
           <StatusText>
-            { screeningState === "preshow" && "Preshow" }
             { screeningState === "trailer" && "Trailer" }
             { screeningState === "live" && "Showtime :)" }
             { screeningState === "finished" && "It's over now!" }
 
             { screeningState === "preshow" && timeLeftUntilScreening &&
-              <><br />Starting in: { timeLeftUntilScreening.hours }:{ timeLeftUntilScreening.minutes }:{ timeLeftUntilScreening.seconds }</>
+              <>
+                { timeLeftUntilScreening.days > 0 &&
+                  <>
+                    Starting in { timeLeftUntilScreening.days } days { timeLeftUntilScreening.minutes !== 0 && `and ${parseInt(timeLeftUntilScreening.minutes)} minutes` }
+                  </>
+                }
+                { timeLeftUntilScreening.days === 0 &&
+                <>Starting in: { timeLeftUntilScreening.hours }:{ timeLeftUntilScreening.minutes }:{ timeLeftUntilScreening.seconds }</>
+                }
+              </>
             }
             { screeningState === "trailer" && timeLeftUntilLive &&
               <>
@@ -627,7 +635,6 @@ const VideoDetails = styled('div')`
 
 const TrailerText = styled('small')`
   display: inline-block;
-  padding-top: .5rem;
   color: #999;
 
   @media screen and (max-width: 800px) {
