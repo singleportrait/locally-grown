@@ -5,6 +5,7 @@ import {
   useStripe,
   useElements
 } from "@stripe/react-stripe-js";
+import consoleLog from '../helpers/consoleLog';
 
 import { addDonationtoScreening } from '../firestore/screenings.js';
 
@@ -15,7 +16,7 @@ import { formatAmount, formatAmountForStripe } from '../helpers/stripeHelpers';
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
-import { ButtonDiv, Button, errorColor } from '../styles';
+import { ButtonDiv, Button, errorColor, successColor } from '../styles';
 
 function StripeCheckoutForm(props) {
   const { user } = useContext(UserContext);
@@ -27,6 +28,8 @@ function StripeCheckoutForm(props) {
   const [error, setError] = useState(null);
 
   const [amount, setAmount] = useState(10);
+  const [amountIsFocused, setAmountIsFocused] = useState(false);
+  const [cardIsFocused, setCardIsFocused] = useState(false);
   const currency = "usd";
 
   const [customerId, setCustomerId] = useState(null);
@@ -73,14 +76,14 @@ function StripeCheckoutForm(props) {
     }
     const createPaymentIntent = functions.httpsCallable('stripe-createPaymentIntent');
     createPaymentIntent(intentData).then(result => {
-      // console.log("Setting client secret", result.data.client_secret);
+      // consoleLog("Setting client secret", result.data.client_secret);
       if (isMounted) {
         setClientSecret(result.data.client_secret);
         setPaymentIntent(result.data.payment_intent_id);
         setResetPaymentIntent(true);
       }
     }).catch((error) => {
-      console.log(error);
+      consoleLog(error);
     });
     return () => isMounted = false;
   }, [resetPaymentIntent, user.email, screeningId, props.contentfulScreeningTitle, customerId]);
@@ -89,9 +92,10 @@ function StripeCheckoutForm(props) {
   // const [succeeded, setSucceeded] = useState(false);
 
   /* Mostly copied from Stripe's demo page */
+  /* Listening for CardElement form event changes */
   const [disabled, setDisabled] = useState(true);
   const handleChange = async (event) => {
-    // console.log("Handling changes within the card element");
+    // consoleLog("Handling changes within the card element", event);
     // Listen for changes in the CardElement
     // and display any errors as the customer types their card details
     setDisabled(event.empty);
@@ -109,10 +113,10 @@ function StripeCheckoutForm(props) {
       }
     });
     if (payload.error) {
-      setError(`Payment failed ${payload.error.message}`);
+      setError(`Payment failed: ${payload.error.message}`);
       setProcessing(false);
     } else {
-      console.log("Payload:", payload);
+      consoleLog("Payload:", payload);
       /* Reset the setup on the page if you want to enable further transactions */
       // setError(null);
       // setProcessing(false);
@@ -128,7 +132,7 @@ function StripeCheckoutForm(props) {
         currency: currency,
         created: new Date(payload.paymentIntent.created*1000)
       }
-      console.log("Payload id", payload.paymentIntent.id);
+      consoleLog("Payload id", payload.paymentIntent.id);
       await addDonationtoScreening(screeningId, user, paymentInfo);
 
       props.setPayment(`✅ Your payment of ${formatAmount(paymentInfo.amount, payload.paymentIntent.currency)} has been processed via Stripe. A receipt has been sent to ${user.email}.`);
@@ -136,14 +140,15 @@ function StripeCheckoutForm(props) {
   };
 
   const handleAmountChange = (event) => {
-    console.log("Handling amount change");
     const formAmount = Number(event.target.value);
+    // consoleLog("Handling amount change", formAmount);
     if (formAmount <= 0) {
       setAmount(event.target.value);
       setProcessing(true);
       return;
     }
     const formattedAmount = formatAmountForStripe(formAmount, currency);
+    // consoleLog("Formmated amount for stripe", formattedAmount);
     setProcessing(true);
 
     const updatePaymentIntent = functions.httpsCallable('stripe-updatePaymentIntent');
@@ -151,7 +156,7 @@ function StripeCheckoutForm(props) {
       payment_intent: paymentIntent,
       amount: formattedAmount
     }).then(result => {
-      console.log("Amount change updated:", result, formattedAmount);
+      // consoleLog("Amount change updated:", result, formattedAmount);
       setProcessing(false);
     });
     setAmount(event.target.value);
@@ -163,22 +168,34 @@ function StripeCheckoutForm(props) {
         <label>
           My Donation:
           <br />
-          <input
-            name="amount"
-            type="number"
-            min="1"
-            max="99999999"
-            value={amount}
-            onChange={handleAmountChange}
-            required
-            className={inputStyle}
-          />
+          <AmountContainer isFocused={amountIsFocused}>
+            <div className={dollarStyle}>$</div>
+            <input
+              name="amount"
+              type="number"
+              min="1"
+              max="99999999"
+              step="any"
+              value={amount}
+              onChange={handleAmountChange}
+              required
+              className={amountInputStyle}
+              onFocus={() => setAmountIsFocused(true)}
+              onBlur={() => setAmountIsFocused(false)}
+            />
+          </AmountContainer>
         </label>
       </div>
       <br />
-      <div className={cardStyle}>
-        <CardElement id="card-element" options={cardElementStyle} onChange={handleChange} />
-      </div>
+      <CardContainer isFocused={cardIsFocused}>
+        <CardElement
+          id="card-element"
+          options={cardElementStyle}
+          onChange={handleChange}
+          onFocus={() => setCardIsFocused(true)}
+          onBlur={() => setCardIsFocused(false)}
+        />
+      </CardContainer>
       {/* Show any error that happens when processing the payment */}
       { error &&
         <CardError role="alert">
@@ -192,7 +209,7 @@ function StripeCheckoutForm(props) {
         <Button
           disabled={processing || disabled}
           color={(processing || disabled) ? "#ccc" : "#111"}
-          focusColor="#333"
+          focusColor={successColor}
           textColor="#fff"
           id="submit"
         >
@@ -209,19 +226,35 @@ const CardError = styled('div')`
   margin: .5rem 0;
 `;
 
-const inputStyle = css`
-  padding: 0.7rem 1rem 0.6rem;
-  border: 1px solid #666;
-  border-radius: 2rem;
-  font-weight: 500;
-  width: 100%;
-`;
-
-const cardStyle = css`
-  padding: 0.8rem 1rem 0.6rem;
-  border: 1px solid #666;
+const InputContainer = styled('div')`
+  border: 1px solid ${props => props.isFocused ? successColor : "#666" };
   border-radius: 2rem;
   background-color: #fff;
+`;
+
+const AmountContainer = styled(InputContainer)`
+  padding: 0 1rem;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+`;
+
+const dollarStyle = css`
+  padding: .7rem 0 .6rem;
+`;
+
+const amountInputStyle = css`
+  font-weight: 500;
+  width: 100%;
+  border: none;
+  padding: .6rem 0 .6rem .2rem;
+  border-radius: 2rem;
+  outline: none;
+`;
+
+const CardContainer = styled(InputContainer)`
+  padding: .8rem 1rem .67rem;
 `;
 
 const flexRight = css`
