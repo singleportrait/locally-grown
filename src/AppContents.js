@@ -19,8 +19,6 @@ import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
 import Screenings from './Screenings';
 
-import Registration from './Registration';
-
 import styled from '@emotion/styled';
 
 import { mobileViewportHeight } from './styles';

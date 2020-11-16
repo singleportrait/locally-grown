@@ -325,7 +325,7 @@ function Screening(props) {
               <>
                 { timeLeftUntilScreening.days > 0 &&
                   <>
-                    Starting in { timeLeftUntilScreening.days } days { timeLeftUntilScreening.minutes !== 0 && `and ${parseInt(timeLeftUntilScreening.minutes)} minutes` }
+                    Starting in { timeLeftUntilScreening.days } days{timeLeftUntilScreening.hours !== 0 && `, ${parseInt(timeLeftUntilScreening.hours)} hours`}{ timeLeftUntilScreening.minutes !== 0 && ` and ${parseInt(timeLeftUntilScreening.minutes)} minutes` }
                   </>
                 }
                 { timeLeftUntilScreening.days === 0 &&
