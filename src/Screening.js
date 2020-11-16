@@ -30,6 +30,7 @@ import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
 import VdoCipherVideo from './components/VdoCipherVideo';
 import Tlkio from './components/Tlkio';
 import PlayButton from './components/PlayButton';
+import ScreeningAdmin from './components/ScreeningAdmin';
 
 const backgroundColor = "#0c0c0c";
 const red = "#fc4834";
@@ -230,6 +231,14 @@ function Screening(props) {
         <CustomHr subtle={isMobileOrTablet} />
         { contentfulScreening.description &&
           <Markdown className={description} source={contentfulScreening.description} />
+        }
+        { screening && screening.members && screening.members.length &&
+          <>
+            <CustomHr />
+            <ScreeningAdmin
+              screening={screening}
+            />
+          </>
         }
         <CustomHr subtle={isMobileOrTablet} />
           <Link to="/">

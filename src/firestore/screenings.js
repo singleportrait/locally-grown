@@ -39,14 +39,15 @@ const getScreeningMembers = async(screeningId, uid) => {
     } else {
       console.log("Found members for this screening");
 
-      const membersData = membersDoc.docs.map(member => {
+      const membersMap = membersDoc.docs.map(member => {
         return {
           id: member.id,
           ...member.data()
         }
       })
 
-      return membersData;
+      const sortedMembers = membersMap.sort((a, b) => (a.registeredAt.seconds > b.registeredAt.seconds) ? 1 : -1);
+      return sortedMembers;
     }
   } catch (error) {
     handleError("Couldn't fetch members because", error);
