@@ -83,7 +83,7 @@ function ScreeningRegistrationFlow(props) {
       { props.screening && props.registration &&
         <>
           <RegistrationConfirmation>
-            <h4 className={bold}>Congrats, you're registered for the screening!</h4>
+            <ConfirmationH4>Congrats, you're registered for the screening!</ConfirmationH4>
             <p>We've sent you a confirmation email, and we'll send a reminder day-of.</p>
             <hr />
             <p>Won't be able to watch? Unregister to free up a spot for another viewer:</p>
@@ -198,14 +198,20 @@ const loginText = css`
 const RegistrationConfirmation = styled('div')`
   padding: 1rem 1.4rem 1.4rem;
   // background-color: ${successColor};
-  background-color: rgba(92, 203, 102, .2);
-  border-radius: 1rem;
+  // background-color: rgba(92, 203, 102, .2);
+  background-color: #262626;
+  // border-radius: 1rem;
   margin-bottom: 1rem;
 
   hr {
     border-color: #333;
     mix-blend-mode: screen;
   }
+`;
+
+const ConfirmationH4 = styled('h4')`
+  font-weight: bold;
+  color: ${successColor};
 `;
 
 const bold = css`
