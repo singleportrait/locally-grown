@@ -99,5 +99,5 @@ exports.mailchimpScreeningUnsubsribe = functions.firestore
     const subscriberHash = md5(snap.data().email.toLowerCase());
     const tagName = context.params.screeningId;
 
-    updateTag(email, subscriberHash, tagName, "inactive");
+    updateTag(snap.data().email, subscriberHash, tagName, "inactive");
   });
