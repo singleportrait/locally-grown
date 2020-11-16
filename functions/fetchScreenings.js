@@ -25,6 +25,7 @@ client.getEntries({
       title: screening.fields.title,
       slug: screening.fields.slug,
       description: screening.fields.description,
+      shortDescription: screening.fields.shortDescription,
       // Optional chaining `?.` isn't supported yet by eslint
       previewImage: screening.fields.previewImage && screening.fields.previewImage.fields.file.url || null
     }

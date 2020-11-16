@@ -12,6 +12,7 @@ const screenings = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 
 
 const appName = "Locally Grown TV";
 const appDescription = "Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.";
+const shareImage = "/share.png";
 
 const setMetadata = (route, title, description) => {
   app.get(route, (request, response) => {
@@ -33,7 +34,7 @@ setMetadata("/channels", "Channels | Locally Grown TV", "See what's playing now 
 // This was showing as a 404 in Firebase logs, originally
 setMetadata("/index.html", appName, appDescription);
 
-const setDynamicMetadata = (response, slug, title, description) => {
+const setDynamicMetadata = (response, slug, title, description, previewImage) => {
   // functions.logger.info(`${title} visited!`);
 
   let data = fs.readFileSync('./web/index.html').toString();
@@ -42,6 +43,7 @@ const setDynamicMetadata = (response, slug, title, description) => {
   data = data.replace(/(https:\/\/locallygrown\.tv\/)/g, '$&'+slug);
   data = data.replace(/__TITLE__/g, `${title} | Locally Grown TV` || appName);
   data = data.replace(/__DESCRIPTION__/g, removeMarkdown(description) || appDescription);
+  data = data.replace(/\/share\.png/g, previewImage || shareImage);
 
   return response.send(data);
 }
@@ -69,7 +71,15 @@ app.get("/screenings/:slug", (request, response) => {
     return response.redirect(404, '/');
   }
 
-  return setDynamicMetadata(response, `screenings/${slug}`, screening.title, screening.description);
+  const compressedPreviewImage = screening.previewImage ? `${screening.previewImage}?fm=jpg&fl=progressive&w=1200` : undefined;
+
+  return setDynamicMetadata(
+    response,
+    `screenings/${slug}`,
+    screening.title,
+    screening.shortDescription,
+    compressedPreviewImage
+  );
 });
 
 // This line doesn't seem to be necessary
