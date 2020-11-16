@@ -26,6 +26,7 @@ import { mobileViewportHeight } from './styles';
 import withTracker from './components/withTracker';
 const TVGuideWithTracker = withTracker(TVGuide);
 const ChannelsWithTracker = withTracker(Channels);
+const NoMatchWithTracker = withTracker(LoadingScreen, {"title": "404"});
 
 const mobileLowBatteryTooltipHeight = "200px";
 
@@ -82,15 +83,6 @@ class AppContents extends Component {
       // ReactGA.pageview('/no-programs');
       return (
         <LoadingScreen message="No programs right now" showWhatIsThisTooltip />
-      );
-    };
-
-    function NoMatch() {
-      // Tracking for 404 page
-      // TODO: This is running every time for some reason - we don't want that
-      // ReactGA.pageview('/404');
-      return (
-        <LoadingScreen message="Sorry, we couldn&apos;t find that." showTVGuideLink />
       );
     };
 
@@ -227,7 +219,14 @@ class AppContents extends Component {
                 )} />
               }
 
-              <Route component={NoMatch} />
+              <Route render={props => ( // When no match found
+                <>
+                  <Helmet>
+                    <title>{`Page Not Found | ${process.env.REACT_APP_NAME}`}</title>
+                  </Helmet>
+                  <NoMatchWithTracker showTVGuideLink {...props} />
+                </>
+              )} />
             </Switch>
           }
           { !this.props.channels.isLoaded && LoadingState() }

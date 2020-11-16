@@ -1,9 +1,13 @@
 import React from 'react';
-import { Switch, Route, Link, useRouteMatch, useParams, Redirect } from 'react-router-dom';
+import { Switch, Route, useRouteMatch, useParams, Redirect } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import withTracker from './components/withTracker';
 
 import Screening from './Screening';
+import LoadingScreen from './components/LoadingScreen';
+
 const ScreeningWithTracker = withTracker(Screening);
+const NoMatchWithTracker = withTracker(LoadingScreen, {"title": "404"});
 
 function Screenings(props) {
   let { path } = useRouteMatch();
@@ -35,10 +39,10 @@ function ScreeningContainer(props) {
       }
       { !screening &&
         <>
-          <Link to="/screenings">Back to screenings</Link>
-          <hr />
-          <br />
-          Sorry, we couldn't find a screening with that URL.
+          <Helmet>
+            <title>{`Page Not Found | ${process.env.REACT_APP_NAME}`}</title>
+          </Helmet>
+          <NoMatchWithTracker showTVGuideLink {...props} />
         </>
       }
     </>
