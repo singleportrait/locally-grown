@@ -500,7 +500,7 @@ const InfoColumnContainer = styled('div')`
 
 const infoColumn = css`
   // padding-right: 16px;
-  padding-right: 32px;
+  padding-right: calc(16px + 1.4rem);
   margin-right: -16px;
   overflow-y: scroll;
   height: 100%;
