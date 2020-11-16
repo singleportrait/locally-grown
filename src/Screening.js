@@ -215,7 +215,7 @@ function Screening(props) {
             <h4>There's no screening registration for this screening yet!</h4>
             { process.env.NODE_ENV === "development" &&
               <>
-                <p>Reminder!! You need to make sure you're using the <strong>production Firestore database</strong> when you click this</p>
+                <p>Reminder!! You need to make sure you're using the <strong>production Firestore database</strong> if you want to create this for production.</p>
                 <span style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => makeTestScreening(contentfulScreening.slug)}>Make test screening</span>
               </>
             }

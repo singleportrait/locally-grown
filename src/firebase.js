@@ -16,18 +16,17 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-/* Using local emulator for functions */
-if (process.env.NODE_ENV === 'development') {
-  firebase.functions().useFunctionsEmulator('http://localhost:5001')
-}
-
 export default firebase;
 export const auth = firebase.auth();
-export const firestore = firebase.firestore();
 export const functions = firebase.functions();
+export const firestore = firebase.firestore();
 
-/* Using local emulator for Firestore */
-if (window.location.hostname === "localhost") {
+/* Using local emulators */
+if (process.env.NODE_ENV === 'development') {
+  /* Functions */
+  functions.useFunctionsEmulator('http://localhost:5001')
+
+  /* Firestore */
   firestore.settings({
     host: "localhost:8080",
     ssl: false
