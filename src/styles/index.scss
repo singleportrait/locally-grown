@@ -37,14 +37,9 @@ body {
   }
 }
 
-#root {
-  position: relative;
-  z-index: 1;
-}
-
 #modal {
   position: relative;
-  z-index: 2;
+  z-index: 9999;
 }
 
 a, a:visited, a:hover, a:active {
