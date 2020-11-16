@@ -65,18 +65,18 @@ function ScreeningRegistrationFlow(props) {
       }
       { props.screening && !props.registration &&
         <>
-          { props.screening.totalRegistered <= props.screening.totalAllowed &&
+          { props.screening.totalRegistered < props.screening.totalAllowed &&
             <>
               <ButtonDiv large onClick={() => openModal()}>Register Now</ButtonDiv>
-              { !user &&
-                <p className={loginText}>
-                  Already registered? <span className={linkStyle} onClick={() => openModal()}>Log in</span>
-                </p>
-              }
             </>
           }
           { props.screening.totalRegistered === props.screening.totalAllowed &&
-            <h4>Sorry, this event is sold out!</h4>
+            <ButtonDiv large color="#666" disabled>Sold Out!</ButtonDiv>
+          }
+          { !user &&
+            <p className={loginText}>
+              Already registered? <span className={linkStyle} onClick={() => openModal()}>Log in</span>
+            </p>
           }
         </>
       }
