@@ -10,6 +10,9 @@ import spacetime from 'spacetime';
 import styled from '@emotion/styled';
 import { css } from 'emotion';
 
+import screening_header_logo_wide from './images/screening_header_logo_wide.png';
+import screening_header_logo_narrow from './images/screening_header_logo_narrow.png';
+
 import { UserContext } from "./providers/UserProvider";
 
 import { calculateTimeLeft, convertTimeToSeconds } from './helpers/utils';
@@ -26,14 +29,16 @@ import {
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
 import VdoCipherVideo from './components/VdoCipherVideo';
 import Tlkio from './components/Tlkio';
+import PlayButton from './components/PlayButton';
 
-const backgroundColor = "#111";
+const backgroundColor = "#0c0c0c";
 const red = "#fc4834";
 
 function Screening(props) {
   const { user, userIsLoaded } = useContext(UserContext);
   const [error, setError] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [preshowPlaying, setPreshowPlaying] = useState(false);
 
   const isWideScreen = useMediaQuery({ minWidth: 800 });
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
@@ -43,6 +48,7 @@ function Screening(props) {
     startDatetime,
     endDatetime,
     videoTrailer,
+    videoTrailerImage,
     preScreeningVideo,
     preScreeningVideoLength
   } = props.screening.fields;
@@ -195,7 +201,7 @@ function Screening(props) {
         <h1>{ contentfulScreening.title }</h1>
         <h4>A Private Screening</h4>
         <h3 className={marginMedium}>
-          Watch LIVE with us on
+          Watch Live with us on
           <br />
           { contentfulScreening.screeningDate } @
           <br />
@@ -204,7 +210,7 @@ function Screening(props) {
         <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p>
         { !screening && isLoaded &&
           <>
-            <hr />
+            <CustomHr />
             <h4>There's no screening registration for this screening yet!</h4>
             { process.env.NODE_ENV === "development" &&
               <>
@@ -221,11 +227,11 @@ function Screening(props) {
   function InfoColumnFooter() {
     return (
       <>
-        <hr />
+        <CustomHr subtle={isMobileOrTablet} />
         { contentfulScreening.description &&
           <Markdown className={description} source={contentfulScreening.description} />
         }
-        <hr />
+        <CustomHr subtle={isMobileOrTablet} />
           <Link to="/">
             <h4>View all Locally Grown TV &#8594;</h4>
           </Link>
@@ -250,9 +256,11 @@ function Screening(props) {
           <VideoWrapper>
             <ReactPlayer
               url={videoTrailer.fields.url}
+              playing={preshowPlaying}
               width="100%"
               height="100%"
               className={reactPlayer}
+              controls={true}
               config={{
                 youtube: {
                   modestbranding: 1,
@@ -260,6 +268,16 @@ function Screening(props) {
                 }
               }}
             />
+            { videoTrailerImage && !preshowPlaying &&
+              <>
+                <VideoTrailerImage backgroundImage={videoTrailerImage.fields.file.url} />
+                <PlayButton
+                  className={playButton}
+                  color={red}
+                  togglePlaying={() => setPreshowPlaying(!preshowPlaying)}
+                />
+              </>
+            }
           </VideoWrapper>
         }
         { preScreeningVideo && registration && screeningState === "trailer" &&
@@ -288,8 +306,8 @@ function Screening(props) {
           />
         }
         <VideoDetails>
-          <TrailerText>Watch the trailer</TrailerText>
-          <small style={{textAlign: "right"}}>
+          <TrailerText>Watch the trailer &uarr;</TrailerText>
+          <StatusText>
             { screeningState === "preshow" && "Preshow" }
             { screeningState === "trailer" && "Trailer" }
             { screeningState === "live" && "Showtime :)" }
@@ -304,7 +322,8 @@ function Screening(props) {
                 Showing pre-screening film; time until film starts: { timeLeftUntilLive.hours }:{ timeLeftUntilLive.minutes }:{ timeLeftUntilLive.seconds }
               </>
             }
-          </small>
+          </StatusText>
+          { isMobileOrTablet && <CustomHr /> }
         </VideoDetails>
       </>
     );
@@ -318,14 +337,18 @@ function Screening(props) {
       { isWideScreen &&
         <WideProgramContainer>
           <Header>
-            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
+            <img
+              className={wideLogo}
+              src={process.env.REACT_APP_DOMAIN + screening_header_logo_wide}
+              alt="Black Archives & Locally Grown Present:"
+            />
             { user &&
               <LogOutLink>
                 <p className={linkStyle} onClick={() => auth.signOut()}>Sign out</p>
-                { user.email }
+                <span style={{color: "#999"}}>{ user.email }</span>
               </LogOutLink>
             }
-            <hr />
+            <CustomHr />
           </Header>
           <ContentContainer>
             <VideoAndControlsColumn>
@@ -354,8 +377,11 @@ function Screening(props) {
       { isMobileOrTablet &&
         <>
           <MobileHeader>
-            <h2 style={{textAlign: "center"}}>Black Archives & Locally Grown Present:</h2>
-            <hr />
+            <img
+              className={narrowLogo}
+              src={screening_header_logo_narrow}
+              alt="Black Archives & Locally Grown Present:"
+            />
           </MobileHeader>
           { renderVideoPlayer() }
           <MobileInfoColumn>
@@ -369,7 +395,12 @@ function Screening(props) {
               isLoaded={isLoaded}
               setIsLoaded={setIsLoaded} />
             <InfoColumnFooter />
-            { user && <p className={linkStyle} onClick={() => auth.signOut()}>Log out</p>}
+            { user &&
+              <MobileLogOut>
+                <CustomHr subtle />
+                <p className={linkStyle} onClick={() => auth.signOut()}>Log out</p>
+              </MobileLogOut>
+            }
           </MobileInfoColumn>
         </>
       }
@@ -463,9 +494,38 @@ const Page = styled('div')`
   min-height: 100vh;
   background-color: ${backgroundColor};
 
-  hr {
-    border-color: ${red};
+  h1 {
+    // Overriding some base paragraph styles (that should probably be updated) */
+    @media (max-width: 600px) {
+      font-size: 27px;
+    }
   }
+
+  h3 {
+    @media (max-width: 600px) {
+      font-size: 21px;
+    }
+  }
+
+  h4 {
+    font-size: 18px;
+
+    @media (max-width: 600px) {
+      font-size: 18px;
+    }
+  }
+
+  p {
+    font-size: 15px;
+
+    @media (max-width: 600px) {
+      font-size: 15px;
+    }
+  }
+`;
+
+const CustomHr = styled('hr')`
+  border-color: ${props => props.subtle ? "#333" : red };
 `;
 
 const ContentContainer = styled('div')`
@@ -474,13 +534,22 @@ const ContentContainer = styled('div')`
 
 const Header = styled('div')`
   position: relative;
+  display: flex;
+  flex-direction: column;
+`;
+
+const wideLogo = css`
+  max-width: 400px;
+  align-self: center;
 `;
 
 const LogOutLink = styled('div')`
   position: absolute;
   top: 50%;
   right: 1rem;
-  margin-top: -1.3rem;
+  // To account for the email being in the header
+  // margin-top: -1.3rem;
+  margin-top: -2rem;
   text-align: right;
 `;
 
@@ -491,6 +560,15 @@ const linkStyle = css`
 
 const MobileHeader = styled('div')`
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const narrowLogo = css`
+  height: auto;
+  width: 70vw;
+  max-width: 200px;
 `;
 
 const MobileInfoColumn = styled('div')`
@@ -508,10 +586,43 @@ const reactPlayer = css`
   left: 0;
 `;
 
+const VideoTrailerImage = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  background-image: url(${props => props.backgroundImage || 'none'});
+  background-size: cover;
+`;
+
+const playButton = css`
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 2;
+  cursor: pointer;
+
+  @media screen and (max-width: 800px) {
+    bottom: 1rem;
+    left: 1rem;
+    transform-origin: bottom left;
+    transform: scale(.75);
+  }
+`;
+
 const VideoDetails = styled('div')`
   padding-top: .5rem;
   display: flex;
   justify-content: space-between;
+
+  @media screen and (max-width: 800px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: -1rem; // Accounting for <hr> weirdness w following title
+    flex-direction: column;
+  }
 `;
 
 const TrailerText = styled('small')`
@@ -520,9 +631,15 @@ const TrailerText = styled('small')`
   color: #999;
 
   @media screen and (max-width: 800px) {
-    padding-left: 1rem;
-    padding-right: 1rem;
     text-align: right;
+  }
+`;
+
+const StatusText = styled('small')`
+  text-align: right;
+
+  @media screen and (max-width: 800px) {
+    display: none;
   }
 `;
 
@@ -541,11 +658,21 @@ const description = css`
 
   p {
     margin-top: .5rem;
+    line-height: 1.4rem;
   }
 `;
 
 const errorText = css`
   color: ${red};
+`;
+
+const MobileLogOut = styled('div')`
+  padding-bottom: 3rem;
+  text-align: center;
+
+  p {
+    color: #999;
+  }
 `;
 
 export default Screening;

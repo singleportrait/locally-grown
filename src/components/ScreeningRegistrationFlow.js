@@ -96,7 +96,7 @@ function ScreeningRegistrationFlow(props) {
       }
 
       { showModal &&
-        <Modal closeModal={closeModal}>
+        <Modal closeModal={closeModal} className={modalStyle}>
           { !user &&
             <>
               <h4 className={modalHeader}>Log In or Create an Account</h4>
@@ -246,5 +246,16 @@ const elementsOptions = {
   //   }
   // ]
 }
+
+const modalStyle = css`
+  p {
+    font-size: 15px;
+
+    // Overriding some base paragraph styles (that should probably be removed) */
+    @media (max-width: 600px) {
+      font-size: 15px;
+    }
+  }
+`;
 
 export default ScreeningRegistrationFlow;

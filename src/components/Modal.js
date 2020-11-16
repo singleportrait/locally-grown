@@ -38,7 +38,7 @@ class Modal extends Component {
     return ReactDOM.createPortal(
       <ModalContainer>
         <ModalOverlay onClick={this.props.closeModal} />
-        <Content>
+        <Content className={this.props.className}>
           { this.props.children }
           { this.props.closeModal &&
             <CloseModal onClick={this.props.closeModal}>
@@ -76,8 +76,8 @@ const ModalOverlay = styled('div')`
 
 const Content = styled('div')`
   width: 400px;
-  min-height: 300px;
-  max-height: 94vh;
+  min-height: 240px;
+  max-height: 90vh;
   overflow-y: scroll;
   padding: 1rem;
   position: relative;
@@ -85,8 +85,8 @@ const Content = styled('div')`
   z-index: 2;
 
   @media screen and (max-width: 600px) {
-    width: 90vw;
-    min-height: 40vh;
+    width: 86vw;
+    min-height: 30vh;
     max-height: 75vh;
   }
 
