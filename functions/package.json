@@ -25,7 +25,8 @@
     "md5": "^2.3.0",
     "path": "^0.12.7",
     "remove-markdown": "^0.3.0",
-    "stripe": "^8.119.0"
+    "stripe": "^8.119.0",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",

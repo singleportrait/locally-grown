@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { v4: uuidv4 } = require('uuid');
 
 const stripe = require('stripe')(functions.config().stripe.secret_live, {
   apiVersion: '2020-08-27',
@@ -11,6 +12,8 @@ const currency = "usd";
  * When the donation form is visible, create a new Payment Intent
  */
 exports.createPaymentIntent = functions.https.onCall((data, context) => {
+  const idempotencyKey = uuidv4();
+
   return stripe.paymentIntents.create({
     amount: 1000,
     currency: currency,
@@ -19,7 +22,7 @@ exports.createPaymentIntent = functions.https.onCall((data, context) => {
     receipt_email: data.email,
     description: `${data.metadata.reason_title} Donation`,
     metadata: data.metadata,
-  }).then((paymentIntent) => {
+  }, {idempotencyKey}).then((paymentIntent) => {
     // functions.logger.info("Received payment intent", paymentIntent);
     return {
       client_secret: paymentIntent.client_secret,
@@ -32,12 +35,14 @@ exports.createPaymentIntent = functions.https.onCall((data, context) => {
 });
 
 exports.updatePaymentIntent = functions.https.onCall((data, context) => {
+  const idempotencyKey = uuidv4();
+
   return stripe.paymentIntents.update(
     data.payment_intent,
   {
     amount: data.amount,
     currency: currency
-  }).then((paymentIntent) => {
+  }, {idempotencyKey}).then((paymentIntent) => {
     // functions.logger.info("Updated payment intent", paymentIntent);
     return {
       client_secret: paymentIntent.client_secret,
