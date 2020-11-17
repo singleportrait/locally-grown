@@ -21,6 +21,8 @@ import Modal from './Modal';
 import StripeCheckoutForm from './StripeCheckoutForm';
 import RegisterCheckboxes from './RegisterCheckboxes';
 
+import posterImage from '../images/Recorder-Risograph-Poster.jpg';
+
 import { successColor, ButtonDiv } from '../styles';
 
 function ScreeningRegistrationFlow(props) {
@@ -130,7 +132,16 @@ function ScreeningRegistrationFlow(props) {
               </p>
               <DonationContainer>
                 <h4 className={modalHeader}>Donate to Support the Screening</h4>
-                <p>We're asking for a donation to cover the costs to distribute this film. It's pay-what-you-can, but we encourage you to support Black Archives and Locally Grown in our mission to build an independent home for films we can watch together. Our suggested donation is $10. If you can't pay anything, we understand.</p>
+                <TextWithPoster>
+                  <div>
+                  <p>
+                    Donations help cover the costs to distribute this film and assist in our mission to build an independent home for films you can watch together. It's pay-what-you-can, but if you can't pay anything, we completely understand. And if you donate $15 or more, we will send you this commemorative 11x17" poster.
+                  </p>
+                  </div>
+                  <div>
+                    <img src={posterImage} className={posterStyle} />
+                  </div>
+                </TextWithPoster>
                 <hr />
                 <Elements stripe={stripePromise} options={elementsOptions}>
                   <StripeCheckoutForm
@@ -232,6 +243,20 @@ const DonationContainer = styled('div')`
   background-color: #eee;
 `;
 
+const TextWithPoster = styled('div')`
+  display: flex;
+  flex-direction: row;
+`;
+
+const posterStyle = css`
+  padding-left: .75rem;
+  max-width: 150px;
+
+  @media screen and (max-width: 400px) {
+    max-width: 33vw;
+  }
+`;
+
 const PaymentContainer = styled('div')`
   padding: .7rem 1rem .5rem;
   background-color: #eee;
@@ -251,11 +276,11 @@ const elementsOptions = {
 
 const modalStyle = css`
   p {
-    font-size: 15px;
+    font-size: 14px;
 
     // Overriding some base paragraph styles (that should probably be removed) */
     @media (max-width: 600px) {
-      font-size: 15px;
+      font-size: 14px;
     }
   }
 `;
