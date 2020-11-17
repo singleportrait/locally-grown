@@ -15,7 +15,7 @@ import screening_header_logo_narrow from './images/screening_header_logo_narrow.
 
 import { UserContext } from "./providers/UserProvider";
 
-import { calculateTimeLeft, convertTimeToSeconds } from './helpers/utils';
+import { convertTimeToSeconds } from './helpers/utils';
 
 import {
   makeTestScreening,
@@ -31,6 +31,7 @@ import VdoCipherVideo from './components/VdoCipherVideo';
 import Tlkio from './components/Tlkio';
 import PlayButton from './components/PlayButton';
 import ScreeningAdmin from './components/ScreeningAdmin';
+import ScreeningCountdown from './components/ScreeningCountdown';
 
 const backgroundColor = "#0c0c0c";
 const red = "#fc4834";
@@ -115,28 +116,6 @@ function Screening(props) {
     setScreening(await getScreening(screening.id, user.uid));
   }
 
-  /* Custom hook for calculating various countdowns */
-  const useExpired = (time, beforeState, afterState, customCheck = null) => {
-    const [expired, setExpired] = useState();
-    useEffect(() => {
-      if (screeningState !== beforeState) return;
-      if (customCheck) customCheck();
-
-      const timeoutRef = setTimeout(() => {
-        const timeLeft = calculateTimeLeft(time);
-        // console.log("Time left", timeLeft);
-        if (timeLeft.complete) {
-          clearTimeout(timeoutRef);
-          setScreeningState(afterState);
-          return false;
-        }
-        setExpired(timeLeft);
-      }, 1000);
-      return () => clearTimeout(timeoutRef);
-    }, [time, beforeState, afterState, customCheck]);
-    return expired;
-  }
-
   /* Date and timezone formatting */
   const now = spacetime.now();
   const timezone = now.timezone().name;
@@ -168,24 +147,6 @@ function Screening(props) {
 
     setScreeningState(setState());
   }, []);
-
-  /* For some reason, spacetime's stateTime won't work here, but using the
-   * proper Date() does work, no matter the time zone */
-  const dateTime = new Date(startDatetime);
-  const timeLeftUntilScreening = useExpired(dateTime, "preshow", "trailer");
-
-  const customCheck = () => {
-    if (!preScreeningVideo || !preScreeningVideoLength) {
-      // console.log("This screening doesn't have a pre-screening video");
-      setScreeningState("live");
-      return;
-    }
-  }
-
-  const timeLeftUntilLive = useExpired(liveTime, "trailer", "live", customCheck);
-
-  const finishedTime = new Date(endDatetime);
-  const timeUntilFinished = useExpired(finishedTime, "live", "finished");
 
   /* Visual displays of event time */
   contentfulScreening.screeningDate = startTime.format('{day}, {month} {date-ordinal}');
@@ -316,24 +277,16 @@ function Screening(props) {
             { screeningState === "trailer" && "Trailer" }
             { screeningState === "live" && "Showtime :)" }
             { screeningState === "finished" && "It's over now!" }
-
-            { screeningState === "preshow" && timeLeftUntilScreening &&
-              <>
-                { timeLeftUntilScreening.days > 0 &&
-                  <>
-                    Starting in { timeLeftUntilScreening.days } days{timeLeftUntilScreening.hours !== 0 && `, ${parseInt(timeLeftUntilScreening.hours)} hours`}{ timeLeftUntilScreening.minutes !== 0 && ` and ${parseInt(timeLeftUntilScreening.minutes)} minutes` }
-                  </>
-                }
-                { timeLeftUntilScreening.days === 0 &&
-                <>Starting in: { timeLeftUntilScreening.hours }:{ timeLeftUntilScreening.minutes }:{ timeLeftUntilScreening.seconds }</>
-                }
-              </>
-            }
-            { screeningState === "trailer" && timeLeftUntilLive &&
-              <>
-                <br />
-                Showing pre-screening film; time until film starts: { timeLeftUntilLive.hours }:{ timeLeftUntilLive.minutes }:{ timeLeftUntilLive.seconds }
-              </>
+            { (screeningState === "preshow" || screeningState === "trailer") &&
+              <ScreeningCountdown
+                screeningState={screeningState}
+                setScreeningState={setScreeningState}
+                startDatetime={startDatetime}
+                endDatetime={endDatetime}
+                liveTime={liveTime}
+                preScreeningVideo={preScreeningVideo}
+                preScreeningVideoLength={preScreeningVideoLength}
+              />
             }
           </StatusText>
           { isMobileOrTablet && <CustomHr /> }
