@@ -3,6 +3,8 @@ import 'firebase/functions';
 import 'firebase/auth';
 import 'firebase/firestore';
 
+import consoleLog from './helpers/consoleLog';
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -52,7 +54,7 @@ export const handleUiConfig = (signinCallback) => {
       // Avoid redirects after sign-in.
       signInSuccessWithAuthResult: (authResult) => {
         if (signinCallback) {
-          console.log("Handling additional signin callback");
+          consoleLog("Handling additional signin callback");
           signinCallback();
         }
       }
