@@ -11,7 +11,11 @@ const channels = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'f
 const screenings = JSON.parse(fs.readFileSync(path.resolve(__dirname, './data', 'fetchedScreenings.json')));
 
 const appName = "Locally Grown TV";
+const appNamePlaceholderRegexp = /Locally Grown TV/g;
+
+/* Note! If we changed this description text to "Locally Grown TV", these regexps will break. Just a word of warning! */
 const appDescription = "Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be.";
+const appDescriptionRegexp = /Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be./g;
 const shareImage = "/share.png";
 
 const setMetadata = (route, title, description) => {
@@ -20,8 +24,8 @@ const setMetadata = (route, title, description) => {
     let data = fs.readFileSync(path.resolve(__dirname, './web', 'index.html')).toString();
 
     data = data.replace(/(https:\/\/locallygrown\.tv)(\/)/g, '$1'+route);
-    data = data.replace(/__TITLE__/g, title || appName);
-    data = data.replace(/__DESCRIPTION__/g, description || appDescription);
+    data = data.replace(appNamePlaceholderRegexp, title || appName);
+    data = data.replace(appDescriptionRegexp, description || appDescription);
 
     response.send(data);
   });
@@ -41,8 +45,8 @@ const setDynamicMetadata = (response, slug, title, description, previewImage) =>
 
   // Slightly different treatment than setMetadata() above
   data = data.replace(/(https:\/\/locallygrown\.tv\/)/g, '$&'+slug);
-  data = data.replace(/__TITLE__/g, `${title} | Locally Grown TV` || appName);
-  data = data.replace(/__DESCRIPTION__/g, removeMarkdown(description) || appDescription);
+  data = data.replace(appNamePlaceholderRegexp, `${title} | Locally Grown TV` || appName);
+  data = data.replace(appDescriptionRegexp, removeMarkdown(description) || appDescription);
   data = data.replace(/\/share\.png/g, previewImage || shareImage);
 
   return response.send(data);
