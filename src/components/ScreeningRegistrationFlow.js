@@ -139,7 +139,7 @@ function ScreeningRegistrationFlow(props) {
                   </p>
                   </div>
                   <div>
-                    <img src={posterImage} className={posterStyle} />
+                    <img src={posterImage} className={posterStyle} alt="Recorder Screening Commemorative Poster" />
                   </div>
                 </TextWithPoster>
                 <hr />
