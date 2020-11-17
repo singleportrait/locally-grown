@@ -35,7 +35,10 @@ exports.createPaymentIntent = functions.https.onCall((data, context) => {
 });
 
 exports.updatePaymentIntent = functions.https.onCall((data, context) => {
-  const idempotencyKey = uuidv4();
+  const idempotencyKey = data.idempotencyKey;
+  if (!idempotencyKey) {
+    throw new functions.https.HttpsError("failed-precondition", "An error occurred, and developers have been alerted.");
+  }
 
   return stripe.paymentIntents.update(
     data.payment_intent,
@@ -46,6 +49,7 @@ exports.updatePaymentIntent = functions.https.onCall((data, context) => {
     // functions.logger.info("Updated payment intent", paymentIntent);
     return {
       client_secret: paymentIntent.client_secret,
+      idempotencyKey: idempotencyKey
     }
   }).catch(error => {
     reportError(error, { user: context.auth.uid });

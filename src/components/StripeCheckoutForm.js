@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import { firestore, functions } from '../firebase';
 import {
   CardElement,
@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import consoleLog from '../helpers/consoleLog';
 import debounce from 'lodash/debounce';
+import { v4 as uuidv4 } from 'uuid';
 
 import { addDonationtoScreening } from '../firestore/screenings.js';
 
@@ -146,20 +147,35 @@ function StripeCheckoutForm(props) {
     }
   };
 
-  const debouncedUpdate = useCallback(debounce((paymentIntent, formattedAmount) => {
+  const idempotencyKey = useRef();
+
+  const debouncedUpdate = useCallback(debounce((paymentIntent, key, formattedAmount) => {
     const updatePaymentIntent = functions.httpsCallable('stripe-updatePaymentIntent');
     updatePaymentIntent({
       payment_intent: paymentIntent,
+      idempotencyKey: key,
       amount: formattedAmount
     }).then(result => {
-      consoleLog("Amount change updated:", result, formattedAmount);
+      // consoleLog("Amount change updated:", result, formattedAmount);
+      // If this request's idempotency key doesn't match the current ref for the key, don't re-enable the submit button
+      // consoleLog("Comparing keys", result.data.idempotencyKey, idempotencyKey.current);
+      if (result.data.idempotencyKey !== idempotencyKey.current) {
+        consoleLog("The old key doesn't match the updated one, not allowing button to be submitted");
+        return;
+      }
       setProcessing(false);
+    }).catch(error => {
+      setError(error.message);
     });
   }, 1000), []);
 
   const handleAmountChange = (event) => {
     setProcessing(true);
     setAmount(event.target.value);
+    // Set fresh idempotency key
+    const key = uuidv4();
+    idempotencyKey.current = key;
+    consoleLog("Id key", key);
 
     const formAmount = Number(event.target.value);
     // consoleLog("Handling amount change", formAmount);
@@ -171,7 +187,7 @@ function StripeCheckoutForm(props) {
     const formattedAmount = formatAmountForStripe(formAmount, currency);
     // consoleLog("Formmated amount for stripe", formattedAmount);
 
-    debouncedUpdate(paymentIntent, formattedAmount);
+    debouncedUpdate(paymentIntent, key, formattedAmount);
   }
 
   return (
