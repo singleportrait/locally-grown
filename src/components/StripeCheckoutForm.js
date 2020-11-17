@@ -34,8 +34,8 @@ function StripeCheckoutForm(props) {
   const [cardIsFocused, setCardIsFocused] = useState(false);
   const currency = "usd";
 
-  const [customerId, setCustomerId] = useState(null);
   /* Get Stripe customer */
+  const [customerId, setCustomerId] = useState(null);
   useEffect(() => {
     if (!user) return;
     let isMounted = true;
