@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { firestore, functions } from '../firebase';
 import {
   CardElement,
@@ -6,6 +6,7 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 import consoleLog from '../helpers/consoleLog';
+import debounce from 'lodash/debounce';
 
 import { addDonationtoScreening } from '../firestore/screenings.js';
 
@@ -145,7 +146,21 @@ function StripeCheckoutForm(props) {
     }
   };
 
+  const debouncedUpdate = useCallback(debounce((paymentIntent, formattedAmount) => {
+    const updatePaymentIntent = functions.httpsCallable('stripe-updatePaymentIntent');
+    updatePaymentIntent({
+      payment_intent: paymentIntent,
+      amount: formattedAmount
+    }).then(result => {
+      consoleLog("Amount change updated:", result, formattedAmount);
+      setProcessing(false);
+    });
+  }, 1000), []);
+
   const handleAmountChange = (event) => {
+    setProcessing(true);
+    setAmount(event.target.value);
+
     const formAmount = Number(event.target.value);
     // consoleLog("Handling amount change", formAmount);
     if (formAmount <= 0) {
@@ -155,17 +170,8 @@ function StripeCheckoutForm(props) {
     }
     const formattedAmount = formatAmountForStripe(formAmount, currency);
     // consoleLog("Formmated amount for stripe", formattedAmount);
-    setProcessing(true);
 
-    const updatePaymentIntent = functions.httpsCallable('stripe-updatePaymentIntent');
-    updatePaymentIntent({
-      payment_intent: paymentIntent,
-      amount: formattedAmount
-    }).then(result => {
-      // consoleLog("Amount change updated:", result, formattedAmount);
-      setProcessing(false);
-    });
-    setAmount(event.target.value);
+    debouncedUpdate(paymentIntent, formattedAmount);
   }
 
   return (
@@ -180,7 +186,7 @@ function StripeCheckoutForm(props) {
               name="amount"
               type="number"
               min="1"
-              max="99999999"
+              max="999999"
               step="any"
               value={amount}
               onChange={handleAmountChange}
