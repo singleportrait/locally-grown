@@ -32,7 +32,7 @@ function ScreeningRegistrationFlow(props) {
 
   const [stripePromise, setStripePromise] = useState();
   useEffect(() => {
-    setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_TEST_KEY));
+    setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_LIVE_KEY));
   }, []);
 
   const openModal = () => {

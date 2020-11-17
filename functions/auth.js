@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const stripe = require('stripe')(functions.config().stripe.secret_test, {
+const stripe = require('stripe')(functions.config().stripe.secret_live, {
   apiVersion: '2020-08-27',
 });
 
