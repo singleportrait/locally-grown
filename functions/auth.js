@@ -67,7 +67,11 @@ exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
     if (userDoc.exists) {
       /* Remove customer from Stripe */
       const customer = userDoc.data();
-      await stripe.customers.del(customer.customer_id);
+      try {
+        await stripe.customers.del(customer.customer_id);
+      } catch (error) {
+        functions.logger.error("Error deleting Stripe customer", error);
+      }
 
       userRef.delete();
     }

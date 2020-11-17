@@ -26,7 +26,8 @@ exports.createPaymentIntent = functions.https.onCall((data, context) => {
       payment_intent_id: paymentIntent.id
     }
   }).catch(error => {
-    reportError(error, { user: context.params.userId });
+    reportError(error, { user: context.auth.uid });
+    throw new functions.https.HttpsError("failed-precondition", "An error occurred, and developers have been alerted.");
   });
 });
 
@@ -42,7 +43,8 @@ exports.updatePaymentIntent = functions.https.onCall((data, context) => {
       client_secret: paymentIntent.client_secret,
     }
   }).catch(error => {
-    reportError(error, { user: context.params.userId });
+    reportError(error, { user: context.auth.uid });
+    throw new functions.https.HttpsError("failed-precondition", "An error occurred, and developers have been alerted.");
   });
 });
 

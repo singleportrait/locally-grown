@@ -84,6 +84,7 @@ function StripeCheckoutForm(props) {
       }
     }).catch((error) => {
       consoleLog(error);
+      setError(error.message);
     });
     return () => isMounted = false;
   }, [resetPaymentIntent, user.email, screeningId, props.contentfulScreeningTitle, customerId]);
@@ -106,6 +107,11 @@ function StripeCheckoutForm(props) {
     event.preventDefault();
     setProcessing(true);
     // setSucceeded(false);
+
+    if (!clientSecret) {
+      setError("We're having trouble with your payment; developers have been alerted.");
+      return;
+    }
 
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
