@@ -93,6 +93,7 @@ function ScreeningVideoPlayer(props) {
             liveTime={liveTime}
             maxMode={maxMode}
             setMaxMode={setMaxMode}
+            videoTrailerImage={videoTrailerImage}
           />
         }
       </>

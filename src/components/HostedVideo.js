@@ -9,7 +9,7 @@ import consoleLog from '../helpers/consoleLog';
 import FullscreenPageButton from './FullscreenPageButton';
 import MuteButton from './MuteButton';
 
-import { VideoOverlay, ScreeningVideoDetails } from '../styles';
+import { VideoOverlay, ScreeningVideoDetails, ScreeningPreshowImage } from '../styles';
 
 class HostedVideo extends Component {
   constructor(props) {
@@ -73,6 +73,12 @@ class HostedVideo extends Component {
       <>
         <VideoWrapper>
           <VideoOverlay onClick={() => this.props.maxMode ? this.props.setMaxMode(false) : undefined} />
+          { this.state.videoEnded && this.props.videoTrailerImage &&
+            <ScreeningPreshowImage
+              onClick={() => this.props.maxMode ? this.props.setMaxMode(false) : undefined}
+              backgroundImage={`${this.props.videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`}
+            />
+          }
           <ReactPlayer
             ref={this.ref}
             url={this.props.registeredInfo.amazonS3Video}

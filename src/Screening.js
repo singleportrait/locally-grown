@@ -35,7 +35,7 @@ import ScreeningChatangoChat from './components/ScreeningChatangoChat';
 
 import { ScreeningVideoDetails } from './styles';
 
-const backgroundColor = "#0c0c0c";
+const backgroundColor = "#090909";
 const red = "#fc4834";
 
 function Screening(props) {
@@ -393,6 +393,9 @@ const relativeLeftValue = `calc(((100vw) - 2.8rem - ((100vh - 2.8rem) * ${opposi
 // Adding the first `+ 2rem` here to account for the "Expand sidebar" button absolutely positioned
 const relativeTopValue = `calc((((100vh + 2rem) - 2.8rem - (100vw - 2.8rem) * ${videoRatio})) / 2)`;
 
+// "Tight" as in, this is used when the player is hitting the top and bottom of the browser and has room to breathe
+// on the left and right sides.
+const tightTopValue = "calc((100vh - ((100vh - 2.8rem) * 1.55) * .59)/2)";
 
 const VideoAndControlsColumn = styled('div')`
   position: relative;
@@ -404,7 +407,7 @@ const VideoAndControlsColumn = styled('div')`
   @media (min-aspect-ratio: ${videoAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
     left: ${props => props.maxMode ? relativeLeftValue : '0' };
-    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Same as above
+    top: ${props => props.maxMode ? tightTopValue : "0" }; // Same as above
   }
 
   @media (max-aspect-ratio: ${videoAspectRatio}) {
@@ -413,15 +416,15 @@ const VideoAndControlsColumn = styled('div')`
   }
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
-    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '55%' };
-    left: ${props => props.maxMode ? relativeLeftValue : '5%' };
-    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Not completely sure why this works, not on suuuper wide screens but mostly is fine
+    width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
+    left: ${props => props.maxMode ? relativeLeftValue : '0%' };
+    top: ${props => props.maxMode ? tightTopValue : "0" }; // Not completely sure why this works, not on suuuper wide screens but mostly is fine
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '45%' };
     left: ${props => props.maxMode ? relativeLeftValue : '10%' };
-    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Same as above
+    top: ${props => props.maxMode ? tightTopValue : "0" }; // Same as above
   }
 `;
 

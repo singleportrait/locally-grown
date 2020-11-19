@@ -18,7 +18,7 @@ function ScreeningChatangoChat(props) {
     script.style = `width: 100%;height: ${props.height};`;
     script.setAttribute("data-cfasync", "false");
 
-    const inlineScript = document.createTextNode('{"handle":"barecorder","arch":"js","styles":{"a":"111111","b":100,"c":"a0a0a0","d":"a0a0a0","e":"111111","g":"ffffff","h":"a0a0a0","k":"111111","l":"000000","m":"000000","n":"FFFFFF","p":"10","q":"333333","r":100,"t":0,"ab":false,"usricon":0,"sbc":"404040","sba":0,"surl":0,"allowpm":0,"cnrs":"0.35"}}');
+    const inlineScript = document.createTextNode('{"handle":"barecorder","arch":"js","styles":{"a":"090909","b":100,"c":"a0a0a0","d":"a0a0a0","e":"090909","g":"ffffff","h":"a0a0a0","k":"090909","l":"000000","m":"000000","n":"FFFFFF","p":"10","q":"333333","r":100,"t":0,"ab":false,"usricon":0,"sbc":"404040","sba":0,"surl":0,"allowpm":0,"cnrs":"0.35"}}');
     script.appendChild(inlineScript)
 
     script.onload = () => onScriptLoad();
