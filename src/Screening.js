@@ -27,14 +27,13 @@ import {
 } from './firestore/screenings';
 
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
-import VdoCipherVideo from './components/VdoCipherVideo';
+import ScreeningVideoPlayer from './components/ScreeningVideoPlayer';
 import Tlkio from './components/Tlkio';
-import PlayButton from './components/PlayButton';
 import ScreeningAdmin from './components/ScreeningAdmin';
 import ScreeningCountdown from './components/ScreeningCountdown';
 import ScreeningChatangoChat from './components/ScreeningChatangoChat';
 
-import { ScreeningPreshowImage, ScreeningVideoDetails } from './styles';
+import { ScreeningVideoDetails } from './styles';
 
 const backgroundColor = "#0c0c0c";
 const red = "#fc4834";
@@ -224,67 +223,17 @@ function Screening(props) {
   const renderVideoPlayer = () => {
     return (
       <>
-        { !isLoaded && <VideoWrapper /> }
-        { videoTrailer && isLoaded &&
-          ((registration && screeningState === "preshow") ||
-          (registration && screeningState === "finished") ||
-          !registration) &&
-          <VideoWrapper>
-            <ReactPlayer
-              url={videoTrailer.fields.url}
-              playing={preshowPlaying}
-              width="100%"
-              height="100%"
-              className={reactPlayer}
-              onReady={onPreshowVideoReady}
-              controls={true}
-              config={{
-                youtube: {
-                  modestbranding: 1,
-                  rel: 0 // Doesn't work, sadly; could try something later
-                }
-              }}
-            />
-            { videoTrailerImage && !preshowPlaying &&
-              <>
-                <ScreeningPreshowImage backgroundImage={`${videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`} />
-                { showPlayIcon &&
-                  <PlayButton
-                    className={playButton}
-                    color={red}
-                    togglePlaying={() => setPreshowPlaying(!preshowPlaying)}
-                  />
-                }
-              </>
-            }
-          </VideoWrapper>
-        }
-        { preScreeningVideo && registration && screeningState === "trailer" &&
-          <VideoWrapper>
-            <ReactPlayer
-              url={preScreeningVideo.fields.url}
-              width="100%"
-              height="100%"
-              playing={true}
-              muted={true}
-              playsinline={true}
-              className={reactPlayer}
-              config={{
-                youtube: {
-                  modestbranding: 1,
-                  rel: 0 // Doesn't work, sadly; could try something later
-                }
-              }}
-            />
-          </VideoWrapper>
-        }
-        { registration && registeredInfo && screeningState === "live" &&
-          <VdoCipherVideo
-            videoId={registeredInfo.videoId}
-            liveTime={liveTime}
-            videoTrailerImage={videoTrailerImage}
-          />
-        }
+        <ScreeningVideoPlayer
+          isLoaded={isLoaded}
+          videoTrailer={videoTrailer}
+          registration={registration}
+          registeredInfo={registeredInfo}
+          screeningState={screeningState}
+          videoTrailerImage={videoTrailerImage}
+          preScreeningVideo={preScreeningVideo}
+          liveTime={liveTime}
+          red={red}
+        />
         { screeningState && isLoaded &&
           <ScreeningVideoDetails>
             <TrailerText>
@@ -340,7 +289,7 @@ function Screening(props) {
             <InfoColumnContainer>
               <div className={infoColumn}>
                 { registration && (screeningState === "trailer" || screeningState === "live") &&
-                  <ScreeningChatangoChat />
+                  <ScreeningChatangoChat className={widescreenChat} />
                 }
                 <InfoColumnHeader />
                 <ScreeningRegistrationFlow
@@ -544,6 +493,10 @@ const linkStyle = css`
   text-decoration: underline;
 `;
 
+const widescreenChat = css`
+  padding-bottom: 1rem;
+`;
+
 const MobileHeader = styled('div')`
   padding: 1rem;
   display: flex;
@@ -563,33 +516,6 @@ const MobileInfoColumn = styled('div')`
 
 const mobileChat = css`
   padding: 1rem;
-`;
-
-const VideoWrapper = styled('div')`
-  position: relative;
-  padding-top: 56.25%;
-  background-color: #000;
-`;
-
-const reactPlayer = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const playButton = css`
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  z-index: 2;
-  cursor: pointer;
-
-  @media screen and (max-width: 800px) {
-    bottom: 1rem;
-    left: 1rem;
-    transform-origin: bottom left;
-    transform: scale(.75);
-  }
 `;
 
 const TrailerText = styled('small')`

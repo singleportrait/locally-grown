@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { css } from 'emotion/macro';
 
 import MuteButton from './MuteButton';
+import PlayButton from './PlayButton';
 
 import { VideoOverlay, ScreeningPreshowImage, ScreeningVideoDetails } from '../styles';
 
@@ -147,6 +148,14 @@ function VdoCipherVideo(props) {
               { !error && !videoIsLoaded && "Loading video..." }
             </VideoOverlayMessage>
           }
+          { video && videoIsLoaded && !videoPlayed && !videoEnded &&
+            <PlayButtonContainer>
+              <PlayButton
+                color={props.color}
+                togglePlaying={() => setPreshowPlaying(!preshowPlaying)}
+              />
+            </PlayButtonContainer>
+          }
           { videoPlayed && <VideoOverlay /> }
           { videoEnded && props.videoTrailerImage &&
             <ScreeningPreshowImage backgroundImage={`${props.videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`} />
@@ -188,17 +197,28 @@ const VideoContainer = styled('div')`
   justify-content: center;
 `;
 
-const VideoOverlayMessage = styled('h3')`
+const overlayStyle = `
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-  padding: 0 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+`;
+
+const VideoOverlayMessage = styled('h3')`
+  ${overlayStyle}
+  padding: 0 2rem;
+`;
+
+const PlayButtonContainer = styled('div')`
+  ${overlayStyle}
+  z-index: 1;
+  pointer-events: none;
+  touch-action: none;
 `;
 
 const VdoCipherContainer = styled('div')`
