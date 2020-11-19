@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 
-import styled from '@emotion/styled';
-import { css } from 'emotion';
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
 
 import PlayButton from './PlayButton';
-import VdoCipherVideo from './VdoCipherVideo';
+import HostedVideo from './HostedVideo';
 
 import { ScreeningPreshowImage, ScreeningVideoDetails } from '../styles';
 
@@ -88,13 +88,9 @@ function ScreeningVideoPlayer(props) {
           </VideoWrapper>
         }
         { registration && registeredInfo && screeningState === "live" &&
-          <VdoCipherVideo
-            videoId={registeredInfo.videoId}
+          <HostedVideo
+            registeredInfo={registeredInfo}
             liveTime={liveTime}
-            videoTrailerImage={videoTrailerImage}
-            color={red}
-            maxMode={maxMode}
-            setMaxMode={setMaxMode}
           />
         }
       </>
