@@ -37,9 +37,12 @@ function ScreeningRegistrationFlow(props) {
     setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_LIVE_KEY));
   }, []);
 
-  const openModal = () => {
-    // console.log("Opening modal");
+  const [loginFlowOnly, setLoginFlowOnly] = useState(false);
+  const openModal = (loginOnly = false) => {
     setShowModal(true);
+    if (loginOnly) {
+      setLoginFlowOnly(true);
+    }
   }
 
   const closeModal = () => {
@@ -47,6 +50,7 @@ function ScreeningRegistrationFlow(props) {
     setShowModal(false);
     setPayment(null);
     setSkipPayment(false);
+    setLoginFlowOnly(false);
   }
 
   const googleShareUrl = getGoogleCalendarShareUrl(
@@ -57,6 +61,14 @@ function ScreeningRegistrationFlow(props) {
     props.contentfulScreening.endDatetime,
     true
   );
+
+  const customLoginFlow = () => {
+    // console.log("We're following the custom login flow");
+    props.setIsLoaded(false);
+    if (loginFlowOnly) {
+      closeModal();
+    }
+  }
 
   return (
     <RegistrationContainer>
@@ -77,7 +89,7 @@ function ScreeningRegistrationFlow(props) {
           }
           { !user &&
             <p className={loginText}>
-              Already registered? <span className={linkStyle} onClick={() => openModal()}>Log in</span>
+              Already registered? <span className={linkStyle} onClick={() => openModal(true)}>Log in</span>
             </p>
           }
         </>
@@ -107,7 +119,7 @@ function ScreeningRegistrationFlow(props) {
             <>
               <h4 className={modalHeader}>Log In or Create an Account</h4>
               <p>After creating an account you'll be able to register for this event.</p>
-              <StyledFirebaseAuth uiConfig={handleUiConfig(() => props.setIsLoaded(false))} firebaseAuth={auth}/>
+              <StyledFirebaseAuth uiConfig={handleUiConfig(customLoginFlow)} firebaseAuth={auth}/>
             </>
           }
           { user && !props.registration && props.isLoaded &&
