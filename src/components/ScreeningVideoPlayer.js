@@ -20,7 +20,9 @@ function ScreeningVideoPlayer(props) {
     videoTrailerImage,
     preScreeningVideo,
     liveTime,
-    red
+    red,
+    maxMode,
+    setMaxMode
   } = props;
 
   /* Show play icon over preshow video once the video has loaded */
@@ -91,6 +93,8 @@ function ScreeningVideoPlayer(props) {
             liveTime={liveTime}
             videoTrailerImage={videoTrailerImage}
             color={red}
+            maxMode={maxMode}
+            setMaxMode={setMaxMode}
           />
         }
       </>

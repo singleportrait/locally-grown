@@ -157,9 +157,12 @@ function VdoCipherVideo(props) {
               />
             </PlayButtonContainer>
           }
-          { videoPlayed && <VideoOverlay /> }
+          { videoPlayed && <VideoOverlay onClick={() => props.maxMode ? props.setMaxMode(false) : undefined}/> }
           { videoEnded && props.videoTrailerImage &&
-            <ScreeningPreshowImage backgroundImage={`${props.videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`} />
+            <ScreeningPreshowImage
+              onClick={() => props.maxMode ? props.setMaxMode(false) : undefined}
+              backgroundImage={`${props.videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`}
+            />
           }
           <VdoCipherContainer
             id="vdoVideo"

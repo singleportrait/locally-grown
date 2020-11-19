@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -6,6 +6,7 @@ import Markdown from 'react-markdown';
 import { auth } from './firebase';
 import ReactPlayer from 'react-player';
 import spacetime from 'spacetime';
+import debounce from 'lodash/debounce';
 
 import styled from '@emotion/styled';
 import { css } from 'emotion';
@@ -156,6 +157,9 @@ function Screening(props) {
   const screeningTimeEastCoast = startTime.goto('America/New_York').format(timeFormat);
   const screeningTimeWestCoast = startTime.goto('America/Los_Angeles').format(timeFormat);
 
+  /* Max mode lite for this page ! But just manual */
+  const [maxMode, setMaxMode] = useState(false);
+
   function InfoColumnHeader() {
     return (
       <>
@@ -233,6 +237,8 @@ function Screening(props) {
           preScreeningVideo={preScreeningVideo}
           liveTime={liveTime}
           red={red}
+          maxMode={maxMode}
+          setMaxMode={setMaxMode}
         />
         { screeningState && isLoaded &&
           <ScreeningVideoDetails>
@@ -268,7 +274,7 @@ function Screening(props) {
       </Helmet>
       { isWideScreen &&
         <WideProgramContainer>
-          <Header>
+          <Header maxMode={maxMode}>
             <img
               className={wideLogo}
               src={process.env.REACT_APP_DOMAIN + screening_header_logo_wide}
@@ -283,13 +289,20 @@ function Screening(props) {
             <CustomHr />
           </Header>
           <ContentContainer>
-            <VideoAndControlsColumn>
+            <VideoAndControlsColumn maxMode={maxMode}>
+              <ExpandSidebarLink maxMode={maxMode} onClick={() => setMaxMode(false)}>&laquo; Expand sidebar</ExpandSidebarLink>
               { renderVideoPlayer() }
             </VideoAndControlsColumn>
-            <InfoColumnContainer>
+            <InfoColumnContainer maxMode={maxMode}>
               <div className={infoColumn}>
                 { registration && (screeningState === "trailer" || screeningState === "live") &&
-                  <ScreeningChatangoChat className={widescreenChat} />
+                  <>
+                    <div className={chatHeaderStyles}>
+                      <h4>Chat:</h4>
+                      <CollapseSidebarLink onClick={() => setMaxMode(true)}>Collapse sidebar &raquo;</CollapseSidebarLink>
+                    </div>
+                    <ScreeningChatangoChat className={widescreenChat} />
+                  </>
                 }
                 <InfoColumnHeader />
                 <ScreeningRegistrationFlow
@@ -354,15 +367,18 @@ const WideProgramContainer = styled('div')`
   height: 100vh;
 `;
 
+const oppositeVideoRatio = "1.777";
+const videoRatio = ".5625";
+
 const shortAspectRatio = '9/5';
 const shortestAspectRatio = '9/4';
 // widthRelativeToBrowserHeight = (Browser width - program padding) * video 4/3 ratio
-const widthRelativeToBrowserHeight = 'calc((100vh - 2.8rem) * 1.333)';
+const widthRelativeToBrowserHeight = `calc((100vh - 2.8rem) * ${oppositeVideoRatio})`;
 
 // Use the ratio of the video to learn how wide or tall it is, then position
 // it accordingly based on the browser ratio
-const relativeLeftValue = 'calc((100vw - 2.8rem - ((100vh - 2.8rem) * 1.333)) / 2)';
-const relativeTopValue = 'calc(((100vh - 2.8rem - (100vw - 2.8rem) * .75)) / 2)';
+const relativeLeftValue = `calc((100vw - 2.8rem - ((100vh - 2.8rem) * ${oppositeVideoRatio})) / 2)`;
+const relativeTopValue = `calc(((100vh - 2.8rem - (100vw - 2.8rem) * ${videoRatio})) / 2)`;
 
 const VideoAndControlsColumn = styled('div')`
   position: relative;
@@ -403,9 +419,11 @@ const InfoColumnContainer = styled('div')`
   // scrollable section the correct height
   height: calc(100vh - 1.4rem - 5rem);
   overflow-x: hidden;
-  transition: opacity 0.4s ease, right 0.4s ease;
+  transition: opacity 0.4s ease, right 0.4s ease, top 0.4s ease;
   opacity: ${props => props.maxMode ? '0' : '1' };
   right: ${props => props.maxMode ? '-35%' : '0' };
+  // TODO: yep, set things to real heights
+  top: 5.8rem;
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
     right: ${props => props.maxMode ? '-35%' : '5%' };
@@ -471,6 +489,10 @@ const Header = styled('div')`
   position: relative;
   display: flex;
   flex-direction: column;
+  transition: opacity 0.4s ease, margin-top 0.4s ease;
+  height: 4.5rem;
+  opacity: ${props => props.maxMode ? "0" : "1" };
+  margin-top: ${props => props.maxMode ? "-6.5rem" : "0" };
 `;
 
 const wideLogo = css`
@@ -491,6 +513,34 @@ const LogOutLink = styled('div')`
 const linkStyle = css`
   cursor: pointer;
   text-decoration: underline;
+`;
+
+const maxModeLinkStyle = `
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
+const ExpandSidebarLink = styled('div')`
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  transition: opacity 0.4s ease;
+  opacity: ${props => props.maxMode ? "1" : "0" };
+  cursor: ${props => props.maxMode ? "pointer" : "default" };
+  color: #666;
+  ${maxModeLinkStyle}
+`;
+
+const CollapseSidebarLink = styled('div')`
+  margin-bottom: .5rem;
+  color: #ccc;
+  ${maxModeLinkStyle}
+`;
+
+const chatHeaderStyles = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 `;
 
 const widescreenChat = css`

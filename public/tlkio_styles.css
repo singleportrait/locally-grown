@@ -33,7 +33,7 @@ body {
 
 /* Colors */
 .theme--night .header-bar {
-  background-color: transparent;
+  background-color: #111;
   border-bottom: 1px solid #333;
 }
 
