@@ -91,6 +91,8 @@ function ScreeningVideoPlayer(props) {
           <HostedVideo
             registeredInfo={registeredInfo}
             liveTime={liveTime}
+            maxMode={maxMode}
+            setMaxMode={setMaxMode}
           />
         }
       </>

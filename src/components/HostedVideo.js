@@ -72,7 +72,7 @@ class HostedVideo extends Component {
     return (
       <>
         <VideoWrapper>
-          <VideoOverlay />
+          <VideoOverlay onClick={() => this.props.maxMode ? this.props.setMaxMode(false) : undefined} />
           <ReactPlayer
             ref={this.ref}
             url={this.props.registeredInfo.amazonS3Video}
