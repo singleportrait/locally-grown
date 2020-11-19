@@ -29,7 +29,6 @@ import {
 
 import ScreeningRegistrationFlow from './components/ScreeningRegistrationFlow';
 import ScreeningVideoPlayer from './components/ScreeningVideoPlayer';
-import Tlkio from './components/Tlkio';
 import ScreeningAdmin from './components/ScreeningAdmin';
 import ScreeningCountdown from './components/ScreeningCountdown';
 import ScreeningChatangoChat from './components/ScreeningChatangoChat';
