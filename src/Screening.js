@@ -77,12 +77,14 @@ function Screening(props) {
     setScreening(null);
     // console.log("[useEffect reset]");
     async function checkScreeningAndRegistration() {
-      const result = await getScreeningAndRegistration(contentfulScreening.slug, user?.uid || null)
-        .catch(e => setError(`${e.name}: ${e.message}`));
-
-      setScreening(result.screening);
-      setRegistration(result.registration);
-      setIsLoaded(true);
+      try {
+        const result = await getScreeningAndRegistration(contentfulScreening.slug, user?.uid || null);
+        setScreening(result.screening);
+        setRegistration(result.registration);
+        setIsLoaded(true);
+      } catch (e) {
+        setError(`${e.name}: ${e.message}`);
+      }
     }
 
     checkScreeningAndRegistration();
@@ -94,9 +96,12 @@ function Screening(props) {
 
     // console.log("Registered user, let's get the private stuff");
     (async () => {
-      const registeredInfo = await getRegisteredInfo(contentfulScreening.slug)
-        .catch(e => setError(`${e.name}: ${e.message}`));
-      setRegisteredInfo(registeredInfo);
+      try {
+        const registeredInfo = await getRegisteredInfo(contentfulScreening.slug);
+        setRegisteredInfo(registeredInfo);
+      } catch(e) {
+        setError(`${e.name}: ${e.message}`);
+      }
     })();
   }, [registration, contentfulScreening.slug]);
 
