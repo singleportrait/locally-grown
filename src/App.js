@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import MediaQuery from 'react-responsive';
 
 import ReactGA from 'react-ga';
 import AppContents from './AppContents';
-import ChatangoChat from './components/ChatangoChat';
 import UserProvider from './providers/UserProvider';
 
 import store from './store';
@@ -23,9 +21,6 @@ class App extends Component {
       <UserProvider>
         <Provider store={store}>
           <AppContents />
-          <MediaQuery minDeviceWidth={600} minWidth={400}>
-            <ChatangoChat />
-          </MediaQuery>
         </Provider>
       </UserProvider>
     );
