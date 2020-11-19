@@ -49,6 +49,7 @@ const setDynamicMetadata = (response, slug, title, description, previewImage) =>
   data = data.replace(appDescriptionRegexp, removeMarkdown(description) || appDescription);
   data = data.replace(/\/share\.png/g, previewImage || shareImage);
 
+  response.set('Cache-Control', 'public, max-age=300, s-maxage=600');
   return response.send(data);
 }
 
