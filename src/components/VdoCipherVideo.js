@@ -6,6 +6,7 @@ import { css } from 'emotion/macro';
 
 import MuteButton from './MuteButton';
 import PlayButton from './PlayButton';
+import FullscreenPageButton from './FullscreenPageButton';
 
 import { VideoOverlay, ScreeningPreshowImage, ScreeningVideoDetails } from '../styles';
 
@@ -171,9 +172,10 @@ function VdoCipherVideo(props) {
               <>
                 { !videoPlayed && <p>Click play to begin!</p> }
                 { videoPlayed &&
-                  <MuteContainer>
+                  <ControlsContainer>
+                    <FullscreenPageButton />
                     <MuteButton muted={muted} toggleMute={toggleMute} />
-                  </MuteContainer>
+                  </ControlsContainer>
                 }
               </>
             }
@@ -233,10 +235,11 @@ const VdoCipherContainer = styled('div')`
   ${props => props.hidden && "visibility: hidden;" }
 `;
 
-const MuteContainer = styled('div')`
+const ControlsContainer = styled('div')`
   position: relative;
   margin-top: -.5rem;
   margin-right: -1rem;
+  display: flex;
 `;
 
 export default VdoCipherVideo;

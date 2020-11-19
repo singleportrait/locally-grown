@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import { css } from 'emotion';
-
-import { toggleMute } from '../actions/videoActions';
 
 import MuteIcon from './MuteIcon';
 import UnmuteIcon from './UnmuteIcon';
