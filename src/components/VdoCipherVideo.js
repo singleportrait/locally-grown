@@ -56,6 +56,7 @@ function VdoCipherVideo(props) {
 
     return () => {
       script.remove();
+      window.vdo = undefined;
     }
   }, [script, vdoKeys])
 
@@ -197,6 +198,7 @@ const VideoOverlayMessage = styled('h3')`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 `;
 
 const VdoCipherContainer = styled('div')`
