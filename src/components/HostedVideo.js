@@ -6,6 +6,7 @@ import { css } from 'emotion';
 
 import consoleLog from '../helpers/consoleLog';
 
+import FullscreenPageButton from './FullscreenPageButton';
 import MuteButton from './MuteButton';
 
 import { VideoOverlay, ScreeningVideoDetails } from '../styles';
@@ -95,6 +96,7 @@ class HostedVideo extends Component {
         <ScreeningVideoDetails alignEnd={this.state.playing && !this.state.videoEnded}>
           { this.state.playing && !this.state.videoEnded &&
             <ControlsContainer>
+              <FullscreenPageButton />
               <MuteButton muted={this.state.muted} toggleMute={this.toggleMute} />
             </ControlsContainer>
           }
