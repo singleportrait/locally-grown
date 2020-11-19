@@ -78,6 +78,7 @@ function ScreeningVideoPlayer(props) {
               muted={true}
               playsinline={true}
               className={reactPlayer}
+              controls={true}
               config={{
                 youtube: {
                   modestbranding: 1,
