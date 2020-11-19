@@ -85,9 +85,13 @@ function ScreeningRegistrationFlow(props) {
       { props.screening && props.registration &&
         <>
           <RegistrationConfirmation>
-            <ConfirmationH4>Congrats, you're registered for the screening!</ConfirmationH4>
-            <p>We've sent you a confirmation email, and we'll send a reminder day-of.</p>
-            <hr />
+            { props.screeningState !== "live" &&
+              <>
+                <ConfirmationH4>Congrats, you're registered for the screening!</ConfirmationH4>
+                <p>We've sent you a confirmation email, and we'll send a reminder day-of.</p>
+                <hr />
+              </>
+            }
             <p>Won't be able to watch? Unregister to free up a spot for another viewer:</p>
             <p className={linkStyle} onClick={props.unregister}>Unregister</p>
             <hr />

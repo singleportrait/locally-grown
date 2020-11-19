@@ -33,6 +33,8 @@ import PlayButton from './components/PlayButton';
 import ScreeningAdmin from './components/ScreeningAdmin';
 import ScreeningCountdown from './components/ScreeningCountdown';
 
+import { ScreeningPreshowImage, ScreeningVideoDetails } from './styles';
+
 const backgroundColor = "#0c0c0c";
 const red = "#fc4834";
 
@@ -169,7 +171,7 @@ function Screening(props) {
           <br />
           <span className={time}>{ screeningTimeEastCoast }</span> ET / <span className={time}>{ screeningTimeWestCoast }</span> PT
         </h3>
-        <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p>
+        { !registration && <p className={marginMedium}>Optional $10 donation to help us cover the costs of screening</p> }
         { !screening && isLoaded &&
           <>
             <CustomHr />
@@ -212,13 +214,20 @@ function Screening(props) {
     );
   }
 
+  /* Show play icon over preshow video once the video has loaded */
+  const [showPlayIcon, setShowPlayIcon] = useState(false);
+  const onPreshowVideoReady = () => {
+    setShowPlayIcon(true);
+  }
+
   const renderVideoPlayer = () => {
     return (
       <>
-        { videoTrailer &&
-          (!registration ||
-          (registration && screeningState === "preshow") ||
-          (registration && screeningState === "finished")) &&
+        { !isLoaded && <VideoWrapper /> }
+        { videoTrailer && isLoaded &&
+          ((registration && screeningState === "preshow") ||
+          (registration && screeningState === "finished") ||
+          !registration) &&
           <VideoWrapper>
             <ReactPlayer
               url={videoTrailer.fields.url}
@@ -226,6 +235,7 @@ function Screening(props) {
               width="100%"
               height="100%"
               className={reactPlayer}
+              onReady={onPreshowVideoReady}
               controls={true}
               config={{
                 youtube: {
@@ -236,12 +246,14 @@ function Screening(props) {
             />
             { videoTrailerImage && !preshowPlaying &&
               <>
-                <VideoTrailerImage backgroundImage={videoTrailerImage.fields.file.url} />
-                <PlayButton
-                  className={playButton}
-                  color={red}
-                  togglePlaying={() => setPreshowPlaying(!preshowPlaying)}
-                />
+                <ScreeningPreshowImage backgroundImage={`${videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`} />
+                { showPlayIcon &&
+                  <PlayButton
+                    className={playButton}
+                    color={red}
+                    togglePlaying={() => setPreshowPlaying(!preshowPlaying)}
+                  />
+                }
               </>
             }
           </VideoWrapper>
@@ -266,31 +278,35 @@ function Screening(props) {
           </VideoWrapper>
         }
         { registration && registeredInfo && screeningState === "live" &&
-          /* To pull from `screenings/{screeningId}/registeredInfo/{screeningId} */
           <VdoCipherVideo
             videoId={registeredInfo.videoId}
+            liveTime={liveTime}
+            videoTrailerImage={videoTrailerImage}
           />
         }
-        <VideoDetails>
-          <TrailerText>Watch the trailer &uarr;</TrailerText>
-          <StatusText>
-            { screeningState === "trailer" && "Trailer" }
-            { screeningState === "live" && "Showtime :)" }
-            { screeningState === "finished" && "It's over now!" }
-            { (screeningState === "preshow" || screeningState === "trailer") &&
-              <ScreeningCountdown
-                screeningState={screeningState}
-                setScreeningState={setScreeningState}
-                startDatetime={startDatetime}
-                endDatetime={endDatetime}
-                liveTime={liveTime}
-                preScreeningVideo={preScreeningVideo}
-                preScreeningVideoLength={preScreeningVideoLength}
-              />
-            }
-          </StatusText>
-          { isMobileOrTablet && <CustomHr /> }
-        </VideoDetails>
+        { screeningState && isLoaded &&
+          <ScreeningVideoDetails>
+            <TrailerText>
+              { screeningState === "preshow" && <>Watch the trailer &uarr;</> }
+              { screeningState === "trailer" && <>Join us in watching our pre-screening film &uarr;</>}
+            </TrailerText>
+            <StatusText>
+              { screeningState === "finished" && "It's over now!" }
+              { (screeningState === "preshow" || screeningState === "trailer") &&
+                <ScreeningCountdown
+                  screeningState={screeningState}
+                  setScreeningState={setScreeningState}
+                  startDatetime={startDatetime}
+                  endDatetime={endDatetime}
+                  liveTime={liveTime}
+                  preScreeningVideo={preScreeningVideo}
+                  preScreeningVideoLength={preScreeningVideoLength}
+                />
+              }
+            </StatusText>
+            { isMobileOrTablet && <CustomHr /> }
+          </ScreeningVideoDetails>
+        }
       </>
     );
   }
@@ -332,6 +348,7 @@ function Screening(props) {
                   registration={registration}
                   register={register}
                   unregister={unregister}
+                  screeningState={screeningState}
                   isLoaded={isLoaded}
                   setIsLoaded={setIsLoaded} />
                 <InfoColumnFooter />
@@ -358,6 +375,7 @@ function Screening(props) {
               registration={registration}
               register={register}
               unregister={unregister}
+              screeningState={screeningState}
               isLoaded={isLoaded}
               setIsLoaded={setIsLoaded} />
             <InfoColumnFooter />
@@ -543,24 +561,14 @@ const MobileInfoColumn = styled('div')`
 
 const VideoWrapper = styled('div')`
   position: relative;
-  padding-top: 56.25%
+  padding-top: 56.25%;
+  background-color: #000;
 `;
 
 const reactPlayer = css`
   position: absolute;
   top: 0;
   left: 0;
-`;
-
-const VideoTrailerImage = styled('div')`
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 1;
-  background-image: url(${props => props.backgroundImage || 'none'});
-  background-size: cover;
 `;
 
 const playButton = css`
@@ -575,19 +583,6 @@ const playButton = css`
     left: 1rem;
     transform-origin: bottom left;
     transform: scale(.75);
-  }
-`;
-
-const VideoDetails = styled('div')`
-  padding-top: .5rem;
-  display: flex;
-  justify-content: space-between;
-
-  @media screen and (max-width: 800px) {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-bottom: -1rem; // Accounting for <hr> weirdness w following title
-    flex-direction: column;
   }
 `;
 

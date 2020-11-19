@@ -55,6 +55,45 @@ export const VideoPlaceholderWrapper = styled('div')`
   background-size: cover;
 `;
 
+export const VideoOverlay = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity .3s ease;
+  background-size: contain;
+`;
+
+export const ScreeningPreshowImage = styled('div')`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  background-image: url(${props => props.backgroundImage || 'none'});
+  background-size: cover;
+`;
+
+export const ScreeningVideoDetails = styled('div')`
+  padding-top: .5rem;
+  display: flex;
+  justify-content: ${props => props.alignEnd ? "flex-end" : "space-between" };
+
+  @media screen and (max-width: 800px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: -1rem; // Accounting for <hr> weirdness w following title
+    flex-direction: column;
+  }
+`;
+
 export const Button = styled('button')`
   background-color: ${props => props.color ? props.color : "#fff"};
   color: ${props => props.textColor ? props.textColor: "#000"};

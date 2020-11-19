@@ -69,8 +69,7 @@ function ScreeningCountdown(props) {
       }
       { props.screeningState === "trailer" && timeLeftUntilLive &&
         <>
-          <br />
-          Showing pre-screening film; time until film starts: { timeLeftUntilLive.hours }:{ timeLeftUntilLive.minutes }:{ timeLeftUntilLive.seconds }
+          Film starts in { timeLeftUntilLive.hours }:{ timeLeftUntilLive.minutes }:{ timeLeftUntilLive.seconds }
         </>
       }
     </>

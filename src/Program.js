@@ -14,7 +14,7 @@ import MobileProgram from './MobileProgram';
 import LoadingScreen from './components/LoadingScreen';
 import Video from './components/Video';
 import Navigation from './components/Navigation';
-import MuteButton from './components/MuteButton';
+import MuteButtonWithRedux from './components/MuteButtonWithRedux';
 import ChannelButton from './components/ChannelButton';
 import InfoTooltip from './components/InfoTooltip';
 import ProgramSidebar from './components/ProgramSidebar';
@@ -229,7 +229,7 @@ function Program(props) {
 
             { currentProgramBlock.fields.videos &&
               <div className={controlButtons}>
-                <MuteButton />
+                <MuteButtonWithRedux />
               </div>
             }
 

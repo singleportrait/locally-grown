@@ -17,14 +17,18 @@ const muteButton = css`
   }
 `;
 
-class MuteButton extends Component {
+class MuteButtonWithRedux extends Component {
+  toggleMute = () => {
+    this.props.toggleMute(this.props.video.muted);
+  }
+
   render() {
     return (
-      <div className={muteButton} onClick={this.props.toggleMute}>
-        {this.props.muted &&
+      <div className={muteButton} onClick={this.toggleMute}>
+        {this.props.video.muted &&
           <UnmuteIcon />
         }
-        {!this.props.muted &&
+        {!this.props.video.muted &&
           <MuteIcon />
         }
       </div>
@@ -32,4 +36,8 @@ class MuteButton extends Component {
   }
 }
 
-export default MuteButton;
+const mapStateToProps = state => ({
+  video: state.video
+});
+
+export default connect(mapStateToProps, { toggleMute })(MuteButtonWithRedux);

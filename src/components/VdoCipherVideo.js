@@ -4,11 +4,16 @@ import styled from '@emotion/styled';
 
 import { css } from 'emotion/macro';
 
+import MuteButton from './MuteButton';
+
+import { VideoOverlay, ScreeningPreshowImage, ScreeningVideoDetails } from '../styles';
+
 function VdoCipherVideo(props) {
 
   /* Requesting otp and playback info from the server, which we should do eventually */
   const [vdoKeys, setVdoKeys] = useState({});
   useEffect(() => {
+
     const fetchRealVideo = async () => {
       const callFunction = functions.httpsCallable('vdoCipher-getOTPAndPlaybackInfo');
       callFunction({videoId: props.videoId})
@@ -48,183 +53,124 @@ function VdoCipherVideo(props) {
 
       setVideo(vdo.getObjects()[0]);
     }
+
+    return () => {
+      script.remove();
+    }
   }, [script, vdoKeys])
 
-  /* Sample VdoCipher event listeners */
-  useEffect(() => {
-    if (!video) return;
+  /* Script to find out where to seek in the film */
+  const getSeekTime = () => {
+    const now = new Date();
+    const difference = (Date.parse(now) - Date.parse(props.liveTime))/1000;
 
-    let timeout;
+    // console.log("Time movie should start:", props.liveTime);
+    // console.log("Time it is now", now);
+    // console.log("Difference between the two:", difference);
+
+    return difference;
+  }
+
+  /* VdoCipher event listeners */
+  const [videoIsLoaded, setVideoIsLoaded] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [videoPlayed, setVideoPlayed] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!video) return
+
+    /* Catching errors on mobile after 10 second delay, for now */
+    const errorTimeout = setTimeout(() => {
+      // console.log("Checking after 10 seconds to see if video loaded");
+      if (video.status === -1) {
+        setError("Error loading video. Please try on desktop Chrome for best support.");
+      }
+    }, 15000);
+
+    // console.log("Video is set now", video);
     const loadListener = video.addEventListener('load', () => {
-      console.log("Loaded video");
-      video.seek(4);
-      video.mute();
-      video.play();
-      // setCanMute(true);
-      timeout = setTimeout(() => {
-        setCanMute(true);
-        console.log("Able to set mute now");
-      }, 8000);
+      setVideoIsLoaded(true);
+      // console.log("Loaded video");
+      // If time we try to seek to is later than the end of the video, don't play it
+      if (getSeekTime() > Math.round(video.duration)) {
+        setVideoEnded(true);
+      }
     });
+
     const endedListener = video.addEventListener('ended', () => {
-      console.log("Video ended");
-      // video.seek(0);
-      // video.play();
+      setVideoEnded(true);
     });
 
     const playListener = video.addEventListener("play", () => {
-      console.log("Video playing");
+      // console.log("Video playing");
+      video.seek(getSeekTime());
+      setVideoPlayed(true);
+      setMuted(false);
     });
+
+    /* Example of listening to properties on video */
+    // if (video.isBuffering) {
+    //   console.log("Buffering...");
+    // }
 
     return () => {
       loadListener();
-      clearTimeout(timeout);
       endedListener();
       playListener();
+      clearTimeout(errorTimeout);
     }
-  }, [video]);
+  }, [video, getSeekTime, error]);
 
-  /* Play/pause controls */
-  const playPausePageload = () => {
-    const playConditions = [-1, 0, 2]; // Loading, ready to play, or paused
-    if (playConditions.includes(video.status)) {
-      console.log("Loading, ready to play, or paused");
-      video.seek(20);
-      video.mute();
-      video.play();
-    } else if (video.status === 3) { // Ended
-      console.log("Ended; doing nothing");
-    } else if (video.status === 1) {
-      console.log("Playing");
-      video.pause();
-    }
-  };
-
-  const playPauseMuted = () => {
-    let status;
-    const playConditions = [-1, 0, 2]; // Loading, ready to play, or paused
-    if (playConditions.includes(video.status)) {
-      status = "Loading, ready to play, or paused";
-      video.mute();
-      video.play();
-    } else if (video.status === 3) { // Ended
-      status = "Ended; doing nothing";
-    } else {
-      status = "Playing";
-      video.pause();
-    }
-    // switch (video.status) {
-    //   case -1: // Loading
-    //   case 0: // Ready to play
-    //   case 2: // Paused
-    //     status = "Loading, ready to play, or paused";
-    //     video.mute();
-    //     video.play();
-    //     break;
-    //   case 1: // Playing
-    //     status = "Playing";
-    //     video.pause();
-    //     break;
-    //   case 3: // Ended
-    //     status = "Ended; doing nothing";
-    //     break;
-    //   default:
-    //     status = "No status found";
-    // }
-
-    console.log(status);
-  }
-
-  const playPauseWithoutMute = () => {
-    const playConditions = [-1, 0, 2]; // Loading, ready to play, or paused
-    if (playConditions.includes(video.status)) {
-      console.log("Loading, ready to play, or paused");
-      video.play();
-      video.unmute();
-    } else if (video.status === 3) { // Ended
-      console.log("Ended; restart");
-      video.seek(0);
-      video.play();
-    } else {
-      console.log("Playing");
-      video.pause();
-    }
-  }
-
-  /* Don't need this, but it's here and works if we do */
-  // window.onVdoCipherAPIReady = () => {
-  //   console.log("Video cipher api is ready");
-  // }
-
-  /* Autoplay video upon final ability to see video */
-  const [canMute, setCanMute] = useState();
-  useEffect(() => {
-    if (!video) return;
-
-    if (video.status === -1) {
-      console.log("Loading video");
-    }
-
-    if (video.isBuffering) {
-      console.log("Buffering...");
-    }
-    return;
-    playPausePageload();
-    setTimeout(() => {
-      setCanMute(true);
-      console.log("Able to set mute now");
-    }, 8000);
-  }, [video]);
-
-  /* TODO: This will only work if you first *choose* to play the video.
-   * This solution won't work long-term and needs to be figured out. */
+  /* Ability to toggle mute */
   const toggleMute = () => {
     if (!video) return;
 
     if (video.muted) {
       video.unmute();
+      setMuted(false);
     } else {
       video.mute();
+      setMuted(true);
     }
-  }
-
-  const [pageClicked, setPageClicked] = useState();
-  const showVideo = () => {
-    setPageClicked(true);
   }
 
   return (
     <>
       <div>
         <VideoContainer>
+          { (error || !videoIsLoaded) &&
+            <VideoOverlayMessage>
+              { error && error }
+              { !error && !videoIsLoaded && "Loading video..." }
+            </VideoOverlayMessage>
+          }
+          { videoPlayed && <VideoOverlay /> }
+          { videoEnded && props.videoTrailerImage &&
+            <ScreeningPreshowImage backgroundImage={`${props.videoTrailerImage.fields.file.url}?fm=jpg&fl=progressive`} />
+          }
           <VdoCipherContainer
             id="vdoVideo"
-            pageClicked={true}
+            hidden={!videoIsLoaded || videoEnded}
           />
         </VideoContainer>
-        { video && false &&
-          <>
-            <h3>You can view the video now</h3>
-            <p onClick={() => playPauseMuted()}>Play/pause video (with mute, has to be clicked first for `mute()` to work)</p>
-            <p onClick={() => playPauseWithoutMute()}>Toggle play/pause manually (without mute)</p>
-            <hr />
-            { canMute &&
+        { video && videoIsLoaded &&
+          <ScreeningVideoDetails alignEnd={videoPlayed && !videoEnded}>
+            { !videoEnded &&
               <>
-                <div>
-                  <p onClick={() => showVideo()}>Allow video (Click me first)</p>
-                  { pageClicked &&
-                  <h4>Page has been clicked</h4>
-                  }
-                </div>
-                <p onClick={() => toggleMute()}>Toggle mute</p>
-                <ul>
-                  <li>Only works after manually playing first OR ~5 seconds wait</li>
-                  <li>BUT, this isn't consistent. We need some way to hook into the user actually being allowed to hit "mute"</li>
-                </ul>
+                { !videoPlayed && <p>Click play to begin!</p> }
+                { videoPlayed &&
+                  <MuteContainer>
+                    <MuteButton muted={muted} toggleMute={toggleMute} />
+                  </MuteContainer>
+                }
               </>
             }
-            <br />
-          </>
+            { videoEnded &&
+              <small style={{color: "#999"}}>The film has ended. Thanks for joining us!</small>
+            }
+          </ScreeningVideoDetails>
         }
       </div>
     </>
@@ -236,16 +182,39 @@ const VideoContainer = styled('div')`
   width: 100%;
   padding-top: 56.25%;
   overflow: hidden;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+`;
+
+const VideoOverlayMessage = styled('h3')`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const VdoCipherContainer = styled('div')`
   position: absolute;
+  top: 0;
   top: -20%;
   left: 0;
   width: 100%;
+  height: 100%;
   height: 140%;
   display: block;
-  visibility: ${props  => props.pageClicked ? "visible" : "hidden"};
+  ${props => props.hidden && "visibility: hidden;" }
+`;
+
+const MuteContainer = styled('div')`
+  position: relative;
+  margin-top: -.5rem;
+  margin-right: -1rem;
 `;
 
 export default VdoCipherVideo;

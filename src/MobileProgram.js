@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { css } from 'emotion';
 
 import Video from './components/Video';
-import MuteButton from './components/MuteButton';
+import MuteButtonWithRedux from './components/MuteButtonWithRedux';
 import CloseIcon from './components/CloseIcon';
 import ChannelButton from './components/ChannelButton';
 import ProgramSidebar from './components/ProgramSidebar';
@@ -37,7 +37,7 @@ function MobileProgram(props) {
         { props.currentProgramBlock &&
           <React.Fragment>
             { !props.showMobileProgramInfo &&
-              <div className={mobileTopRightIcon}><MuteButton /></div>
+              <div className={mobileTopRightIcon}><MuteButtonWithRedux /></div>
             }
             { props.showMobileProgramInfo &&
               <div className={mobileProgramInfoCloseIcon} onClick={props.toggleMobileProgramInfo}>
