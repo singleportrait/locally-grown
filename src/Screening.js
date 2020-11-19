@@ -330,7 +330,9 @@ function Screening(props) {
             />
           </MobileHeader>
           { renderVideoPlayer() }
-          <ScreeningChatangoChat className={mobileChat} height="300px" />
+          { registration && (screeningState === "trailer" || screeningState === "live") &&
+            <ScreeningChatangoChat className={mobileChat} height="300px" />
+          }
           <MobileInfoColumn>
             <InfoColumnHeader />
             <ScreeningRegistrationFlow
