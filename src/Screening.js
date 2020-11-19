@@ -32,6 +32,7 @@ import Tlkio from './components/Tlkio';
 import PlayButton from './components/PlayButton';
 import ScreeningAdmin from './components/ScreeningAdmin';
 import ScreeningCountdown from './components/ScreeningCountdown';
+import ScreeningChatangoChat from './components/ScreeningChatangoChat';
 
 import { ScreeningPreshowImage, ScreeningVideoDetails } from './styles';
 
@@ -339,7 +340,7 @@ function Screening(props) {
             <InfoColumnContainer>
               <div className={infoColumn}>
                 { registration && (screeningState === "trailer" || screeningState === "live") &&
-                  <Tlkio />
+                  <ScreeningChatangoChat />
                 }
                 <InfoColumnHeader />
                 <ScreeningRegistrationFlow
@@ -367,6 +368,7 @@ function Screening(props) {
             />
           </MobileHeader>
           { renderVideoPlayer() }
+          <ScreeningChatangoChat className={mobileChat} height="300px" />
           <MobileInfoColumn>
             <InfoColumnHeader />
             <ScreeningRegistrationFlow
@@ -556,6 +558,10 @@ const narrowLogo = css`
 `;
 
 const MobileInfoColumn = styled('div')`
+  padding: 1rem;
+`;
+
+const mobileChat = css`
   padding: 1rem;
 `;
 
