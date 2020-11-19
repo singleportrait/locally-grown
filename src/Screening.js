@@ -299,7 +299,7 @@ function Screening(props) {
             </VideoAndControlsColumn>
             <InfoColumnContainer maxMode={maxMode}>
               <div className={infoColumn}>
-                { registration && (screeningState === "trailer" || screeningState === "live") &&
+                { registration && (screeningState === "trailer" || screeningState === "live" || screeningState === "finished") &&
                   <>
                     <div className={chatHeaderStyles}>
                       <h4>Chat:</h4>
@@ -334,7 +334,7 @@ function Screening(props) {
             />
           </MobileHeader>
           { renderVideoPlayer() }
-          { registration && (screeningState === "trailer" || screeningState === "live") &&
+          { registration && (screeningState === "trailer" || screeningState === "live" || screeningState === "finished") &&
             <ScreeningChatangoChat className={mobileChat} height="300px" />
           }
           <MobileInfoColumn>
