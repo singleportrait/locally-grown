@@ -228,6 +228,9 @@ function Screening(props) {
     setShowPlayIcon(true);
   }
 
+  /* Calculated width of video, divided by vertical height ratio, minus height of chat header */
+  const responsiveChatHeight = "calc((((100vw - 2.8rem) * .65) * .5625) - 2rem)";
+
   const renderVideoPlayer = () => {
     return (
       <>
@@ -305,7 +308,7 @@ function Screening(props) {
                       <h4>Chat:</h4>
                       <CollapseSidebarLink onClick={() => setMaxMode(true)}>Collapse sidebar &raquo;</CollapseSidebarLink>
                     </div>
-                    <ScreeningChatangoChat className={widescreenChat} />
+                    <ScreeningChatangoChat className={widescreenChat} height={responsiveChatHeight} />
                   </>
                 }
                 <InfoColumnHeader />
@@ -561,6 +564,7 @@ const chatHeaderStyles = css`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  height: 2rem;
 `;
 
 const widescreenChat = css`
