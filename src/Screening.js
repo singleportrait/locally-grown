@@ -377,15 +377,23 @@ const WideProgramContainer = styled('div')`
 const oppositeVideoRatio = "1.777";
 const videoRatio = ".5625";
 
+// For short screens, we actually need the ratio including the buttons
+const oppositeVideoRatioWithControls = "1.55";
+const videoRatioWithControls = ".645";
+
+// Updated videoAspectRatio due to differently proportioned player elements
+const videoAspectRatio = '9/6';
 const shortAspectRatio = '9/5';
 const shortestAspectRatio = '9/4';
 // widthRelativeToBrowserHeight = (Browser width - program padding) * video 4/3 ratio
-const widthRelativeToBrowserHeight = `calc((100vh - 2.8rem) * ${oppositeVideoRatio})`;
+const widthRelativeToBrowserHeight = `calc((100vh - 2.8rem) * ${oppositeVideoRatioWithControls})`;
 
 // Use the ratio of the video to learn how wide or tall it is, then position
 // it accordingly based on the browser ratio
-const relativeLeftValue = `calc((100vw - 2.8rem - ((100vh - 2.8rem) * ${oppositeVideoRatio})) / 2)`;
-const relativeTopValue = `calc(((100vh - 2.8rem - (100vw - 2.8rem) * ${videoRatio})) / 2)`;
+const relativeLeftValue = `calc(((100vw) - 2.8rem - ((100vh - 2.8rem) * ${oppositeVideoRatioWithControls})) / 2)`;
+// Adding the first `+ 2rem` here to account for the "Expand sidebar" button absolutely positioned
+const relativeTopValue = `calc((((100vh + 2rem) - 2.8rem - (100vw - 2.8rem) * ${videoRatio})) / 2)`;
+
 
 const VideoAndControlsColumn = styled('div')`
   position: relative;
@@ -394,12 +402,13 @@ const VideoAndControlsColumn = styled('div')`
   transition: width 0.4s ease, left 0.4s ease, top 0.4s ease;
   max-width: 100%;
 
-  @media (min-aspect-ratio: 4/3) {
+  @media (min-aspect-ratio: ${videoAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '65%' };
     left: ${props => props.maxMode ? relativeLeftValue : '0' };
+    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Same as above
   }
 
-  @media (max-aspect-ratio: 4/3) {
+  @media (max-aspect-ratio: ${videoAspectRatio}) {
     width: ${props => props.maxMode ? '100%' : '65%' };
     top: ${props => props.maxMode ? relativeTopValue : '0' };
   }
@@ -407,11 +416,13 @@ const VideoAndControlsColumn = styled('div')`
   @media (min-aspect-ratio: ${shortAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '55%' };
     left: ${props => props.maxMode ? relativeLeftValue : '5%' };
+    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Not completely sure why this works, not on suuuper wide screens but mostly is fine
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
     width: ${props => props.maxMode ? widthRelativeToBrowserHeight : '45%' };
     left: ${props => props.maxMode ? relativeLeftValue : '10%' };
+    top: ${props => props.maxMode ? "2.5rem" : "0" }; // Same as above
   }
 `;
 
@@ -433,7 +444,7 @@ const InfoColumnContainer = styled('div')`
   top: 5.8rem;
 
   @media (min-aspect-ratio: ${shortAspectRatio}) {
-    right: ${props => props.maxMode ? '-35%' : '5%' };
+    right: ${props => props.maxMode ? '-35%' : '0%' };
   }
 
   @media (min-aspect-ratio: ${shortestAspectRatio}) {
@@ -499,7 +510,7 @@ const Header = styled('div')`
   transition: opacity 0.4s ease, margin-top 0.4s ease;
   height: 4.5rem;
   opacity: ${props => props.maxMode ? "0" : "1" };
-  margin-top: ${props => props.maxMode ? "-6.5rem" : "0" };
+  margin-top: ${props => props.maxMode ? "-6rem" : "0" };
 `;
 
 const wideLogo = css`
