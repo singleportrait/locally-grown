@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthed(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // function isGodMod() {
+    //   let roles = debug(get(/databases/$(database)/users/$(request.auth.uid)).data.roles);
+    //   return ("godMod" in(roles));
+    // }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    match /users/{userId} {
+      allow read, update, delete, create: if isAuthed(userId);
+    }
+    match /screenings/{screeningId} {
+      function userIsEventMod() {
+        let adminIds = get(/databases/$(database)/documents/screenings/$(screeningId)).data.adminIds;
+        return (request.auth.uid in(adminIds));
+      }
+
+      function editOnlyChangesFields(allowedFields) {
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        return affectedKeys.hasOnly(allowedFields);
+      }
+
+      function registrationIncrementsTotalRegistered() {
+        let title = debug("** Check that registration increments total registered if non-mod is updating **");
+        let debugNewCount = debug("** newCount: **");
+        let newCount = debug(request.resource.data.totalRegistered);
+
+        let debugOldCount = debug("** oldCount: **");
+        let oldCount = debug(resource.data.totalRegistered);
+
+        let debugIsAboveZero = debug("** newCount >= 0 ? **");
+        let isAboveZero = debug(newCount >=0);
+
+        return ((newCount > oldCount) || (newCount < oldCount)) && isAboveZero;
+      }
+
+      function newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered() {
+        let result = debug("** newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered? **");
+        return debug(request.resource.data.totalAllowed >= resource.data.totalRegistered);
+      }
+
+      function newTotalRegisteredIsLessOrEqualToTotalAllowed() {
+        let result = debug("** newTotalRegisteredIsLessOrEqualToTotalAllowed? **");
+        return debug(request.resource.data.totalRegistered <= resource.data.totalAllowed);
+      }
+
+      function screeningHasAllRequiredFields() {
+        return (request.resource.data.keys()
+          .hasAll([
+            "totalAllowed",
+            "totalRegistered",
+            "registrationUpdatedAt",
+            "adminIds"
+          ])
+        );
+      }
+
+      allow read: if true;
+      allow update: if ((userIsEventMod() ||
+        (editOnlyChangesFields(["totalRegistered", "registrationUpdatedAt"]) && registrationIncrementsTotalRegistered()) && newTotalRegisteredIsLessOrEqualToTotalAllowed()) &&
+        newAllowedTotalIsGreaterOrEqualToCurrentTotalRegistered());
+      allow create: if screeningHasAllRequiredFields();
+      // allow create: if (isGodMod() && screeningHasAllRequiredFields());
+
+      match /members/{userId} {
+        function memberHasRequiredFields() {
+          let debugMessage = debug("** Comparing request auth and user ID **");
+          let unused = debug(request.auth.uid);
+          let unusedUserId = debug(userId);
+          return (request.resource.data.keys()
+            .hasAll(["displayName", "email", "registeredAt"]));
+        }
+
+        function updatedRegistrationUpdatedAtTimestamp() {
+          let oldUpdatedTimeIsDifferent = get(/databases/$(database)/documents/screenings/$(screeningId))
+            .data.registrationUpdatedAt != request.time;
+          let newUpdatedTimeIsSame = getAfter(/databases/$(database)/documents/screenings/$(screeningId))
+           .data.registrationUpdatedAt == request.time;
+          let debugMessage = debug("** Comparing old and new timestamps **");
+          return debug(oldUpdatedTimeIsDifferent) && debug(newUpdatedTimeIsSame);
+        }
+
+        allow read, update: if isAuthed(userId) || userIsEventMod();
+        allow create: if (isAuthed(userId) || userIsEventMod()) &&
+          debug(memberHasRequiredFields()) &&
+          updatedRegistrationUpdatedAtTimestamp();
+        allow delete: if (isAuthed(userId) || userIsEventMod()) &&
+          updatedRegistrationUpdatedAtTimestamp();
+      }
+
+      match /registeredInfo/{document=**} {
+        function isRegisteredMember() {
+          return exists(/databases/$(database)/documents/screenings/$(screeningId)/members/$(request.auth.uid));
+        }
+
+        allow read: if (isRegisteredMember() || userIsEventMod());
+        allow update, create: if userIsEventMod();
+      }
+    }
+  }
+}

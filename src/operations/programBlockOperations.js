@@ -14,6 +14,7 @@ const findProgramBlock = (programBlockId) => {
   return new Promise(function(resolve, reject) {
     let matchingProgramBlock = null;
     store.getState().channels.allChannels.find(channel => {
+      if (!channel.fields.programs) return false;
       return channel.fields.programs.find(program => {
         if (program.fields && program.fields.programBlocks) {
           return program.fields.programBlocks.find(programBlock => {

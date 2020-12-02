@@ -46,4 +46,8 @@ function LoadingScreen(props) {
   );
 }
 
+LoadingScreen.defaultProps = {
+  message: "Sorry, we couldn't find that."
+}
+
 export default LoadingScreen;

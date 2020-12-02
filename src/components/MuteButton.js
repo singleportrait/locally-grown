@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import { css } from 'emotion';
-
-import { toggleMute } from '../actions/videoActions';
 
 import MuteIcon from './MuteIcon';
 import UnmuteIcon from './UnmuteIcon';
@@ -18,17 +15,13 @@ const muteButton = css`
 `;
 
 class MuteButton extends Component {
-  toggleMute = () => {
-    this.props.toggleMute(this.props.video.muted);
-  }
-
   render() {
     return (
-      <div className={muteButton} onClick={this.toggleMute}>
-        {this.props.video.muted &&
+      <div className={muteButton} onClick={this.props.toggleMute}>
+        {this.props.muted &&
           <UnmuteIcon />
         }
-        {!this.props.video.muted &&
+        {!this.props.muted &&
           <MuteIcon />
         }
       </div>
@@ -36,8 +29,4 @@ class MuteButton extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  video: state.video
-});
-
-export default connect(mapStateToProps, { toggleMute })(MuteButton);
+export default MuteButton;

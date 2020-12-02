@@ -13,7 +13,7 @@ class PlayButton extends Component {
         className={this.props.className}
         onClick={this.togglePlaying}
       >
-        <PlayIcon />
+        <PlayIcon color={this.props.color} />
       </div>
     );
   }
