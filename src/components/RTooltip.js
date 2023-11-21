@@ -3,7 +3,7 @@ import Markdown from 'react-markdown';
 import ReactTooltip from 'react-tooltip';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import CloseIcon from './CloseIcon';
 
@@ -56,7 +56,9 @@ class RTooltip extends Component {
           }
           { this.props.description &&
             <div>
-              <Markdown source={this.props.description} />
+              <Markdown>
+                {this.props.description}
+              </Markdown>
             </div>
           }
           { this.props.descriptionHTML &&

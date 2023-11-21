@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 import consoleLog from './helpers/consoleLog';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { getCurrentProgramBlock } from './operations/programBlockOperations';
 

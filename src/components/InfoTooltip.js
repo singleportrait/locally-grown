@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Overlay from 'react-bootstrap/Overlay';
 import Markdown from 'react-markdown';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import Tooltip from './Tooltip';
 
@@ -22,7 +22,9 @@ class InfoTooltip extends Component {
         <React.Fragment>
           {description &&
             <div>
-              <Markdown source={description} />
+              <Markdown>
+                {description}
+              </Markdown>
             </div>
           }
           {!description &&
@@ -34,7 +36,9 @@ class InfoTooltip extends Component {
               <p><strong>{contributor.fields.name}</strong></p>
               {contributor.fields.description &&
                 <div>
-                  <Markdown source={contributor.fields.description} />
+                  <Markdown>
+                    {contributor.fields.description}
+                  </Markdown>
                 </div>
               }
             </React.Fragment>

@@ -3,7 +3,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Markdown from 'react-markdown';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import Tooltip from './Tooltip';
 import RemindLink from './RemindLink';
@@ -24,7 +24,9 @@ class ProgramBlockInfoDescription extends Component {
         <div>
           { description &&
             <React.Fragment>
-              <Markdown source={description} />
+              <Markdown>
+                {description}
+              </Markdown>
             </React.Fragment>
           }
           <br />

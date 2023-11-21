@@ -5,6 +5,53 @@ You can find the most recent version of this guide [here](https://github.com/fac
 
 ## LOCALLY GROWN TV WEBSITE
 
+### Installing
+
+You can install everything using:
+
+```
+npm install
+```
+
+And run the app with:
+
+```
+npm start
+```
+
+In order to get the app working you need 3 environment files:
+
+```
+# .env
+REACT_APP_DOMAIN=https://locallygrown.tv/
+REACT_APP_NAME="Locally Grown TV"
+REACT_APP_DESCRIPTION="Locally Grown is something you can leave on because you trust us. Grassroots TV-esque format meant to be exactly what it needs to be."
+```
+
+```
+# .env.development
+REACT_APP_DOMAIN=http://localhost:3000/
+```
+
+```
+# .env.local
+REACT_APP_CONTENTFUL_ACCESS_TOKEN // From Contentful, 'Locally Grown TV Web App': https://app.contentful.com/spaces/erbmau6qmrq2/api/keys
+REACT_APP_FIREBASE_API_KEY // From Firebase: https://console.firebase.google.com/u/1/project/locally-grown-tv/settings/general/web:YWI2NTM0YzctNDYxMi00NzBkLWIzNDYtMmU3ZWY2MjZiODlj
+REACT_APP_FIREBASE_AUTH_DOMAIN
+REACT_APP_FIREBASE_DATABASE_URL
+REACT_APP_FIREBASE_PROJECT_ID
+REACT_APP_FIREBASE_STORAGE_BUCKET
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID
+REACT_APP_FIREBASE_APP_ID
+REACT_APP_DRM_VIDEO_PASSWORD=bar2020
+REACT_APP_STRIPE_PUBLISHABLE_TEST_KEY // From Stripe, with login billing@locallygrown.tv
+REACT_APP_STRIPE_PUBLISHABLE_LIVE_KEY
+```
+
+There's also some important routing happening via Firebase Functions. Instructions are on Dropbox Paper here: https://paper.dropbox.com/doc/Locally-Grown-Tech-Notes--CEL~W8AYLJBHq4Vh2eDKMqPiAg-wGGxqlI9LsCNOAPHGKbVR
+
+### Notes
+
 Some notable things it's built with:
 
 - Contentful as the headless API
