@@ -7,6 +7,8 @@ You can find the most recent version of this guide [here](https://github.com/fac
 
 ### Installing
 
+The packages were last updated to the latest-and-greatest in November 2023.
+
 You can install everything using:
 
 ```
@@ -49,6 +51,12 @@ REACT_APP_STRIPE_PUBLISHABLE_LIVE_KEY
 ```
 
 There's also some important routing happening via Firebase Functions. Instructions are on Dropbox Paper here: https://paper.dropbox.com/doc/Locally-Grown-Tech-Notes--CEL~W8AYLJBHq4Vh2eDKMqPiAg-wGGxqlI9LsCNOAPHGKbVR
+
+### Deploying
+
+The main app is currently deployed from the branch `firebase-react-ui-auth`. The instructions for deploying are also in Dropbox Paper: https://paper.dropbox.com/doc/Locally-Grown-Tech-Notes--CEL~W8AYLJBHq4Vh2eDKMqPiAg-wGGxqlI9LsCNOAPHGKbVR
+
+** Note: Do not build the app from `main` until merging in that PR: https://github.com/singleportrait/locally-grown/pull/31. It will also need updated packages, most likely.
 
 ### Notes
 
