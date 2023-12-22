@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import * as moment from 'moment';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { getRelativeSortedProgramBlocks } from './helpers/programBlockHelpers';
 

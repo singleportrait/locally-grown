@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import Video from './components/Video';
 import MuteButtonWithRedux from './components/MuteButtonWithRedux';

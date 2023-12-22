@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import MuteIcon from './MuteIcon';
 import UnmuteIcon from './UnmuteIcon';

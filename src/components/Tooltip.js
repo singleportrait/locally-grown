@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Markdown from 'react-markdown';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 class Tooltip extends Component {
   render() {
@@ -18,7 +18,9 @@ class Tooltip extends Component {
         </div>
         { this.props.description &&
           <div>
-            <Markdown source={this.props.description} />
+            <Markdown>
+              {this.props.description}
+            </Markdown>
           </div>
         }
         { this.props.descriptionHTML &&

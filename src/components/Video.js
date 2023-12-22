@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 import ReactGA from 'react-ga';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import consoleLog from '../helpers/consoleLog';
 

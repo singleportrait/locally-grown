@@ -2,7 +2,7 @@ import React from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { programBlockBase } from '../styles';
 

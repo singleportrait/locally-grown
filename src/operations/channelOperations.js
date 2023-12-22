@@ -50,7 +50,7 @@ const configureChannels = (channels) => {
 
     // Filter out programs with no fields, and ones that
     // aren't active for today
-    const validPrograms = channel.fields.programs.filter(program => {
+    const validPrograms = !channel?.fields?.programs ? [] : channel.fields.programs.filter(program => {
       return program.fields &&
         moment(program.fields.startDate, dateFormat).isSameOrBefore(today) &&
         moment(program.fields.endDate, dateFormat).isSameOrAfter(today);

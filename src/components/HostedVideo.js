@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactPlayer from 'react-player';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import consoleLog from '../helpers/consoleLog';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import screenfull from 'screenfull';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import consoleLog from '../helpers/consoleLog';
 

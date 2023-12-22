@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { functions } from '../firebase';
 import styled from '@emotion/styled';
 
-import { css } from 'emotion/macro';
+import { css } from '@emotion/css';
 
 function VdoCipherVideoAutoplay(props) {
 

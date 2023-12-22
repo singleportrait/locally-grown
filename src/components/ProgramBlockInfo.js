@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import * as moment from 'moment';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import ProgramBlockInfoDescription from './ProgramBlockInfoDescription';
 

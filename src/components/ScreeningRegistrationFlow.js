@@ -11,7 +11,7 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 // import larsseit from '../fonts/larsseit-light.woff';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { UserContext } from "../providers/UserProvider";
 

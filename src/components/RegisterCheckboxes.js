@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { ButtonDiv } from '../styles';
 

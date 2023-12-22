@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 
-import styled from '@emotion/styled/macro';
-import { css } from 'emotion/macro';
+import styled from '@emotion/styled';
+import { css } from '@emotion/css';
 
 import PlayButton from './PlayButton';
 import HostedVideo from './HostedVideo';

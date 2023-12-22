@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import Tooltip from './Tooltip';
 

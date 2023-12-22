@@ -16,7 +16,7 @@ import { UserContext } from "../providers/UserProvider";
 import { formatAmount, formatAmountForStripe } from '../helpers/stripeHelpers';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import { ButtonDiv, Button, errorColor, successColor } from '../styles';
 

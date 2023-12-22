@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import screenfull from 'screenfull';
 import { findDOMNode } from 'react-dom'
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import consoleLog from '../helpers/consoleLog';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Helmet from 'react-helmet';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 function Tlkio(props) {
   // const [script] = useState(document.createElement("script"));

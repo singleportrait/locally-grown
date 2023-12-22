@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import TVGuideLink from './TVGuideLink';
 

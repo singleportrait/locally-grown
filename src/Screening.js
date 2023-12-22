@@ -9,7 +9,7 @@ import spacetime from 'spacetime';
 import debounce from 'lodash/debounce';
 
 import styled from '@emotion/styled';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 import screening_header_logo_wide from './images/screening_header_logo_wide.png';
 import screening_header_logo_narrow from './images/screening_header_logo_narrow.png';
@@ -201,7 +201,9 @@ function Screening(props) {
       <>
         <CustomHr subtle={isMobileOrTablet} />
         { contentfulScreening.description &&
-          <Markdown className={description} source={contentfulScreening.description} />
+          <Markdown className={description}>
+            {contentfulScreening.description}
+          </Markdown>
         }
         { screening && screening.members && screening.members.length &&
           <>

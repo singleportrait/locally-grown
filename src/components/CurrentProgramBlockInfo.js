@@ -8,7 +8,9 @@ class CurrentProgramBlockInfo extends Component {
         <p>Now playing:</p>
         <h1>{this.props.programBlock.fields.title}</h1>
         <div>
-          <Markdown source={this.props.programBlock.fields.description} />
+          <Markdown>
+            {this.props.programBlock.fields.description}
+          </Markdown>
         </div>
         { this.props.programBlock.programmingLength < 3600 &&
             <p>
