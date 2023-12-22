@@ -3,7 +3,7 @@ const md5 = require('md5');
 
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 mailchimp.setConfig({
-  apiKey: functions.config().mailchimp.key,
+  apiKey: process.env.MAILCHIMP_KEY,
   server: "us18"
 });
 

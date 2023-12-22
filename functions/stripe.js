@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { v4: uuidv4 } = require('uuid');
 
-const stripe = require('stripe')(functions.config().stripe.secret_live, {
+const stripe = require('stripe')(process.env.STRIPE_SECRET_LIVE, {
   apiVersion: '2020-08-27',
 });
 

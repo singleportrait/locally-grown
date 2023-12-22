@@ -5,6 +5,7 @@ web/index.html
 
 # Private environment variables
 .env
+.env.default
 
 # In order to access Firebase functions locally
 .runtimeconfig.json

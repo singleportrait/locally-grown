@@ -5,12 +5,11 @@ exports.getOTPAndPlaybackInfo = functions.https.onCall((data, context) => {
   // console.log(data.videoId);
   if (!data.videoId) return;
 
-  // console.log(data.videoId, functions.config().vdocipher.key);
   // Fetch API endpoint and return code to user
   return axios
     .post(`https://dev.vdocipher.com/api/videos/${data.videoId}/otp`, {}, {
       headers: {
-        'Authorization': `Apisecret ${functions.config().vdocipher.key}`,
+        'Authorization': `Apisecret ${process.env.VDOCIPHER_KEY}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       }
