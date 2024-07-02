@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Markdown from 'react-markdown';
 import { auth } from './firebase';
-import ReactPlayer from 'react-player';
 import spacetime from 'spacetime';
-import debounce from 'lodash/debounce';
 
 import styled from '@emotion/styled';
 import { css } from '@emotion/css';
@@ -42,7 +40,6 @@ function Screening(props) {
   const { user, userIsLoaded } = useContext(UserContext);
   const [error, setError] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [preshowPlaying, setPreshowPlaying] = useState(false);
 
   const isWideScreen = useMediaQuery({ minWidth: 800 });
   const isMobileOrTablet = useMediaQuery({ maxWidth: 800 });
@@ -153,6 +150,7 @@ function Screening(props) {
     }
 
     setScreeningState(setState());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* Visual displays of event time */
@@ -222,12 +220,6 @@ function Screening(props) {
           <br />
       </>
     );
-  }
-
-  /* Show play icon over preshow video once the video has loaded */
-  const [showPlayIcon, setShowPlayIcon] = useState(false);
-  const onPreshowVideoReady = () => {
-    setShowPlayIcon(true);
   }
 
   /* Calculated width of video, divided by vertical height ratio, minus height of chat header */
@@ -378,12 +370,12 @@ const WideProgramContainer = styled('div')`
   height: 100vh;
 `;
 
-const oppositeVideoRatio = "1.777";
+// const oppositeVideoRatio = "1.777";
 const videoRatio = ".5625";
 
 // For short screens, we actually need the ratio including the buttons
 const oppositeVideoRatioWithControls = "1.55";
-const videoRatioWithControls = ".645";
+// const videoRatioWithControls = ".645";
 
 // Updated videoAspectRatio due to differently proportioned player elements
 const videoAspectRatio = '9/6';

@@ -48,8 +48,8 @@ function ScreeningCountdown(props) {
 
   const timeLeftUntilLive = useExpired(props.liveTime, "trailer", "live", 1000, customCheck);
 
-  const finishedTime = new Date(props.endDatetime);
-  const timeUntilFinished = useExpired(finishedTime, "live", "finished", 1000 * 60);
+  // const finishedTime = new Date(props.endDatetime);
+  // const timeUntilFinished = useExpired(finishedTime, "live", "finished", 1000 * 60);
 
   return (
     <>

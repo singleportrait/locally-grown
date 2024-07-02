@@ -7,7 +7,7 @@ import { css } from '@emotion/css';
 import PlayButton from './PlayButton';
 import HostedVideo from './HostedVideo';
 
-import { ScreeningPreshowImage, ScreeningVideoDetails } from '../styles';
+import { ScreeningPreshowImage } from '../styles';
 
 function ScreeningVideoPlayer(props) {
   const [preshowPlaying, setPreshowPlaying] = useState(false);
