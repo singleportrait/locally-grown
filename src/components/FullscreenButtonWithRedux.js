@@ -18,7 +18,7 @@ const fullscreenButton = css`
   }
 `;
 
-class FullscreenButton extends Component {
+class FullscreenButtonWithRedux extends Component {
   goFullscreen = () => {
     if (screenfull.enabled) {
       screenfull.request(findDOMNode(this.props.video.player));
@@ -47,4 +47,4 @@ const mapStateToProps = state => ({
   video: state.video
 });
 
-export default connect(mapStateToProps)(FullscreenButton);
+export default connect(mapStateToProps)(FullscreenButtonWithRedux);

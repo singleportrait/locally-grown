@@ -1,0 +1,86 @@
+/* src: url("http://localhost:3000/static/media/larsseit-light.d504a720.woff2") format('woff2'), */
+@font-face {
+  font-family: 'Larsseit';
+  src: url(fonts/larsseit-light.woff2) format('woff2'),
+       url(fonts/larsseit-light.woff) format('woff'),
+       url(fonts/larsseit-light.ttf)  format('truetype');
+  font-weight: 300;
+}
+
+html {
+  /* font-size: 13px; */
+  font-family: "Larsseit";
+  -webkit-font-smoothing: antialiased;
+  background-color: #111;
+}
+
+body {
+  /* background-color: #000; */
+}
+
+.header-avatar {
+  display: none;
+}
+
+.header-channel {
+  display: none;
+  /* font-family: "Larsseit"; */
+}
+
+.header-status {
+  left: 1rem;
+}
+
+/* Colors */
+.theme--night .header-bar {
+  background-color: #111;
+  border-bottom: 1px solid #333;
+}
+
+.theme--night .post,
+.theme--night .button {
+  background-color: #333;
+}
+
+.theme--night .post.me {
+  background-color: #222;
+}
+
+.theme--night .input-text,
+.theme--night .message-input {
+  background-color: #333;
+  box-shadow: none;
+}
+
+.theme--night .input-text:focus,
+.theme--night .message-input:focus {
+  background-color: #444;
+  border-color: rgba(0,0,0,0.3);
+}
+
+/* Social icons */
+.join-button-icon {
+  fill: #ccc;
+}
+
+/* Last message in block */
+.post-message:last-of-type {
+  padding-bottom: 7px; /* Originally were 10px */
+}
+
+/* Name and icon */
+.post-meta {
+  top: 0; /* Originally was 3px, */
+}
+
+@media (max-width: 919px) {
+  /* User name */
+  .post-name {
+    padding-top: 7px;
+  }
+
+  /* User message */
+  .chat .post:nth-last-of-type(-n+3) .post-message:first-of-type {
+    padding-top: 7px;
+  }
+}

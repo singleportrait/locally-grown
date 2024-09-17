@@ -41,7 +41,12 @@ const configureChannels = (channels) => {
   const today = moment().format(dateFormat);
 
   // Configure copied channels
-  const configuredChannels = clone()(channels).map(channel => {
+  const configuredChannels = clone()(channels).filter(channel => {
+    // Filter out channels with no programs
+    if (!channel.fields.programs) return false;
+
+    return true;
+  }).map(channel => {
 
     // Filter out programs with no fields, and ones that
     // aren't active for today

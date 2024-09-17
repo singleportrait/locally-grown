@@ -9,6 +9,7 @@ import { isIOS } from './helpers/utils';
 
 import { initializeSession } from './actions/sessionActions';
 import { initializeChannels } from './operations/channelOperations';
+import { initializeScreenings } from './operations/screeningOperations';
 
 import LoadingScreen from './components/LoadingScreen';
 import Channel from './Channel';
@@ -16,10 +17,16 @@ import TVGuide from './TVGuide';
 import Channels from './Channels';
 import Tooltip from './components/Tooltip';
 import LowBatteryTest from './components/LowBatteryTest';
+import Screenings from './Screenings';
 
 import styled from '@emotion/styled';
 
 import { mobileViewportHeight } from './styles';
+
+import withTracker from './components/withTracker';
+const TVGuideWithTracker = withTracker(TVGuide);
+const ChannelsWithTracker = withTracker(Channels);
+const NoMatchWithTracker = withTracker(LoadingScreen, {"title": "404"});
 
 const mobileLowBatteryTooltipHeight = "200px";
 
@@ -53,6 +60,7 @@ class AppContents extends Component {
   componentDidMount() {
     this.props.initializeSession();
     this.props.initializeChannels();
+    this.props.initializeScreenings();
   }
 
   toggleTooltip() {
@@ -75,15 +83,6 @@ class AppContents extends Component {
       // ReactGA.pageview('/no-programs');
       return (
         <LoadingScreen message="No programs right now" showWhatIsThisTooltip />
-      );
-    };
-
-    function NoMatch() {
-      // Tracking for 404 page
-      // TODO: This is running every time for some reason - we don't want that
-      // ReactGA.pageview('/404');
-      return (
-        <LoadingScreen message="Sorry, we couldn&apos;t find that." showTVGuideLink />
       );
     };
 
@@ -146,6 +145,11 @@ class AppContents extends Component {
           </MediaQuery>
           { this.props.channels.isLoaded &&
             <Switch>
+
+              <Route path="/screenings">
+                <Screenings screenings={this.props.screenings.screenings} />
+              </Route>
+
               { this.props.channels.carouselChannels.map((channel, i) => // Tracking for carousel channels
                 <Route key={i} path={`/${channel.fields.slug}`} render={props => (
                   <React.Fragment>
@@ -189,8 +193,7 @@ class AppContents extends Component {
                     <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
                     <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
                   </Helmet>
-                  {this.trackPageview()}
-                  <TVGuide {...props} channels={this.props.channels.featuredChannels} />
+                  <TVGuideWithTracker {...props} channels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
 
@@ -203,8 +206,7 @@ class AppContents extends Component {
                     <meta property="og:description" content={process.env.REACT_APP_DESCRIPTION} />
                     <meta property="og:image" content={process.env.REACT_APP_DOMAIN + "share.png"} />
                   </Helmet>
-                  {this.trackPageview()}
-                  <Channels {...props} featuredChannels={this.props.channels.featuredChannels} />
+                  <ChannelsWithTracker {...props} featuredChannels={this.props.channels.featuredChannels} />
                 </React.Fragment>
               )} />
 
@@ -217,7 +219,14 @@ class AppContents extends Component {
                 )} />
               }
 
-              <Route component={NoMatch} />
+              <Route render={props => ( // When no match found
+                <>
+                  <Helmet>
+                    <title>{`Page Not Found | ${process.env.REACT_APP_NAME}`}</title>
+                  </Helmet>
+                  <NoMatchWithTracker showTVGuideLink {...props} />
+                </>
+              )} />
             </Switch>
           }
           { !this.props.channels.isLoaded && LoadingState() }
@@ -230,6 +239,7 @@ class AppContents extends Component {
 const mapStateToProps = state => ({
   channels: state.channels,
   session: state.session,
+  screenings: state.screenings,
 });
 
-export default connect(mapStateToProps, { initializeSession, initializeChannels })(AppContents);
+export default connect(mapStateToProps, { initializeSession, initializeChannels, initializeScreenings })(AppContents);
